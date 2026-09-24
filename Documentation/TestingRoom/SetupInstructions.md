@@ -4,7 +4,7 @@
 
 ## Requirements
 
-- Unity 6+
+- Unity 6000.0.58f2
 - Webcam with access permissions
 
 ## Steps
