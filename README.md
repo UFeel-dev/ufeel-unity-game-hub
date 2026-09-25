@@ -3,7 +3,7 @@
 [![Discord](https://dcbadge.limes.pink/api/server/https://discord.gg/TxYTDXMJkM)](https://discord.gg/TxYTDXMJkM)
 
 [![Discord](https://img.shields.io/discord/1461581735631523900.svg)](https://discord.gg/TxYTDXMJkM)
-[![MIT License](https://img.shields.io/badge/mit-license)](https://opensource.org/licenses/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE)
 ![Unity](https://img.shields.io/badge/Unity-%23000000.svg?logo=unity&logoColor=white)
 ![Linux](https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black)
 
@@ -30,7 +30,7 @@ You can find the website [here](https://ufeel.guitt.re).
 
 ## Quick Start
 
-1. Clone the repository.
+1. Clone the [repository](https://github.com/UFeel-dev/ufeel-unity-game-hub).
 2. Open in Unity Hub.
 3. Open the `TestingRoom` scene and press Play.
 
@@ -38,4 +38,4 @@ Note: A webcam is required for most features.
 
 ## License
 
-MIT License - see [LICENSE](LICENSE).
+Apache 2.0 License - see [LICENSE](LICENSE).
