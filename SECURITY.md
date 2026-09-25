@@ -8,7 +8,7 @@ If you discover a security vulnerability or privacy flaw in the UFeel core libra
 
 ### Reporting steps
 
-1. Submit a report directly via [GitHub Security Advisories](https://github.com/UFeel-dev/ufeel/security/advisories) or send an email to [ufeel.dev@gmail.com](mailto:ufeel.dev@gmail.com).
+1. Submit a report directly via [GitHub Security Advisories](https://github.com/UFeel-dev/ufeel-unity-game-hub/security/advisories) or send an email to [ufeel.dev@gmail.com](mailto:ufeel.dev@gmail.com).
 2. Provide a detailed report including:
     - Type of vulnerability identified
     - Affected component (Core library, plugins)
