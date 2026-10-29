@@ -1,9 +1,0 @@
-{
-  "typeCheckingMode": "basic",
-  "reportMissingTypeStubs": false,
-  "reportMissingImports": "none",
-//   "reportOptionalMemberAccess": false,
-//   "reportOptionalSubscript": false,
-//   "reportOptionalCall": false,
-  "exclude": ["venv", "build", "**/node_modules", "**/__pycache__", "**/.*"]
-}

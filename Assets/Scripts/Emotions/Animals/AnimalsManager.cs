@@ -35,14 +35,14 @@ public class AnimalsManager : MonoBehaviour
 
     private List<AnimalType> animalsList = new();
     private GameObject currentAnimalGO;
-    private readonly Dictionary<AnimalType, EmotionData.EmotionType> animalEmotions =
+    private readonly Dictionary<AnimalType, EmotionType> animalEmotions =
         new()
     {
-        { AnimalType.Cat, EmotionData.EmotionType.Happiness },
-        { AnimalType.Deer, EmotionData.EmotionType.Surprise },
-        { AnimalType.Tiger, EmotionData.EmotionType.Anger },
-        { AnimalType.Penguin, EmotionData.EmotionType.Sadness },
-        { AnimalType.Spider, EmotionData.EmotionType.Fear }
+        { AnimalType.Cat, EmotionType.Happy },
+        { AnimalType.Deer, EmotionType.Surprised },
+        { AnimalType.Tiger, EmotionType.Angry },
+        { AnimalType.Penguin, EmotionType.Sad },
+        { AnimalType.Spider, EmotionType.Fearful }
     };
 
     public Slider EmotionProgressBar;
@@ -56,7 +56,6 @@ public class AnimalsManager : MonoBehaviour
 
     private void Start()
     {
-        UFeelAPI.ToggleOffEverything();
         UFeelDebugHUD.Clear();
 
         InitializeDetection();
@@ -74,7 +73,7 @@ public class AnimalsManager : MonoBehaviour
         while (currentLevel <= 5)
         {
             yield return StartCoroutine(InitLevel(currentLevel));
-            yield return StartCoroutine(PlayLevel(currentLevel));
+            yield return StartCoroutine(PlayLevel());
 
             if (timer <= 0 && animalsList.Count > 0)
             {
@@ -115,7 +114,7 @@ public class AnimalsManager : MonoBehaviour
         isLevelActive = true;
     }
 
-    private IEnumerator PlayLevel(int level)
+    private IEnumerator PlayLevel()
     {
         InstructionText.text = string.Empty;
         SpawnAnimal();
@@ -123,7 +122,9 @@ public class AnimalsManager : MonoBehaviour
         while (isLevelActive && timer > 0)
         {
             timer -= Time.deltaTime;
-            TimerText.text = $"Time: 0:{Mathf.CeilToInt(timer)}";
+            string text = $"Time: 0:{Mathf.CeilToInt(timer)}";
+            TimerText.SetText(text);
+
             if (animalsList.Count == 0 && currentAnimalGO == null)
             {
                 isLevelActive = false;
@@ -206,7 +207,8 @@ public class AnimalsManager : MonoBehaviour
         score++;
         if (ScoreText != null)
         {
-            ScoreText.text = $"Score: {score}";
+            string tmp = $"Score: {score}";
+            ScoreText.SetText(tmp);
         }
     }
 
@@ -248,8 +250,6 @@ public class AnimalsManager : MonoBehaviour
 
     private static void InitializeDetection()
     {
-        UFeelAPI.StartEmotionDetection();
-        UFeelAPI.Status();
     }
 
     private void Update()
@@ -260,10 +260,10 @@ public class AnimalsManager : MonoBehaviour
         }
         if (!isLevelActive || !isTrackingEmotion || currentAnimalGO == null) return;
 
-        EmotionData.EmotionType? dominantEmotion = UFeelAPI.DominantEmotion;
-        EmotionData.EmotionType targetEmotion = animalEmotions[currentTargetAnimal];
+        EmotionType? dominantEmotion = UFeelAPI.Emotion.Dominant;
+        EmotionType targetEmotion = animalEmotions[currentTargetAnimal];
 
-        if (dominantEmotion.HasValue && dominantEmotion.Value == targetEmotion)
+        if (dominantEmotion == targetEmotion)
         {
             currentProgress += Time.deltaTime / MaxProgressDuration;
             if (barFillImage != null) barFillImage.color = Color.green;

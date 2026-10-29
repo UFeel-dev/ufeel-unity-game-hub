@@ -49,7 +49,8 @@ public class SpeechManager : MonoBehaviour
 
     [Header("Speech Recognition")]
     [SerializeField] private float recognitionWindowSeconds = 4f;
-    [SerializeField, Range(0.5f, 1f)] private float minimumCommandScore = 0.75f;
+    [SerializeField]
+    [Range(0.5f, 1f)] private float minimumCommandScore = 0.75f;
 
     private readonly SpeechCommandRecognizer commandRecognizer =
         new(4f, 0.75f);
@@ -67,9 +68,11 @@ public class SpeechManager : MonoBehaviour
     private static readonly WaitForSeconds Wait3 = new(3f);
     private static readonly WaitForSeconds Wait2 = new(2f);
 
+    private static readonly string[] VerbsLight = new[] { "allume", "allumer", "active", "activer" };
+    private static readonly string[] WordsLight = new[] { "lumière", "lumiere", "lampe", "éclairage", "eclairage" };
+
     private void Start()
     {
-        UFeelAPI.ToggleOffEverything();
         UFeelDebugHUD.Clear();
 
         StartSpeechDetection();
@@ -83,7 +86,7 @@ public class SpeechManager : MonoBehaviour
     {
         HandleInput();
 
-        string currentSpeech = UFeelAPI.CurrentSpeech;
+        string? currentSpeech = UFeelAPI.SpeechToText.Current;
 
         if (string.IsNullOrWhiteSpace(currentSpeech))
             return;
@@ -111,17 +114,16 @@ public class SpeechManager : MonoBehaviour
             DisplayHint();
     }
 
-    private void StartSpeechDetection()
+    private static void StartSpeechDetection()
     {
-        UFeelAPI.StartSpeechDetection();
-        UFeelAPI.Status();
+        UFeelAPI.SpeechToText.StartDetection();
     }
 
     private void SetStep(EscapeStep step)
     {
         currentStep = step;
 
-        SpeechCommand command = CreateCommand(step);
+        SpeechCommand? command = CreateCommand(step);
 
         commandRecognizer.SetCommand(command);
 
@@ -130,31 +132,18 @@ public class SpeechManager : MonoBehaviour
         StartHintTimer(GetHint(step));
     }
 
-    private SpeechCommand CreateCommand(EscapeStep step)
+    private static SpeechCommand? CreateCommand(EscapeStep step)
     {
-        switch (step)
+        return step switch
         {
-            case EscapeStep.Light:
-                return CreateLightCommand();
-
-            case EscapeStep.Radio:
-                return CreateRadioCommand();
-
-            case EscapeStep.Window:
-                return CreateWindowCommand();
-
-            case EscapeStep.BlueLight:
-                return CreateBlueLightCommand();
-
-            case EscapeStep.TV:
-                return CreateTvCommand();
-
-            case EscapeStep.Door:
-                return CreateDoorCommand();
-
-            default:
-                return null;
-        }
+            EscapeStep.Light => CreateLightCommand(),
+            EscapeStep.Radio => CreateRadioCommand(),
+            EscapeStep.Window => CreateWindowCommand(),
+            EscapeStep.BlueLight => CreateBlueLightCommand(),
+            EscapeStep.TV => CreateTvCommand(),
+            EscapeStep.Door => CreateDoorCommand(),
+            _ => null,
+        };
     }
 
     private static SpeechCommand CreateLightCommand()
@@ -165,13 +154,13 @@ public class SpeechManager : MonoBehaviour
             {
                 new SpeechConcept(
                     "TurnOn",
-                    new[] { "allume", "allumer", "active", "activer" },
+                    VerbsLight,
                     0.72f,
                     1f),
 
                 new SpeechConcept(
                     "Light",
-                    new[] { "lumière", "lumiere", "lampe", "éclairage", "eclairage" },
+                    WordsLight,
                     0.72f,
                     1f)
             });

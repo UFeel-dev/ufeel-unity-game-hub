@@ -49,14 +49,11 @@ public class VehicleController : MonoBehaviour
 
     private void Update()
     {
-        EyeTrackingData? currentDirections = UFeelAPI.CurrentDirections;
-        bool? blinkStatus = UFeelAPI.BlinkStatus;
+        GazeDirection currentDirections = UFeelAPI.Gaze.CurrentDirections;
+        bool blinkStatus = UFeelAPI.Gaze.IsBlinking;
 
-        if (currentDirections is not EyeTrackingData directions)
-            return;
-
-        UpdateSteering(directions);
-        UpdateEngineSequence(directions, blinkStatus);
+        UpdateSteering(currentDirections);
+        UpdateEngineSequence(currentDirections, blinkStatus);
 
         throttleInput = canMove ? Input.GetAxis("Vertical") : 0f;
 
@@ -87,13 +84,13 @@ public class VehicleController : MonoBehaviour
         rb.MoveRotation(rb.rotation * turnRotation);
     }
 
-    private void UpdateSteering(EyeTrackingData directions)
+    private void UpdateSteering(GazeDirection directions)
     {
-        if (directions.left && !directions.right)
+        if (directions.IsDirection(GazeDirection.Left) && !directions.IsDirection(GazeDirection.Right))
         {
             steeringInput = -0.3f;
         }
-        else if (directions.right && !directions.left)
+        else if (directions.IsDirection(GazeDirection.Right) && !directions.IsDirection(GazeDirection.Left))
         {
             steeringInput = 0.3f;
         }
@@ -103,7 +100,7 @@ public class VehicleController : MonoBehaviour
         }
     }
 
-    private void UpdateEngineSequence(EyeTrackingData directions, bool? blinkStatus)
+    private void UpdateEngineSequence(GazeDirection directions, bool? blinkStatus)
     {
         if (activationStep != ActivationStep.WaitBlink &&
             Time.time - lastStepTime > sequenceTimeout)
@@ -114,12 +111,12 @@ public class VehicleController : MonoBehaviour
         bool blink = blinkStatus == true;
         bool blinkPressed = blink && !previousBlink;
 
-        bool leftPressed = directions.left && !previousLeft;
-        bool rightPressed = directions.right && !previousRight;
+        bool leftPressed = directions.IsDirection(GazeDirection.Left) && !previousLeft;
+        bool rightPressed = directions.IsDirection(GazeDirection.Right) && !previousRight;
 
         previousBlink = blink;
-        previousLeft = directions.left;
-        previousRight = directions.right;
+        previousLeft = directions.IsDirection(GazeDirection.Left);
+        previousRight = directions.IsDirection(GazeDirection.Right);
 
         if (canMove)
         {

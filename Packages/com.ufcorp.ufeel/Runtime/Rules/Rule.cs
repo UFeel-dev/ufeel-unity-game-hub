@@ -6,15 +6,15 @@ namespace UFeel
     {
         public Func<bool> Condition;
         public Action Action;
-        public bool IsUnique;
+        public bool OnlyOnce;
         public int Id;
 
-        public Rule(int id, Func<bool> condition, Action action, bool isUnique)
+        public Rule(int id, Func<bool> condition, Action action, bool onlyOnce)
         {
             Id = id;
             Condition = condition;
             Action = action;
-            IsUnique = isUnique;
+            OnlyOnce = onlyOnce;
         }
     }
 }

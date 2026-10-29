@@ -23,7 +23,6 @@ public sealed class CarEyeTrackingManager : MonoBehaviour
 
     private void Awake()
     {
-        UFeelAPI.ToggleOffEverything();
         UFeelDebugHUD.Clear();
 
         InitializeDetection();
@@ -38,8 +37,6 @@ public sealed class CarEyeTrackingManager : MonoBehaviour
 
     private static void InitializeDetection()
     {
-        UFeelAPI.StartEyeTrackingDetection();
-        UFeelAPI.Status();
     }
 
     private void Update()
@@ -102,16 +99,15 @@ public sealed class CarEyeTrackingManager : MonoBehaviour
 
     private Vector3 ComputeTargetPosition()
     {
-        EyeTrackingData? currentDirections = UFeelAPI.CurrentDirections;
-        if (currentDirections is not EyeTrackingData directions)
-            return Vector2.zero;
+        GazeDirection directions = UFeelAPI.Gaze.CurrentDirections;
+
         Vector2 direction = Vector2.zero;
-        if (directions.left) direction.x--;
-        if (directions.right) direction.x++;
+        if (directions.IsDirection(GazeDirection.Left)) direction.x--;
+        if (directions.IsDirection(GazeDirection.Right)) direction.x++;
         // if (directions.up) direction.y++;
         // if (directions.down) direction.y--;
 
-        if (direction != Vector2.zero && !directions.center)
+        if (direction != Vector2.zero && !directions.IsDirection(GazeDirection.Center))
         {
             direction.Normalize();
         }

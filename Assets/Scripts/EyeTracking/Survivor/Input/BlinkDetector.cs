@@ -29,7 +29,7 @@ public class BlinkDetector : MonoBehaviour
         BlinkPressed = false;
         DoubleBlinkPressed = false;
 
-        bool blink = UFeelAPI.BlinkStatus == true;
+        bool blink = UFeelAPI.Gaze.IsBlinking;
 
         bool blinkEdge = blink && !previousBlink;
 
