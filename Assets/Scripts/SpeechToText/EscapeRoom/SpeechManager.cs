@@ -48,9 +48,8 @@ public class SpeechManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI hintText;
 
     [Header("Speech Recognition")]
-    [SerializeField] private float recognitionWindowSeconds = 4f;
-    [SerializeField]
-    [Range(0.5f, 1f)] private float minimumCommandScore = 0.75f;
+    // [SerializeField] private float recognitionWindowSeconds = 4f;
+    // [SerializeField] [Range(0.5f, 1f)] private float minimumCommandScore = 0.75f;
 
     private readonly SpeechCommandRecognizer commandRecognizer =
         new(4f, 0.75f);
@@ -68,8 +67,8 @@ public class SpeechManager : MonoBehaviour
     private static readonly WaitForSeconds Wait3 = new(3f);
     private static readonly WaitForSeconds Wait2 = new(2f);
 
-    private static readonly string[] VerbsLight = new[] { "allume", "allumer", "active", "activer" };
-    private static readonly string[] WordsLight = new[] { "lumière", "lumiere", "lampe", "éclairage", "eclairage" };
+    // private static readonly string[] VerbsLight = new[] { "allume", "allumer", "active", "activer" };
+    // private static readonly string[] WordsLight = new[] { "lumière", "lumiere", "lampe", "éclairage", "eclairage" };
 
     private void Start()
     {
@@ -152,15 +151,15 @@ public class SpeechManager : MonoBehaviour
             "LightOn",
             new[]
             {
-                new SpeechConcept(
-                    "TurnOn",
-                    VerbsLight,
-                    0.72f,
-                    1f),
+                // new SpeechConcept(
+                //     "TurnOn",
+                //     new[] { "allume", "allumer", "active", "activer" },
+                //     0.72f,
+                //     1f),
 
                 new SpeechConcept(
                     "Light",
-                    WordsLight,
+                    new[] { "lumière", "lumiere", "lampe", "éclairage", "eclairage" },
                     0.72f,
                     1f)
             });
@@ -172,11 +171,11 @@ public class SpeechManager : MonoBehaviour
             "RadioOff",
             new[]
             {
-                new SpeechConcept(
-                    "TurnOff",
-                    new[] { "éteins", "eteins", "éteindre", "eteindre", "coupe", "couper", "arrête", "arrete" },
-                    0.68f,
-                    1f),
+                // new SpeechConcept(
+                //     "TurnOff",
+                //     new[] { "éteins", "eteins", "éteindre", "eteindre", "coupe", "couper", "arrête", "arrete" },
+                //     0.68f,
+                //     1f),
 
                 new SpeechConcept(
                     "Radio",
@@ -192,11 +191,11 @@ public class SpeechManager : MonoBehaviour
             "WindowClose",
             new[]
             {
-                new SpeechConcept(
-                    "Close",
-                    new[] { "ferme", "fermer" },
-                    0.72f,
-                    1f),
+                // new SpeechConcept(
+                //     "Close",
+                //     new[] { "ferme", "fermer" },
+                //     0.72f,
+                //     1f),
 
                 new SpeechConcept(
                     "Window",
@@ -218,11 +217,11 @@ public class SpeechManager : MonoBehaviour
                     0.72f,
                     1f),
 
-                new SpeechConcept(
-                    "Purple",
-                    new[] { "violette", "violet" },
-                    0.72f,
-                    1f)
+                // new SpeechConcept(
+                //     "Purple",
+                //     new[] { "violette", "violet" },
+                //     0.72f,
+                //     1f)
             });
     }
 
@@ -238,11 +237,11 @@ public class SpeechManager : MonoBehaviour
                     0.72f,
                     1f),
 
-                new SpeechConcept(
-                    "Screen",
-                    new[] { "écran", "ecran", "télé", "tele", "télévision", "television" },
-                    0.72f,
-                    1f)
+                // new SpeechConcept(
+                //     "Screen",
+                //     new[] { "écran", "ecran", "télé", "tele", "télévision", "television" },
+                //     0.72f,
+                //     1f)
             });
     }
 
@@ -258,11 +257,11 @@ public class SpeechManager : MonoBehaviour
                     0.72f,
                     1f),
 
-                new SpeechConcept(
-                    "Door",
-                    new[] { "porte" },
-                    0.78f,
-                    1f)
+                // new SpeechConcept(
+                //     "Door",
+                //     new[] { "porte" },
+                //     0.78f,
+                //     1f)
             });
     }
 

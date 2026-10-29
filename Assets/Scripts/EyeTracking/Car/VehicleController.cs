@@ -21,7 +21,7 @@ public class VehicleController : MonoBehaviour
     private float throttleInput;
     private float steeringInput;
 
-    private bool canMove;
+    private bool canMove = true;
 
     private enum ActivationStep
     {
@@ -53,7 +53,6 @@ public class VehicleController : MonoBehaviour
         bool blinkStatus = UFeelAPI.Gaze.IsBlinking;
 
         UpdateSteering(currentDirections);
-        UpdateEngineSequence(currentDirections, blinkStatus);
 
         throttleInput = canMove ? Input.GetAxis("Vertical") : 0f;
 
@@ -62,10 +61,10 @@ public class VehicleController : MonoBehaviour
 
     private void HandleInputs()
     {
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            Respawn();
-        }
+        // if (Input.GetKeyDown(KeyCode.R))
+        // {
+        //     Respawn();
+        // }
     }
 
     private void FixedUpdate()
