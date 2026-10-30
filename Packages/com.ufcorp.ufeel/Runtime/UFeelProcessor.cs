@@ -82,6 +82,7 @@ namespace UFeel
 
             string speechModelPath = Path.Combine(
                 modelDirectory,
+                "SpeechToText",
                 "vosk-model-small-fr-0.22");
 
             if (!Directory.Exists(modelDirectory))
@@ -191,7 +192,7 @@ namespace UFeel
             }
         }
 
-        public static GazeResultData GetGaze()
+        public static GazeResultData GetGaze() // TODO: add default values
         {
             UFeelNative.Status status =
                 (UFeelNative.Status)UFeelNative.ufeel_get_gaze_result(

@@ -66,6 +66,8 @@ public class MazeManager : MonoBehaviour
 
         EmotionType? currentEmotion = UFeelAPI.Emotion.Dominant;
 
+        // Debug.Log($"Current emotion: {currentEmotion}, Text assigned: {emotionDebugText != null}");
+
         if (currentEmotion == null)
             return;
 

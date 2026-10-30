@@ -27,16 +27,18 @@ namespace UFeel
                         .OrderByDescending(e => e.Value)
                         .First();
 
+                    // Debug.Log($"Dominant emotion: {dominant.Key}");
+
                     return dominant.Key.ToUpperInvariant() switch
                     {
-                        "angry" => EmotionType.Angry,
-                        "contemptuous" => EmotionType.Contemptuous,
-                        "disgusted" => EmotionType.Disgusted,
-                        "fearful" => EmotionType.Fearful,
-                        "happy" => EmotionType.Happy,
-                        "neutral" => EmotionType.Neutral,
-                        "sad" => EmotionType.Sad,
-                        "surprised" => EmotionType.Surprised,
+                        "ANGRY" => EmotionType.Angry,
+                        "CONTEMPTUOUS" => EmotionType.Contemptuous,
+                        "DISGUSTED" => EmotionType.Disgusted,
+                        "FEARFUL" => EmotionType.Fearful,
+                        "HAPPY" => EmotionType.Happy,
+                        "NEUTRAL" => EmotionType.Neutral,
+                        "SAD" => EmotionType.Sad,
+                        "SURPRISED" => EmotionType.Surprised,
                         _ => null,
                     };
                 }
