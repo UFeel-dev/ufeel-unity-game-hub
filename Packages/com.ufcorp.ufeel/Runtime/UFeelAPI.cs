@@ -1,103 +1,130 @@
+#nullable enable
 
 using System;
-using System.Threading;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace UFeel
 {
-    public partial class UFeelAPI : MonoBehaviour
+    [DefaultExecutionOrder(-1000)]
+    public sealed partial class UFeelAPI : MonoBehaviour
     {
-        private static UFeelAPI? _instance;
+        private static readonly RuleSet Rules = new RuleSet { ErrorHandler = Debug.LogException };
 
-        private readonly CancellationTokenSource cancellation = new();
-        private readonly SemaphoreSlim processorGate = new(1, 1);
-        private static Task processTask;
+        private static UFeelAPI? instance;
+        private static UFeelSession? session;
+        private static CalibrationProfileStore? profiles;
+        private static UFeelSnapshot frameSnapshot = UFeelSnapshot.Initial;
+        private static int frameSnapshotFrame = -1;
 
-        private bool isQuitting;
+        private UFeelCalibrationOverlay? calibrationOverlay;
+
+        /// <summary>Null when the native library failed to start.</summary>
+        public static UFeelSession? Session => session;
+
+        public static bool IsAvailable => session != null;
+
+        public static RuleKey AddRule(Func<bool> condition, Action action, bool onlyOnce)
+        {
+            return Rules.Add(condition, action, onlyOnce);
+        }
+
+        public static void RemoveRule(RuleKey key) => Rules.Remove(key);
+
+        /// <summary>Shared by every read in the current frame, so values stay consistent.</summary>
+        internal static UFeelSnapshot Snapshot
+        {
+            get
+            {
+                int frame = Time.frameCount;
+                if (frame != frameSnapshotFrame)
+                {
+                    frameSnapshot = session?.Latest ?? UFeelSnapshot.Initial;
+                    frameSnapshotFrame = frame;
+                }
+
+                return frameSnapshot;
+            }
+        }
+
+        /// <summary>Also keeps <paramref name="feature"/> running.</summary>
+        internal static UFeelSnapshot Read(DetectionType feature)
+        {
+            session?.Demand.Request(feature);
+            return Snapshot;
+        }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        private static void Initialize()
+        private static void Bootstrap()
         {
-            if (FindAnyObjectByType<UFeelAPI>() != null)
-                return;
-
-            GameObject obj = new("UFeelAPI");
-            obj.AddComponent<UFeelAPI>();
+            if (instance == null)
+                new GameObject(nameof(UFeelAPI)).AddComponent<UFeelAPI>();
         }
 
         private void Awake()
         {
-            if (_instance != null && _instance != this)
+            if (instance != null && instance != this)
             {
                 Destroy(gameObject);
                 return;
             }
 
-            _instance = this;
-            processTask = ProcessLoopAsync(cancellation.Token);
+            instance = this;
             DontDestroyOnLoad(gameObject);
+            calibrationOverlay = gameObject.AddComponent<UFeelCalibrationOverlay>();
 
-            Debug.Log("UFeelAPI initialized");
-        }
-
-        private async Task ProcessLoopAsync(CancellationToken token)
-        {
-            while (!token.IsCancellationRequested)
+            try
             {
-                try
-                {
-                    bool updated = false;
-
-                    await processorGate.WaitAsync(token);
-
-                    try
-                    {
-                        if (isQuitting)
-                            return;
-                        updated = UFeelProcessor.Update();
-                        RulesProcessor.UpdateRules();
-                    }
-                    finally
-                    {
-                        processorGate.Release();
-                    }
-
-                    if (!updated)
-                    {
-                        await Task.Delay(50, token);
-                        continue;
-                    }
-
-                    await Task.Delay(33, token);
-                }
-                catch (OperationCanceledException) when (token.IsCancellationRequested)
-                {
-                    break;
-                }
+                StartSession();
+            }
+            catch (Exception exception)
+            {
+                Debug.LogError($"UFeel is unavailable: {exception.Message}");
+                Debug.LogException(exception);
             }
         }
 
-        private void FixedUpdate()
+        private static void StartSession()
         {
-            if (isQuitting)
-                return;
+            UFeelProcessor processor = new(UFeelPackageLayout.FromRoot(UFeelPackagePaths.NativeRoot));
+            try
+            {
+                profiles = CalibrationProfileStore.CreateDefault();
+                ProfileLoadResult profile = profiles.Load(processor);
+                EyeTracking.Calibrated = profile == ProfileLoadResult.Loaded;
+                Debug.Log($"UFeel started (eye-tracking profile: {profile}, {profiles.Path})");
 
-            RulesProcessor.UpdateRules();
+                session = new UFeelSession(processor);
+            }
+            catch
+            {
+                processor.Dispose();
+                throw;
+            }
+
+            session.Start();
         }
 
-        private void OnApplicationQuit()
-        {
-            isQuitting = true;
-            Debug.Log("Game stopping - releasing UFeel resources");
+        private void Update() => Rules.Evaluate();
 
-            UFeelProcessor.Shutdown();
-        }
+        private void OnApplicationQuit() => Shutdown();
 
         private void OnDestroy()
         {
-            if (_instance == this)
-                _instance = null;
+            if (instance != this)
+                return;
+
+            Shutdown();
+            instance = null;
+        }
+
+        private static void Shutdown()
+        {
+            UFeelSession? running = session;
+            session = null;
+            frameSnapshotFrame = -1;
+            Rules.Clear();
+
+            running?.Dispose();
         }
     }
 }

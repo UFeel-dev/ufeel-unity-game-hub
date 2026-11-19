@@ -4,6 +4,7 @@
     "references": [
         "SceneLoader",
         "UFeel",
+        "UFeel.Core",
         "Utils"
     ],
     "includePlatforms": [],

@@ -3,6 +3,25 @@
 > [<- Back to README](README.md)
 
 
+## [2026-11]
+
+### Changed
+
+- UFeel library updated to the latest release, used through the shared `UFeel.Core` C# adapter (`Runtime/Core`).
+- Native processing runs on a background thread. Features run only while read.
+- `UFeelAPI.Gaze`/`GazeDirection` renamed to `UFeelAPI.EyeTracking`/`EyeTrackingDirection`.
+
+### Added
+
+- Eye-tracking calibration overlay (F8) and automatic loading of the shared calibration profile.
+- Linux player builds ship `dependencies/` and `models/`.
+- `tools/update-ufeel.sh` to sync a ufeel package.
+
+### Fixed
+
+- Speech rules matched in the wrong direction and fired on empty speech.
+- Calibration profile paths were passed as UTF-16.
+
 ## [2026-07]
 
 ### Added

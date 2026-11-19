@@ -27,10 +27,10 @@ public class EyeInput : MonoBehaviour
 
     private void Update()
     {
-        GazeDirection data = UFeelAPI.Gaze.CurrentDirections;
+        EyeTrackingDirection data = UFeelAPI.EyeTracking.Directions;
 
-        bool left = data.IsDirection(GazeDirection.Left);
-        bool right = data.IsDirection(GazeDirection.Right);
+        bool left = data.HasDirection(EyeTrackingDirection.Left);
+        bool right = data.HasDirection(EyeTrackingDirection.Right);
 
         LookLeft = left;
         LookRight = right;

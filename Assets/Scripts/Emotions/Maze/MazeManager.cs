@@ -49,21 +49,10 @@ public class MazeManager : MonoBehaviour
         {
             _emotionLevels[emotionInfo.Emotion] = 0f;
         }
-
-        InitializeDetection();
-    }
-
-    private static void InitializeDetection()
-    {
     }
 
     private void Update()
     {
-        if (Input.GetKeyUp(KeyCode.V))
-        {
-            InitializeDetection();
-        }
-
         EmotionType? currentEmotion = UFeelAPI.Emotion.Dominant;
 
         // Debug.Log($"Current emotion: {currentEmotion}, Text assigned: {emotionDebugText != null}");

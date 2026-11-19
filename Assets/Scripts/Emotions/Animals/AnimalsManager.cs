@@ -58,8 +58,6 @@ public class AnimalsManager : MonoBehaviour
     {
         UFeelDebugHUD.Clear();
 
-        InitializeDetection();
-
         if (EmotionProgressBar != null)
         {
             barFillImage = EmotionProgressBar.fillRect.GetComponent<Image>();
@@ -248,16 +246,8 @@ public class AnimalsManager : MonoBehaviour
         };
     }
 
-    private static void InitializeDetection()
-    {
-    }
-
     private void Update()
     {
-        if (Input.GetKeyUp(KeyCode.V))
-        {
-            InitializeDetection();
-        }
         if (!isLevelActive || !isTrackingEmotion || currentAnimalGO == null) return;
 
         EmotionType? dominantEmotion = UFeelAPI.Emotion.Dominant;

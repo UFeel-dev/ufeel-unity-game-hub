@@ -26,7 +26,6 @@ public class GameManager : MonoBehaviour
     private Coroutine actionCoroutine;
     private Coroutine actionCoroutine2;
 
-    private bool simulated = false;
     private const int HpGainScore = 1;
     public Slider _slider;
 
@@ -41,27 +40,12 @@ public class GameManager : MonoBehaviour
 
         UFeelDebugHUD.Clear();
 
-        InitializeDetection();
-
         actionCoroutine = StartCoroutine(UpdateBPM());
         actionCoroutine2 = StartCoroutine(PlayECGBeep());
     }
 
-    private static void InitializeDetection()
-    {
-    }
-
     private void Update()
     {
-        if (Input.GetKeyUp(KeyCode.V))
-        {
-            InitializeDetection();
-        }
-        if (Input.GetKeyUp(KeyCode.N))
-        {
-            simulated = !simulated;
-            UFeelAPI.HeartRate.ToggleHeartRateSimulation(simulated);
-        }
         if (!StartPlaying && Input.anyKeyDown)
         {
             StartPlaying = true;
@@ -106,9 +90,6 @@ public class GameManager : MonoBehaviour
         {
             uint bpm = GetBPM();
 
-            if (bpm == 0)
-                yield break;
-
             Bs.Bpm = bpm;
             _music.pitch = bpm / (float)MinBpm;
 
@@ -144,7 +125,9 @@ public class GameManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        StopCoroutine(actionCoroutine);
-        StopCoroutine(actionCoroutine2);
+        if (actionCoroutine != null)
+            StopCoroutine(actionCoroutine);
+        if (actionCoroutine2 != null)
+            StopCoroutine(actionCoroutine2);
     }
 }

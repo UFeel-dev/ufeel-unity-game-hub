@@ -1,4 +1,4 @@
 {
     "name": "Utils",
-    "references": ["UFeel"] 
+    "references": ["UFeel", "UFeel.Core"]
 }
