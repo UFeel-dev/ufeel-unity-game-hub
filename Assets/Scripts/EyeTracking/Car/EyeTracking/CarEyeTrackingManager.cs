@@ -23,10 +23,7 @@ public sealed class CarEyeTrackingManager : MonoBehaviour
 
     private void Awake()
     {
-        UFeelAPI.ToggleOffEverything();
         UFeelDebugHUD.Clear();
-
-        InitializeDetection();
 
         if (playerCamera == null)
         {
@@ -36,18 +33,8 @@ public sealed class CarEyeTrackingManager : MonoBehaviour
         }
     }
 
-    private static void InitializeDetection()
-    {
-        UFeelAPI.StartEyeTrackingDetection();
-        UFeelAPI.Status();
-    }
-
     private void Update()
     {
-        if (Input.GetKeyUp(KeyCode.V))
-        {
-            InitializeDetection();
-        }
         if (playerCamera == null || _sphere == null) return;
 
         UpdateGazeStatus();
@@ -102,16 +89,15 @@ public sealed class CarEyeTrackingManager : MonoBehaviour
 
     private Vector3 ComputeTargetPosition()
     {
-        EyeTrackingData? currentDirections = UFeelAPI.CurrentDirections;
-        if (currentDirections is not EyeTrackingData directions)
-            return Vector2.zero;
+        EyeTrackingDirection directions = UFeelAPI.EyeTracking.Directions;
+
         Vector2 direction = Vector2.zero;
-        if (directions.left) direction.x--;
-        if (directions.right) direction.x++;
+        if (directions.HasDirection(EyeTrackingDirection.Left)) direction.x--;
+        if (directions.HasDirection(EyeTrackingDirection.Right)) direction.x++;
         // if (directions.up) direction.y++;
         // if (directions.down) direction.y--;
 
-        if (direction != Vector2.zero && !directions.center)
+        if (direction != Vector2.zero && !directions.HasDirection(EyeTrackingDirection.Center))
         {
             direction.Normalize();
         }

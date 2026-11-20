@@ -23,7 +23,7 @@ public class MazeManager : MonoBehaviour
     private int currentZ;
 
     private const float MaxEmotionValue = 3f;
-    private static readonly Dictionary<EmotionData.EmotionType, float> _emotionLevels = new();
+    private static readonly Dictionary<EmotionType, float> _emotionLevels = new();
 
     private static WaitForSeconds _waitForSeconds5 = new(5f);
     private bool playerDidWin;
@@ -41,7 +41,6 @@ public class MazeManager : MonoBehaviour
 
     private void Start()
     {
-        UFeelAPI.ToggleOffEverything();
         UFeelDebugHUD.Clear();
 
         GenerateRooms();
@@ -50,30 +49,20 @@ public class MazeManager : MonoBehaviour
         {
             _emotionLevels[emotionInfo.Emotion] = 0f;
         }
-
-        InitializeDetection();
-    }
-
-    private static void InitializeDetection()
-    {
-        UFeelAPI.StartEmotionDetection();
-        UFeelAPI.Status();
     }
 
     private void Update()
     {
-        if (Input.GetKeyUp(KeyCode.V))
-        {
-            InitializeDetection();
-        }
-        EmotionData.EmotionType? currentEmotion = UFeelAPI.CurrentEmotionsData?.DominantEmotion;
+        EmotionType? currentEmotion = UFeelAPI.Emotion.Dominant;
+
+        // Debug.Log($"Current emotion: {currentEmotion}, Text assigned: {emotionDebugText != null}");
 
         if (currentEmotion == null)
             return;
 
         foreach (EmotionInfo emotionInfo in EmotionInfo.Emotions)
         {
-            EmotionData.EmotionType emotion = emotionInfo.Emotion;
+            EmotionType emotion = emotionInfo.Emotion;
 
             _emotionLevels[emotion] =
                 emotion == currentEmotion
@@ -90,20 +79,20 @@ public class MazeManager : MonoBehaviour
         UpdateEmotionDebugText(currentEmotion);
     }
 
-    public static bool IsEmotionCharged(EmotionData.EmotionType emotion)
+    public static bool IsEmotionCharged(EmotionType emotion)
     {
         return _emotionLevels.TryGetValue(emotion, out float value)
             && value >= MaxEmotionValue;
     }
 
-    public static float GetEmotionLevel(EmotionData.EmotionType emotion)
+    public static float GetEmotionLevel(EmotionType emotion)
     {
         return _emotionLevels.TryGetValue(emotion, out float value)
             ? value
             : 0f;
     }
 
-    private void UpdateEmotionDebugText(EmotionData.EmotionType? currentEmotion)
+    private void UpdateEmotionDebugText(EmotionType? currentEmotion)
     {
         if (emotionDebugText == null)
             return;
@@ -115,7 +104,7 @@ public class MazeManager : MonoBehaviour
 
         foreach (EmotionInfo emotionInfo in EmotionInfo.Emotions)
         {
-            EmotionData.EmotionType emotion = emotionInfo.Emotion;
+            EmotionType emotion = emotionInfo.Emotion;
             float value = GetEmotionLevel(emotion);
 
             string color = "white";

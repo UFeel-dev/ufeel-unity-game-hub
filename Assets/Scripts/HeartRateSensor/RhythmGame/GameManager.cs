@@ -1,16 +1,15 @@
+using System.Collections;
+using UFeel;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
-using System.Threading.Tasks;
-using UFeel;
 
 public class GameManager : MonoBehaviour
 {
-    private static WaitForSeconds _waitForSeconds1 = new WaitForSeconds(1f);
+    private static WaitForSeconds _waitForSeconds1 = new(1f);
     public static GameManager Instance;
 
     public bool StartPlaying;
-    public BeatScroller bs;
+    public BeatScroller Bs;
 
     public int CurrentScore;
     public int ScorePerNote = 100;
@@ -22,12 +21,11 @@ public class GameManager : MonoBehaviour
     public int MultiplierTracker = 0;
     public int MultiplierThreshold = 4;
 
-    private const int MinBpm = 60;
-    private const int MaxBpm = 180;
+    private const uint MinBpm = 60;
+    private const uint MaxBpm = 180;
     private Coroutine actionCoroutine;
     private Coroutine actionCoroutine2;
 
-    private bool simulated = false;
     private const int HpGainScore = 1;
     public Slider _slider;
 
@@ -40,36 +38,18 @@ public class GameManager : MonoBehaviour
         _music.volume = 0.5f;
         _ECGBeep.volume = 0.25f;
 
-        UFeelAPI.ToggleOffEverything();
         UFeelDebugHUD.Clear();
-
-        InitializeDetection();
 
         actionCoroutine = StartCoroutine(UpdateBPM());
         actionCoroutine2 = StartCoroutine(PlayECGBeep());
     }
 
-    private static void InitializeDetection()
-    {
-        UFeelAPI.StartHeartRateDetection();
-        UFeelAPI.Status();
-    }
-
     private void Update()
     {
-        if (Input.GetKeyUp(KeyCode.V))
-        {
-            InitializeDetection();
-        }
-        if (Input.GetKeyUp(KeyCode.N))
-        {
-            simulated = !simulated;
-            UFeelAPI.ToggleHeartRateSimulation(simulated);
-        }
         if (!StartPlaying && Input.anyKeyDown)
         {
             StartPlaying = true;
-            bs.Started = true;
+            Bs.Started = true;
             _music.Play();
         }
         if (_slider.value <= 0)
@@ -108,12 +88,9 @@ public class GameManager : MonoBehaviour
     {
         while (true)
         {
-            int bpm = GetBPM();
+            uint bpm = GetBPM();
 
-            if (bpm == 0)
-                yield break;
-
-            bs.Bpm = bpm;
+            Bs.Bpm = bpm;
             _music.pitch = bpm / (float)MinBpm;
 
             yield return _waitForSeconds1;
@@ -126,17 +103,31 @@ public class GameManager : MonoBehaviour
         {
             _ECGBeep.Play();
 
-            yield return new WaitForSeconds(1f / (bs.Bpm / 60f));
+            yield return new WaitForSeconds(1f / (Bs.Bpm / 60f));
         }
     }
 
-    private static int GetBPM()
+    private static uint GetBPM()
     {
-        int currentBPM = UFeelAPI.CurrentHeartRate ?? 0;
+        uint currentBPM = UFeelAPI.HeartRate.Current;
 
         if (currentBPM == 0)
             return currentBPM;
 
-        return Mathf.Clamp(currentBPM, MinBpm, MaxBpm);
+        if (currentBPM < MinBpm)
+            return MinBpm;
+
+        if (currentBPM > MaxBpm)
+            return MaxBpm;
+
+        return currentBPM;
+    }
+
+    private void OnDestroy()
+    {
+        if (actionCoroutine != null)
+            StopCoroutine(actionCoroutine);
+        if (actionCoroutine2 != null)
+            StopCoroutine(actionCoroutine2);
     }
 }

@@ -1,3 +1,4 @@
+using UFeel;
 using UnityEngine;
 
 #if UNITY_EDITOR
@@ -70,7 +71,7 @@ public class PauseMenu : MonoBehaviour
             SceneManager.LoadScene("TestingRoom");
         }
 
-        UFeel.UFeelAPI.ToggleOffEverything();
+        UFeelAPI.SpeechToText.StopDetection();
         UFeelDebugHUD.Clear();
     }
 

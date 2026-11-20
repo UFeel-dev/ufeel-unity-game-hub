@@ -2,81 +2,39 @@
 
 > [<- Back to README](README.md)
 
-UFeel Testing Room is a Unity project demonstrating the **UFeel** biometric package. Unity spawns a Python server that processes webcam/sensor data and streams results back via TCP.
-
-## Overview
+The UFeel Unity Game Hub is a Unity project demonstrating the **UFeel** native library (emotions, eye tracking, speech to text, heart rate).
 
 ```mermaid
 graph TD
-    subgraph Unity["Unity (C#)"]
-        Launcher[LauncherScript] --> API[UFeelAPI]
-        API --> Rules[Rules Engine]
-        Rules --> Game[Game Logic / Scenes]
-
-        API --> ER[EmotionReceiver :4100]
-        API --> ET[EyeTrackingReceiver :4000]
-        API --> ST[SpeechToTextReceiver :3900]
-        API --> HR[HeartRateSensorReceiver :3800]
-
-        API --> PSC[PythonServerController]
+    Game[Game scripts] -->|facades, rules| API[UFeelAPI · main thread]
+    API -->|Latest snapshot| Session
+    Overlay[UFeelCalibrationOverlay] -->|ExecuteAsync| Session
+    subgraph Core["Runtime/Core · UFeel.Core (engine-agnostic C# adapter)"]
+        Session[UFeelSession · background thread] --> Processor[UFeelProcessor]
     end
-
-    subgraph Python["Python Server (subprocess)"]
-        Main[main.py] --> DP[DataProcessor]
-        DP --> ED[EmotionDetector]
-        DP --> EY[EyeTracker]
-        DP --> STT[SpeechToText]
-        DP --> HRS[HeartRateSensor]
-    end
-
-    PSC -->|spawn process| Main
-    ED -->|TCP :4100| ER
-    EY -->|TCP :4000| ET
-    STT -->|TCP :3900| ST
-    HRS -->|TCP :3800| HR
-    DP -->|OpenCV webcam| Camera[(Webcam)]
+    Processor -->|C ABI| Native[libufeel_wrapper.so + dependencies/]
+    Native --> Devices[(Webcam, microphone, heart-rate source)]
 ```
 
-## Key Components
+## Package (`Packages/com.ufcorp.ufeel`)
 
-### UFeel Package (`Packages/com.ufcorp.ufeel`)
+| Path | Role |
+| --- | --- |
+| `Runtime/Core/` | C# adapter synced from the ufeel package (`tools/update-ufeel.sh`). Do not edit here, change it in the ufeel repo. |
+| `Runtime/UFeelAPI.cs` | Unity host: starts the session, loads the calibration profile, evaluates rules in `Update`, disposes on quit. |
+| `Runtime/Facades/` | `UFeelAPI.Emotion`, `.EyeTracking`, `.SpeechToText`, `.HeartRate`: read the per-frame snapshot and keep the read features running. |
+| `Runtime/Calibration/` | IMGUI calibration screen (F8) driving the adapter's `EyeTrackingCalibration`. |
+| `Runtime/Plugins/Linux-x86_64/` | Native library, `dependencies/` (found through RUNPATH) and `models/`. |
+| `Editor/` | Plugin import settings, and the Linux post-build step copying `dependencies/` and `models/` (to `StreamingAssets/UFeel`). |
 
-| Component | Role |
-|---|---|
-| `UFeelAPI` | Singleton entry point. Starts/stops detectors, exposes data getters, manages rules. |
-| `ClientBase` | Abstract TCP listener. Each receiver extends it to decode JSON messages on a dedicated thread. |
-| `PythonServerController` | Spawns/kills the Python process from Unity's lifecycle. |
-| `Rules Engine` | Condition->Action pairs evaluated every `Update()`. Supports one-shot and continuous rules. |
+## Threading
 
-### Python Server (`PythonServer/`)
+- Native calls run only on the session thread.
+- Game code reads immutable snapshots and never blocks.
+- Commands (calibration, speech toggle) are queued through `UFeelSession.ExecuteAsync`.
 
-| Module | Role |
-|---|---|
-| `DataProcessor` | Main loop - reads webcam frames, dispatches to each detector. |
-| `EmotionDetector` | MediaPipe-based facial emotion detection. |
-| `EyeTracker` | Gaze direction estimation. |
-| `SpeechToText` | Microphone transcription. |
-| `HeartRateSensor` | rPPG heart-rate estimation from camera. |
+## Testing Room (`Assets/Scripts/TestingRoom`)
 
-### Testing Room (`Assets/Scripts/TestingRoom`)
-
-First-person experience used to validate the UFeel package: room navigation, carousel, doors, and scene transitions driven by UFeel rules.
-
-## Data Flow
-
-```mermaid
-sequenceDiagram
-    participant Game
-    participant UFeelAPI
-    participant Receiver
-    participant Python
-
-    Game->>UFeelAPI: StartAPI()
-    UFeelAPI->>Python: spawn subprocess
-    Game->>UFeelAPI: StartEmotionDetection()
-    UFeelAPI->>Receiver: begin listening :4100
-    Python-->>Receiver: JSON over TCP (continuous)
-    UFeelAPI->>Game: rules fire -> callbacks
-```
+First-person experience used to validate the UFeel package: room navigation, carousel, doors, and scene transitions driven by UFeel rules. TODO: remove "testing room" from the entire project by replacing it with "game hub".
 
 **See also:** [API Reference](Packages/com.ufcorp.ufeel/Runtime/API.md) - [Setup Instructions](Documentation/TestingRoom/SetupInstructions.md)

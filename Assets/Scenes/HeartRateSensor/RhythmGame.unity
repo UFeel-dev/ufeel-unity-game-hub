@@ -3183,7 +3183,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   StartPlaying: 0
-  bs: {fileID: 719419177}
+  Bs: {fileID: 719419177}
   CurrentScore: 0
   ScorePerNote: 100
   ScoreText: {fileID: 1791990394}

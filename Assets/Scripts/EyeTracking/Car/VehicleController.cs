@@ -21,7 +21,7 @@ public class VehicleController : MonoBehaviour
     private float throttleInput;
     private float steeringInput;
 
-    private bool canMove;
+    private bool canMove = true;
 
     private enum ActivationStep
     {
@@ -49,14 +49,10 @@ public class VehicleController : MonoBehaviour
 
     private void Update()
     {
-        EyeTrackingData? currentDirections = UFeelAPI.CurrentDirections;
-        bool? blinkStatus = UFeelAPI.BlinkStatus;
+        EyeTrackingDirection currentDirections = UFeelAPI.EyeTracking.Directions;
+        bool blinkStatus = UFeelAPI.EyeTracking.IsBlinking;
 
-        if (currentDirections is not EyeTrackingData directions)
-            return;
-
-        UpdateSteering(directions);
-        UpdateEngineSequence(directions, blinkStatus);
+        UpdateSteering(currentDirections);
 
         throttleInput = canMove ? Input.GetAxis("Vertical") : 0f;
 
@@ -65,10 +61,10 @@ public class VehicleController : MonoBehaviour
 
     private void HandleInputs()
     {
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            Respawn();
-        }
+        // if (Input.GetKeyDown(KeyCode.R))
+        // {
+        //     Respawn();
+        // }
     }
 
     private void FixedUpdate()
@@ -87,13 +83,13 @@ public class VehicleController : MonoBehaviour
         rb.MoveRotation(rb.rotation * turnRotation);
     }
 
-    private void UpdateSteering(EyeTrackingData directions)
+    private void UpdateSteering(EyeTrackingDirection directions)
     {
-        if (directions.left && !directions.right)
+        if (directions.HasDirection(EyeTrackingDirection.Left) && !directions.HasDirection(EyeTrackingDirection.Right))
         {
             steeringInput = -0.3f;
         }
-        else if (directions.right && !directions.left)
+        else if (directions.HasDirection(EyeTrackingDirection.Right) && !directions.HasDirection(EyeTrackingDirection.Left))
         {
             steeringInput = 0.3f;
         }
@@ -103,7 +99,7 @@ public class VehicleController : MonoBehaviour
         }
     }
 
-    private void UpdateEngineSequence(EyeTrackingData directions, bool? blinkStatus)
+    private void UpdateEngineSequence(EyeTrackingDirection directions, bool? blinkStatus)
     {
         if (activationStep != ActivationStep.WaitBlink &&
             Time.time - lastStepTime > sequenceTimeout)
@@ -114,12 +110,12 @@ public class VehicleController : MonoBehaviour
         bool blink = blinkStatus == true;
         bool blinkPressed = blink && !previousBlink;
 
-        bool leftPressed = directions.left && !previousLeft;
-        bool rightPressed = directions.right && !previousRight;
+        bool leftPressed = directions.HasDirection(EyeTrackingDirection.Left) && !previousLeft;
+        bool rightPressed = directions.HasDirection(EyeTrackingDirection.Right) && !previousRight;
 
         previousBlink = blink;
-        previousLeft = directions.left;
-        previousRight = directions.right;
+        previousLeft = directions.HasDirection(EyeTrackingDirection.Left);
+        previousRight = directions.HasDirection(EyeTrackingDirection.Right);
 
         if (canMove)
         {

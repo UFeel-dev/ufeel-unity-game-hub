@@ -11,14 +11,7 @@ public class DoorEyeController : MonoBehaviour
 
     private bool previousBlink;
 
-    private enum GazeDirection
-    {
-        Center,
-        Left,
-        Right
-    }
-
-    private GazeDirection previousGazeDirection = GazeDirection.Center;
+    private EyeTrackingDirection previousEyeTrackingDirection = EyeTrackingDirection.Center;
 
     private float lastBlinkTime = -10f;
 
@@ -30,10 +23,8 @@ public class DoorEyeController : MonoBehaviour
         {
             Debug.LogError("DoorSelectionManager reference missing.");
             enabled = false;
-            return;
+            // return;
         }
-
-        UFeelAPI.StartEyeTrackingDetection();
     }
 
     private void Update()
@@ -48,11 +39,8 @@ public class DoorEyeController : MonoBehaviour
             return;
         }
 
-        EyeTrackingData? currentDirections = UFeelAPI.CurrentDirections;
-        bool? blinkStatus = UFeelAPI.BlinkStatus;
-
-        if (currentDirections is not EyeTrackingData directions)
-            return;
+        EyeTrackingDirection directions = UFeelAPI.EyeTracking.Directions;
+        bool? blinkStatus = UFeelAPI.EyeTracking.IsBlinking;
 
         ProcessInput(directions, blinkStatus == true);
     }
@@ -62,7 +50,7 @@ public class DoorEyeController : MonoBehaviour
         commandsEnabled = !commandsEnabled;
     }
 
-    private void ProcessInput(EyeTrackingData directions, bool blink)
+    private void ProcessInput(EyeTrackingDirection directions, bool blink)
     {
         bool blinkPressed = blink && !previousBlink;
         previousBlink = blink;
@@ -86,30 +74,30 @@ public class DoorEyeController : MonoBehaviour
         }
     }
 
-    private static GazeDirection GetGazeDirection(EyeTrackingData directions)
+    private static EyeTrackingDirection GetEyeTrackingDirection(EyeTrackingDirection directions)
     {
-        if (directions.left && !directions.right)
-            return GazeDirection.Left;
+        if (directions.HasDirection(EyeTrackingDirection.Left) && !directions.HasDirection(EyeTrackingDirection.Right))
+            return EyeTrackingDirection.Left;
 
-        if (directions.right && !directions.left)
-            return GazeDirection.Right;
+        if (directions.HasDirection(EyeTrackingDirection.Right) && !directions.HasDirection(EyeTrackingDirection.Left))
+            return EyeTrackingDirection.Right;
 
-        return GazeDirection.Center;
+        return EyeTrackingDirection.Center;
     }
 
-    private (bool Left, bool Right) ProcessGaze(EyeTrackingData directions)
+    private (bool Left, bool Right) ProcessGaze(EyeTrackingDirection directions)
     {
-        GazeDirection currentDirection = GetGazeDirection(directions);
+        EyeTrackingDirection currentDirection = GetEyeTrackingDirection(directions);
 
         bool leftGesture =
-            previousGazeDirection == GazeDirection.Left &&
-            currentDirection == GazeDirection.Center;
+            previousEyeTrackingDirection.HasDirection(EyeTrackingDirection.Left) &&
+            currentDirection.HasDirection(EyeTrackingDirection.Center);
 
         bool rightGesture =
-            previousGazeDirection == GazeDirection.Right &&
-            currentDirection == GazeDirection.Center;
+            previousEyeTrackingDirection.HasDirection(EyeTrackingDirection.Right) &&
+            currentDirection.HasDirection(EyeTrackingDirection.Center);
 
-        previousGazeDirection = currentDirection;
+        previousEyeTrackingDirection = currentDirection;
 
         return (leftGesture, rightGesture);
     }

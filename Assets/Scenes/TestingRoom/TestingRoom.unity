@@ -4286,10 +4286,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc972728d3a336719ba069e8117375e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 5
-  cameraRoot: {fileID: 1126030246}
-  mouseSensitivity: 2
-  gravity: -9.81
+  MoveSpeed: 5
+  CameraRoot: {fileID: 1126030246}
+  MouseSensitivity: 2
+  Gravity: -9.81
   Controller: {fileID: 0}
 --- !u!136 &943825819
 CapsuleCollider:

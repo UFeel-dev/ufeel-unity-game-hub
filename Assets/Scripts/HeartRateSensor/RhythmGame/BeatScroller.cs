@@ -3,7 +3,7 @@ using UnityEngine;
 public class BeatScroller : MonoBehaviour
 {
     public float BeatTempo;
-    public int Bpm;
+    public uint Bpm;
     public bool Started;
 
     private void Start()

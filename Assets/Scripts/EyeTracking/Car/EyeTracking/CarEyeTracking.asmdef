@@ -3,7 +3,8 @@
     "rootNamespace": "",
     "references": [
         "Car",
-        "UFeel"
+        "UFeel",
+        "UFeel.Core"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-using UFeel;
 using UnityEditor;
 using UnityEngine;
 
@@ -7,10 +5,8 @@ public class LauncherScript : MonoBehaviour
 {
     private int currentStep = 0;
 
-    private async void Start()
+    private void Start()
     {
-        await UFeelAPI.StartAPI();
-
         ApplyStep();
     }
 
@@ -35,9 +31,6 @@ public class LauncherScript : MonoBehaviour
 
     private static void StopUnity()
     {
-        UFeelAPI.StopAPI();
-        UFeelAPI.Status();
-
 #if UNITY_EDITOR
         EditorApplication.isPlaying = false;
 #else
@@ -45,18 +38,8 @@ public class LauncherScript : MonoBehaviour
 #endif
     }
 
-    private void StopAllDetections()
-    {
-        UFeelAPI.StopEmotionDetection();
-        UFeelAPI.StopEyeTrackingDetection();
-        UFeelAPI.StopSpeechDetection();
-        UFeelAPI.StopHeartRateDetection();
-    }
-
     private void ApplyStep()
     {
-        StopAllDetections();
-
         switch (currentStep)
         {
             case 0:
@@ -64,23 +47,18 @@ public class LauncherScript : MonoBehaviour
 
             case 1:
                 Debug.Log("=== Eye Tracking Detection ===");
-                UFeelAPI.StartEyeTrackingDetection();
                 break;
 
             case 2:
                 Debug.Log("=== Emotion Detection ===");
-                UFeelAPI.StartEmotionDetection();
                 break;
 
             case 3:
                 Debug.Log("=== Speech Detection ===");
-                UFeelAPI.StartSpeechDetection();
                 break;
 
             case 4:
                 Debug.Log("=== Heart Rate Detection ===");
-                UFeelAPI.ToggleHeartRateSimulation(true);
-                UFeelAPI.StartHeartRateDetection();
                 break;
 
             case 5:

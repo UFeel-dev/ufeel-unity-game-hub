@@ -1,29 +1,26 @@
-using UFeel;
 using UnityEngine;
 
 public class FirstPersonController : MonoBehaviour
 {
     [Header("Movement Settings")]
-    public float moveSpeed = 5f;
+    public float MoveSpeed = 5f;
 
     [Header("Look Settings")]
-    public Transform cameraRoot;
-    public float mouseSensitivity = 2f;
+    public Transform CameraRoot;
+    public float MouseSensitivity = 2f;
     private float pitch = 0f;
     private bool isUsingMouseToMoveView = true;
 
     [Header("Gravity")]
-    public float gravity = -9.81f;
+    public float Gravity = -9.81f;
     private float verticalVelocity;
     public CharacterController Controller;
 
-    private async void Start()
+    private void Start()
     {
         Controller = gameObject.AddComponent<CharacterController>();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-
-        await UFeelAPI.StartAPI();
     }
 
     private void Update()
@@ -63,22 +60,22 @@ public class FirstPersonController : MonoBehaviour
         float moveZ = Input.GetAxis("Vertical");
 
         Vector3 move = (transform.right * moveX) + (transform.forward * moveZ);
-        verticalVelocity += gravity * Time.deltaTime;
+        verticalVelocity += Gravity * Time.deltaTime;
 
         move.y = verticalVelocity;
 
-        Controller.Move(moveSpeed * Time.deltaTime * move);
+        Controller.Move(MoveSpeed * Time.deltaTime * move);
     }
 
     private void HandleMouseLook()
     {
-        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
-        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
+        float mouseX = Input.GetAxis("Mouse X") * MouseSensitivity;
+        float mouseY = Input.GetAxis("Mouse Y") * MouseSensitivity;
 
         pitch -= mouseY;
         pitch = Mathf.Clamp(pitch, -89f, 89f);
 
-        cameraRoot.localRotation = Quaternion.Euler(pitch, 0f, 0f);
+        CameraRoot.localRotation = Quaternion.Euler(pitch, 0f, 0f);
         transform.Rotate(Vector3.up * mouseX);
     }
 }
