@@ -25,6 +25,11 @@ public class FirstPersonController : MonoBehaviour
 
     private void Update()
     {
+        if (PauseMenu.GameisPaused)
+        {
+            return;
+        }
+
         HandleMovement();
 
         if (isUsingMouseToMoveView)
