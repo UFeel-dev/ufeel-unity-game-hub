@@ -24,6 +24,15 @@ namespace UFeel
 
             public static EyeTrackingDirection Directions => Current.Directions;
 
+            public static Vector2 Gaze
+            {
+                get
+                {
+                    EyeTrackingResult current = Current;
+                    return new Vector2(current.GazeX, current.GazeY);
+                }
+            }
+
             /// <summary>Normalized screen position (0..1, origin top-left).</summary>
             public static Vector2 Position
             {
@@ -34,9 +43,25 @@ namespace UFeel
                 }
             }
 
-            public static bool IsBlinking => Current.Status == EyeTrackingStatus.Blinking;
+            public static bool IsBlinking => Current.AreEyesClosed;
 
-            /// <summary>True once a profile was loaded or a calibration succeeded.</summary>
+            public static uint BlinkCount => Current.BlinkCount;
+
+            public static float HeadWeight
+            {
+                get => headWeight;
+                set
+                {
+                    headWeight = Mathf.Clamp01(value);
+                    session?.ExecuteAsync(processor => processor.SetEyeTrackingHeadWeight(headWeight)).ContinueWith(
+                        task => Debug.LogException(task.Exception),
+                        TaskContinuationOptions.OnlyOnFaulted);
+                }
+            }
+
+            private static float headWeight;
+
+            /// <summary>Gets a value indicating whether a profile was loaded or a calibration succeeded.</summary>
             public static bool IsCalibrated => Calibrated;
 
             public static bool IsCalibrating => Overlay != null && Overlay.IsRunning;

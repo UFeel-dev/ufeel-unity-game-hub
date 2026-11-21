@@ -91,6 +91,7 @@ namespace UFeel
                 profiles = CalibrationProfileStore.CreateDefault();
                 ProfileLoadResult profile = profiles.Load(processor);
                 EyeTracking.Calibrated = profile == ProfileLoadResult.Loaded;
+                processor.SetEyeTrackingHeadWeight(EyeTracking.HeadWeight);
                 Debug.Log($"UFeel started (eye-tracking profile: {profile}, {profiles.Path})");
 
                 session = new UFeelSession(processor);
