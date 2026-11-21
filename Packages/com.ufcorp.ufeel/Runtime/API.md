@@ -32,6 +32,16 @@ string? text = UFeelAPI.SpeechToText.Current; // null while stopped
 UFeelAPI.SpeechToText.StopDetection();
 ```
 
+The system default microphone is used until another one is selected. **F9** (`UFeelAPI.SpeechToText.MicrophoneSelectorKey`) opens the microphone selector, which is also shown in the pause menu. From code:
+
+```csharp
+IReadOnlyList<MicrophoneDevice> microphones = await UFeelAPI.SpeechToText.GetMicrophonesAsync();
+await UFeelAPI.SpeechToText.SelectMicrophoneAsync(microphones[0].Name); // null: default microphone
+string? selected = UFeelAPI.SpeechToText.SelectedMicrophone;           // null: default microphone
+```
+
+The choice is saved in `PlayerPrefs` and restored at startup. New microphones are listed only while speech detection is stopped.
+
 ## Heart rate
 
 ```csharp

@@ -17,6 +17,7 @@ namespace UFeel
         private static int frameSnapshotFrame = -1;
 
         private UFeelCalibrationOverlay? calibrationOverlay;
+        private UFeelMicrophoneOverlay? microphoneOverlay;
 
         /// <summary>Null when the native library failed to start.</summary>
         public static UFeelSession? Session => session;
@@ -71,6 +72,7 @@ namespace UFeel
             instance = this;
             DontDestroyOnLoad(gameObject);
             calibrationOverlay = gameObject.AddComponent<UFeelCalibrationOverlay>();
+            microphoneOverlay = gameObject.AddComponent<UFeelMicrophoneOverlay>();
 
             try
             {
@@ -102,6 +104,7 @@ namespace UFeel
             }
 
             session.Start();
+            SpeechToText.RestoreMicrophone(session);
         }
 
         private void Update() => Rules.Evaluate();
