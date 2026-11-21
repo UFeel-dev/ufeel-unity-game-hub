@@ -54,7 +54,7 @@ public class VehicleController : MonoBehaviour
 
         UpdateSteering(currentDirections);
 
-        throttleInput = canMove ? Input.GetAxis("Vertical") : 0f;
+        throttleInput = canMove ? LayoutInput.GetVerticalAxis() : 0f;
 
         HandleInputs();
     }

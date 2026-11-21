@@ -12,7 +12,7 @@ public class LauncherScript : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyUp(KeyCode.N))
+        if (LayoutInput.GetKeyUp(KeyCode.N))
         {
             currentStep++;
             currentStep = Mathf.Clamp(currentStep, 0, 6);
@@ -20,7 +20,7 @@ public class LauncherScript : MonoBehaviour
             ApplyStep();
         }
 
-        if (Input.GetKeyUp(KeyCode.B))
+        if (LayoutInput.GetKeyUp(KeyCode.B))
         {
             currentStep--;
             currentStep = Mathf.Clamp(currentStep, 0, 6);

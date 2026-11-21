@@ -5,7 +5,8 @@
         "SceneLoader",
         "UFeel",
         "UFeel.Core",
-        "Utils"
+        "Utils",
+        "GameInput"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -15,12 +15,12 @@ public class ButtonController : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyToPress))
+        if (LayoutInput.GetKeyDown(KeyToPress))
         {
             sr.sprite = PressedImage;
         }
 
-        if (Input.GetKeyUp(KeyToPress))
+        if (LayoutInput.GetKeyUp(KeyToPress))
         {
             sr.sprite = Image;
         }

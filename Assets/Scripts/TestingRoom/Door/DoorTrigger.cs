@@ -27,7 +27,7 @@ public class DoorTrigger : MonoBehaviour
     {
         if (SceneLoader.Instance.IsLoading()) return;
 
-        if (playerInRange && Input.GetKeyDown(KeyCode.E))
+        if (playerInRange && LayoutInput.GetKeyDown(KeyCode.E))
         {
             if (string.IsNullOrEmpty(targetSceneName))
             {
