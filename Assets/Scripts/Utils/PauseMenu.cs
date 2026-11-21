@@ -17,7 +17,7 @@ public class PauseMenu : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.M))
+        if (LayoutInput.GetKeyDown(KeyCode.M))
         {
             if (GameisPaused)
             {

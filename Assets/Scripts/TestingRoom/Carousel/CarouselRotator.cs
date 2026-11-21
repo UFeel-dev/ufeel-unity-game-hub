@@ -58,7 +58,7 @@ public class CarouselRotator : MonoBehaviour
         //     isRotatingContinuously = !isRotatingContinuously;
         // }
 
-        if (Input.GetKeyDown(KeyCode.F))
+        if (LayoutInput.GetKeyDown(KeyCode.F))
         {
             ToggleRotationSpeedAcceleration();
         }

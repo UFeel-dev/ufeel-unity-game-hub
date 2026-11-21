@@ -6,7 +6,8 @@
         "UFeel.Core",
         "Utils",
         "Unity.TextMeshPro",
-        "UnityEngine.UI"
+        "UnityEngine.UI",
+        "GameInput"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

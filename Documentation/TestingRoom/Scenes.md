@@ -79,4 +79,4 @@ All other scenes can be accessed by entering the corresponding door.
 
 **Main Script:** `GameManager`
 
-**See also:** [RhythmGame README](../HeartRateSensor/RhythmGame/README.md)
+**See also:** [RhythmGame README](../HeartRate/RhythmGame/README.md)
