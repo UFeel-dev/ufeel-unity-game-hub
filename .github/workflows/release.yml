@@ -1,0 +1,101 @@
+name: Release
+
+on:
+  push:
+    branches: [release]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build GameHub (Linux)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Free disk space
+        uses: jlumbroso/free-disk-space@v2
+        with:
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: false
+          docker-images: false
+          swap-storage: true
+
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          lfs: false
+
+      - name: Compute Git LFS cache key
+        id: lfs
+        run: echo "key=lfs-$(git lfs ls-files --long | sha256sum | cut -c1-16)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore Git LFS objects
+        id: lfs-cache
+        uses: actions/cache/restore@v6
+        with:
+          path: .git/lfs/objects
+          key: ${{ steps.lfs.outputs.key }}
+
+      - name: Fetch Git LFS files
+        run: git lfs pull
+
+      - name: Save Git LFS objects
+        if: steps.lfs-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: .git/lfs/objects
+          key: ${{ steps.lfs.outputs.key }}
+
+      - name: Restore Unity Library cache
+        uses: actions/cache@v6
+        with:
+          path: Library
+          key: library-linux-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: library-linux-
+
+      - name: Read game version
+        id: version
+        run: |
+          version="$(sed -n 's/^  bundleVersion: //p' ProjectSettings/ProjectSettings.asset)"
+          [[ -n "$version" ]] || { echo "::error::bundleVersion not found in ProjectSettings.asset"; exit 1; }
+          echo "archive=GameHub-$version-linux-x86_64" >> "$GITHUB_OUTPUT"
+
+      - name: Build with Unity
+        uses: game-ci/unity-builder@v6
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+        with:
+          targetPlatform: StandaloneLinux64
+          buildName: GameHub
+          buildsPath: build
+          versioning: None
+
+      - name: Create ZIP archive
+        env:
+          ARCHIVE: ${{ steps.version.outputs.archive }}
+        run: |
+          test -x build/StandaloneLinux64/GameHub.x86_64
+          rm -rf "dist/$ARCHIVE"
+          mkdir -p "dist/$ARCHIVE"
+          cp -a build/StandaloneLinux64/. "dist/$ARCHIVE/"
+          find "dist/$ARCHIVE" -name '*_BurstDebugInformation_DoNotShip' -prune -exec rm -rf {} +
+          (cd dist && zip -qr -y "$ARCHIVE.zip" "$ARCHIVE")
+          unzip -l "dist/$ARCHIVE.zip" | tail -1
+
+      - name: Upload ZIP
+        uses: actions/upload-artifact@v7
+        with:
+          path: dist/${{ steps.version.outputs.archive }}.zip
+          archive: false
+          retention-days: 90
