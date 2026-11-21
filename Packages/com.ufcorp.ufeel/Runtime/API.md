@@ -18,11 +18,15 @@ EmotionResult current = UFeelAPI.Emotion.Current;  // Status, Scores ("happy" = 
 ```csharp
 EyeTrackingDirection directions = UFeelAPI.EyeTracking.Directions;
 bool left = directions.HasDirection(EyeTrackingDirection.Left);
+Vector2 gaze = UFeelAPI.EyeTracking.Gaze;         // -1..1, 1 = right/bottom screen edge
+UFeelAPI.EyeTracking.HeadWeight = 1f;             // 0 = eyes only (default), 1 = eyes + head
+bool closed = UFeelAPI.EyeTracking.IsBlinking;    // both eyes closed
+uint blinks = UFeelAPI.EyeTracking.BlinkCount;    // +1 per blink, compare with the previous value
+
 Vector2 position = UFeelAPI.EyeTracking.Position; // 0..1, origin top-left
-bool blinking = UFeelAPI.EyeTracking.IsBlinking;
 ```
 
-Eye tracking needs a calibration. The saved profile (`~/.local/share/UFeel/eyeTracking-profile-v3.txt`, shared with the ufeel test harness) loads at startup. Otherwise press **F8** (`UFeelAPI.EyeTracking.CalibrationKey`) or call `UFeelAPI.EyeTracking.Calibrate()`. **Escape** cancels.
+Blinking and gaze direction work without calibration. Calibration refines the gaze range. The screen position needs a calibration. The saved profile (`~/.local/share/UFeel/eyeTracking-profile-v3.txt`, shared with the ufeel test harness) loads at startup. Otherwise press **F8** (`UFeelAPI.EyeTracking.CalibrationKey`) or call `UFeelAPI.EyeTracking.Calibrate()`. **Escape** cancels.
 
 ## Speech to text (French model)
 
