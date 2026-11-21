@@ -30,10 +30,10 @@ EditorBuildSettings:
     path: Assets/Scenes/SpeechToText/UnlockWorld.unity
     guid: d9cb4ef7d1e951f0aa351d21be351839
   - enabled: 1
-    path: Assets/Scenes/HeartRateSensor/HorrorRoom.unity
+    path: Assets/Scenes/HeartBeat/HorrorRoom.unity
     guid: 57a982748e7ce0b839aac53579df0df8
   - enabled: 1
-    path: Assets/Scenes/HeartRateSensor/RhythmGame.unity
+    path: Assets/Scenes/HeartBeat/RhythmGame.unity
     guid: a7efac3f0da73e7439004acd29203987
   - enabled: 1
     path: Assets/Scenes/EyeTracking/Car.unity

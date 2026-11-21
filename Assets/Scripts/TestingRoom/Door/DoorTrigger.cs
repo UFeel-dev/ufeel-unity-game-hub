@@ -8,8 +8,17 @@ public class DoorTrigger : MonoBehaviour
     [Tooltip("Name of the scene to load additively.")]
     public string targetSceneName;
 
+    [Tooltip("Shows 'In Progress' on the door and keeps it closed. Also applied when the target scene is not in the build.")]
+    public bool inProgress;
+
     [Tooltip("The wall GameObject (quad) to disable when loading the new scene.")]
     public GameObject wallToDisable;
+
+    public const string InProgressLabel = "In Progress";
+
+    public bool IsInProgress =>
+        inProgress ||
+        (!string.IsNullOrEmpty(targetSceneName) && !Application.CanStreamedLevelBeLoaded(targetSceneName));
 
     private void Start()
     {
@@ -20,6 +29,12 @@ public class DoorTrigger : MonoBehaviour
         else
         {
             Debug.LogError("DoorController component is missing on this GameObject.");
+            return;
+        }
+
+        if (IsInProgress)
+        {
+            _doorController.ShowStatusLabel(InProgressLabel);
         }
     }
 
@@ -29,6 +44,11 @@ public class DoorTrigger : MonoBehaviour
 
         if (playerInRange && LayoutInput.GetKeyDown(KeyCode.E))
         {
+            if (IsInProgress)
+            {
+                return;
+            }
+
             if (string.IsNullOrEmpty(targetSceneName))
             {
                 Debug.LogWarning("Target scene name is not set on DoorController.");

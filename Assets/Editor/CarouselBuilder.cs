@@ -1,14 +1,13 @@
 using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CarouselBuilder : EditorWindow
 {
-    private GameObject doorHolderPrefab;
-    private Transform carouselTop;
-    private GameObject wallToDisable;
-    private int doorCount = 44;
-    private float radius = 19.7f;
+    private const string LayoutPath = "Assets/Editor/CarouselLayout.json";
 
     [System.Serializable]
     public class SpecialDoorConfig
@@ -17,19 +16,42 @@ public class CarouselBuilder : EditorWindow
         public string doorName;
         public string targetSceneName;
         public Color doorColor = Color.red;
+        public bool inProgress;
     }
 
-    private readonly List<SpecialDoorConfig> specialDoors = new();
+    [System.Serializable]
+    private class CarouselLayout
+    {
+        public string doorHolderPrefab;
+        public string doorHoldersPath;
+        public string wallToDisablePath;
+        public int doorCount = 44;
+        public float radius = 19.7f;
+        public List<SpecialDoorConfig> specialDoors = new();
+    }
+
+    private GameObject doorHolderPrefab;
+    private Transform carouselTop;
+    private GameObject wallToDisable;
+    private int doorCount = 44;
+    private float radius = 19.7f;
+    private List<SpecialDoorConfig> specialDoors = new();
+    private Vector2 scrollPos;
 
     [MenuItem("Tools/Build Carousel")]
     private static void Init()
     {
-        CarouselBuilder window = (CarouselBuilder)GetWindow(typeof(CarouselBuilder));
+        CarouselBuilder window = GetWindow<CarouselBuilder>();
         window.titleContent = new GUIContent("Carousel Builder");
+        window.minSize = new Vector2(420f, 600f);
         window.Show();
     }
 
-    private Vector2 scrollPos;
+    private void OnEnable()
+    {
+        if (File.Exists(LayoutPath))
+            LoadLayout();
+    }
 
     private void OnGUI()
     {
@@ -44,7 +66,7 @@ public class CarouselBuilder : EditorWindow
         EditorGUILayout.Space();
         GUILayout.Label("Special Doors", EditorStyles.boldLabel);
 
-        scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Height(200)); // TODO: setup window to take the appropriate size -» currently very small window by default, need to scroll to see anything
+        scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.ExpandHeight(true));
         for (int i = 0; i < specialDoors.Count; i++)
         {
             SpecialDoorConfig config = specialDoors[i];
@@ -53,6 +75,10 @@ public class CarouselBuilder : EditorWindow
             config.doorName = EditorGUILayout.TextField("Door Name", config.doorName);
             config.targetSceneName = EditorGUILayout.TextField("Target Scene", config.targetSceneName);
             config.doorColor = EditorGUILayout.ColorField("Door Color", config.doorColor);
+            config.inProgress = EditorGUILayout.Toggle(DoorTrigger.InProgressLabel, config.inProgress);
+
+            if (!config.inProgress && !IsSceneInBuild(config.targetSceneName))
+                EditorGUILayout.HelpBox($"Scene '{config.targetSceneName}' is not in the Build Settings: the door will show '{DoorTrigger.InProgressLabel}' and stay closed.", MessageType.Warning);
 
             if (GUILayout.Button("Remove"))
                 specialDoors.RemoveAt(i);
@@ -64,6 +90,12 @@ public class CarouselBuilder : EditorWindow
             specialDoors.Add(new SpecialDoorConfig());
 
         EditorGUILayout.Space();
+        EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("Load Layout"))
+            LoadLayout();
+        if (GUILayout.Button("Save Layout"))
+            SaveLayout();
+        EditorGUILayout.EndHorizontal();
 
         if (GUILayout.Button("Load Special Doors From Scene"))
         {
@@ -88,6 +120,95 @@ public class CarouselBuilder : EditorWindow
             BuildCarousel();
         }
     }
+
+    private static bool IsSceneInBuild(string sceneName)
+    {
+        if (string.IsNullOrWhiteSpace(sceneName))
+            return false;
+
+        foreach (EditorBuildSettingsScene scene in EditorBuildSettings.scenes)
+        {
+            if (scene.enabled && Path.GetFileNameWithoutExtension(scene.path) == sceneName)
+                return true;
+        }
+        return false;
+    }
+
+    private static string GetHierarchyPath(Transform target)
+    {
+        if (target == null)
+            return string.Empty;
+
+        string path = target.name;
+        for (Transform parent = target.parent; parent != null; parent = parent.parent)
+            path = $"{parent.name}/{path}";
+        return path;
+    }
+
+    private static Transform FindByHierarchyPath(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+            return null;
+
+        int separator = path.IndexOf('/');
+        string rootName = separator < 0 ? path : path[..separator];
+        string rest = separator < 0 ? string.Empty : path[(separator + 1)..];
+
+        foreach (GameObject root in SceneManager.GetActiveScene().GetRootGameObjects())
+        {
+            if (root.name != rootName)
+                continue;
+
+            Transform found = rest.Length == 0 ? root.transform : root.transform.Find(rest);
+            if (found != null)
+                return found;
+        }
+        return null;
+    }
+
+    private void LoadLayout()
+    {
+        if (!File.Exists(LayoutPath))
+        {
+            Debug.LogError($"Carousel layout not found: {LayoutPath}");
+            return;
+        }
+
+        CarouselLayout layout = JsonUtility.FromJson<CarouselLayout>(File.ReadAllText(LayoutPath));
+        doorHolderPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(layout.doorHolderPrefab);
+        carouselTop = FindByHierarchyPath(layout.doorHoldersPath);
+        Transform wall = FindByHierarchyPath(layout.wallToDisablePath);
+        wallToDisable = wall != null ? wall.gameObject : null;
+        doorCount = layout.doorCount;
+        radius = layout.radius;
+        specialDoors = layout.specialDoors ?? new List<SpecialDoorConfig>();
+        specialDoors.Sort((a, b) => a.doorIndex.CompareTo(b.doorIndex));
+
+        if (carouselTop == null)
+            Debug.LogWarning($"Door holder container '{layout.doorHoldersPath}' not found in the open scene.");
+
+        Repaint();
+        Debug.Log($"Loaded carousel layout with {specialDoors.Count} special doors from {LayoutPath}.");
+    }
+
+    private void SaveLayout()
+    {
+        specialDoors.Sort((a, b) => a.doorIndex.CompareTo(b.doorIndex));
+        CarouselLayout layout = new()
+        {
+            doorHolderPrefab = doorHolderPrefab != null ? AssetDatabase.GetAssetPath(doorHolderPrefab) : string.Empty,
+            doorHoldersPath = GetHierarchyPath(carouselTop),
+            wallToDisablePath = wallToDisable != null ? GetHierarchyPath(wallToDisable.transform) : string.Empty,
+            doorCount = doorCount,
+            radius = radius,
+            specialDoors = specialDoors
+        };
+
+        File.WriteAllText(LayoutPath, JsonUtility.ToJson(layout, true) + "\n");
+        AssetDatabase.ImportAsset(LayoutPath);
+        Debug.Log($"Saved carousel layout with {specialDoors.Count} special doors to {LayoutPath}.");
+    }
+
     private void LoadSpecialDoorsFromScene()
     {
         specialDoors.Clear();
@@ -112,7 +233,8 @@ public class CarouselBuilder : EditorWindow
                 doorIndex = identifier.doorID,
                 doorName = identifier.doorName,
                 targetSceneName = identifier.targetSceneName,
-                doorColor = references.controller.DoorColor
+                doorColor = references.controller.DoorColor,
+                inProgress = references.trigger.inProgress
             });
         }
 
@@ -160,6 +282,7 @@ public class CarouselBuilder : EditorWindow
                 {
                     idComp.targetSceneName = special.targetSceneName; // TODO: integrate enum (DoorIdentifierName), avoid duplicata
                     references.trigger.targetSceneName = special.targetSceneName; // TODO: remove
+                    references.trigger.inProgress = special.inProgress;
 
                     if (special.doorColor != null)
                         references.controller.SetDoorColor(special.doorColor);
@@ -172,6 +295,7 @@ public class CarouselBuilder : EditorWindow
             }
         }
 
+        EditorSceneManager.MarkSceneDirty(carouselTop.gameObject.scene);
         Debug.Log($"Built {doorCount} doors (including {specialDoors.Count} special doors).");
     }
 }
