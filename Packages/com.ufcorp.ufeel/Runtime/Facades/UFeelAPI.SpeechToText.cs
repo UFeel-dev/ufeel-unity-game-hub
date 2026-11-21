@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -15,13 +16,18 @@ namespace UFeel
 
             private const string MicrophonePreferenceKey = "UFeel.Microphone";
 
+            private static int microphonesChanged;
+
+            /// <summary>Raised on the main thread when a microphone was added or removed, or the system default changed.</summary>
+            public static event Action? MicrophonesChanged;
+
             public static bool IsRunning => session?.IsSpeechToTextEnabled ?? false;
 
             /// <summary>Empty when silent, null while detection is stopped.</summary>
             public static string? Current => IsRunning ? Snapshot.SpeechToText.Text : null;
 
             /// <summary>Null while the default microphone is used.</summary>
-            public static string? SelectedMicrophone => session?.SelectedMicrophone;
+            public static string? SelectedMicrophoneId => session?.SelectedMicrophoneId;
 
             public static bool IsMicrophoneSelectorVisible => MicrophoneOverlay != null && MicrophoneOverlay.IsVisible;
 
@@ -32,7 +38,7 @@ namespace UFeel
 
             public static void StopDetection() => SetEnabled(false);
 
-            /// <summary>The list refreshes only while detection is stopped.</summary>
+            /// <summary>Restarts a running detection to rescan the devices.</summary>
             public static Task<IReadOnlyList<MicrophoneDevice>> GetMicrophonesAsync()
             {
                 return session?.GetMicrophonesAsync() ??
@@ -43,18 +49,18 @@ namespace UFeel
             /// Null selects the default microphone. On success, the choice is saved and applied at the next startups.
             /// Call it from the main thread.
             /// </summary>
-            public static async Task<bool> SelectMicrophoneAsync(string? name)
+            public static async Task<bool> SelectMicrophoneAsync(string? id)
             {
-                if (session is null || !await session.SelectMicrophoneAsync(name))
+                if (session is null || !await session.SelectMicrophoneAsync(id))
                     return false;
 
-                if (string.IsNullOrEmpty(name))
+                if (string.IsNullOrEmpty(id))
                     PlayerPrefs.DeleteKey(MicrophonePreferenceKey);
                 else
-                    PlayerPrefs.SetString(MicrophonePreferenceKey, name);
+                    PlayerPrefs.SetString(MicrophonePreferenceKey, id);
 
                 PlayerPrefs.Save();
-                Debug.Log($"Speech microphone: {name ?? "default"}");
+                Debug.Log($"Speech microphone: {id ?? "default"}");
                 return true;
             }
 
@@ -85,20 +91,30 @@ namespace UFeel
                 return TriggerActionOnSpeech(text, action, false);
             }
 
-            /// <summary>A missing saved microphone is kept, the default one is used until it is back.</summary>
             internal static void RestoreMicrophone(UFeelSession running)
             {
-                string name = PlayerPrefs.GetString(MicrophonePreferenceKey, string.Empty);
-                if (name.Length == 0)
+                string id = PlayerPrefs.GetString(MicrophonePreferenceKey, string.Empty);
+                if (id.Length == 0)
                     return;
 
-                running.SelectMicrophoneAsync(name).ContinueWith(task =>
+                running.SelectMicrophoneAsync(id).ContinueWith(task =>
                 {
                     if (task.IsFaulted)
                         Debug.LogException(task.Exception);
                     else if (task.IsCompletedSuccessfully && !task.Result)
-                        Debug.LogWarning($"Saved microphone \"{name}\" is unavailable, using the default one.");
+                        Debug.LogWarning($"Saved microphone \"{id}\" is unavailable, using the default one.");
                 });
+            }
+
+            internal static void WatchMicrophones(UFeelSession running)
+            {
+                running.MicrophonesChanged += () => Interlocked.Exchange(ref microphonesChanged, 1);
+            }
+
+            internal static void RaiseMicrophonesChanged()
+            {
+                if (Interlocked.Exchange(ref microphonesChanged, 0) == 1)
+                    MicrophonesChanged?.Invoke();
             }
 
             private static void SetEnabled(bool enabled)

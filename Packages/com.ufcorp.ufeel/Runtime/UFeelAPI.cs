@@ -103,11 +103,16 @@ namespace UFeel
                 throw;
             }
 
+            SpeechToText.WatchMicrophones(session);
             session.Start();
             SpeechToText.RestoreMicrophone(session);
         }
 
-        private void Update() => Rules.Evaluate();
+        private void Update()
+        {
+            SpeechToText.RaiseMicrophonesChanged();
+            Rules.Evaluate();
+        }
 
         private void OnApplicationQuit() => Shutdown();
 

@@ -36,11 +36,11 @@ The system default microphone is used until another one is selected. **F9** (`UF
 
 ```csharp
 IReadOnlyList<MicrophoneDevice> microphones = await UFeelAPI.SpeechToText.GetMicrophonesAsync();
-await UFeelAPI.SpeechToText.SelectMicrophoneAsync(microphones[0].Name); // null: default microphone
-string? selected = UFeelAPI.SpeechToText.SelectedMicrophone;           // null: default microphone
+await UFeelAPI.SpeechToText.SelectMicrophoneAsync(microphones[0].Id); // null: default microphone
+string? selected = UFeelAPI.SpeechToText.SelectedMicrophoneId; // null: default microphone
 ```
 
-The choice is saved in `PlayerPrefs` and restored at startup. New microphones are listed only while speech detection is stopped.
+The choice is saved in `PlayerPrefs` and restored at startup. Listing restarts a running detection to rescan the devices. `UFeelAPI.SpeechToText.MicrophonesChanged` is raised when a microphone is plugged, unplugged or becomes the system default, and the selector refreshes itself. A selected microphone that disappears falls back to the default one until it comes back.
 
 ## Heart rate
 

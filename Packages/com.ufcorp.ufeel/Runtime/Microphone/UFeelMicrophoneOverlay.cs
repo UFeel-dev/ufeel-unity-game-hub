@@ -70,16 +70,16 @@ namespace UFeel
             }
         }
 
-        private async void Select(string? name)
+        private async void Select(string? id, string label)
         {
             loading = true;
             message = null;
 
             try
             {
-                if (!await UFeelAPI.SpeechToText.SelectMicrophoneAsync(name))
+                if (!await UFeelAPI.SpeechToText.SelectMicrophoneAsync(id))
                 {
-                    message = $"\"{name}\" is no longer available";
+                    message = $"\"{label}\" is no longer available";
                     Refresh();
                 }
             }
@@ -96,7 +96,19 @@ namespace UFeel
             }
         }
 
-        private void OnDisable() => Hide();
+        private void OnEnable() => UFeelAPI.SpeechToText.MicrophonesChanged += OnMicrophonesChanged;
+
+        private void OnDisable()
+        {
+            UFeelAPI.SpeechToText.MicrophonesChanged -= OnMicrophonesChanged;
+            Hide();
+        }
+
+        private void OnMicrophonesChanged()
+        {
+            if (IsVisible)
+                Refresh();
+        }
 
         private void OnGUI()
         {
@@ -131,7 +143,7 @@ namespace UFeel
             GUI.enabled = !loading && UFeelAPI.IsAvailable;
             DrawChoice(UFeelText.DefaultMicrophone(microphones), null);
             foreach (MicrophoneDevice microphone in microphones)
-                DrawChoice(microphone.Name, microphone.Name);
+                DrawChoice(microphone.Name, microphone.Id);
             GUI.enabled = true;
             GUILayout.EndScrollView();
 
@@ -139,9 +151,6 @@ namespace UFeel
                 GUILayout.Label("Loading...");
             else if (message != null)
                 GUILayout.Label(message);
-
-            if (UFeelAPI.SpeechToText.IsRunning)
-                GUILayout.Label("Stop speech detection to detect newly plugged microphones.");
 
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Refresh") && !loading)
@@ -151,11 +160,11 @@ namespace UFeel
             GUILayout.EndHorizontal();
         }
 
-        private void DrawChoice(string label, string? name)
+        private void DrawChoice(string label, string? id)
         {
-            bool selected = name == UFeelAPI.SpeechToText.SelectedMicrophone;
+            bool selected = id == UFeelAPI.SpeechToText.SelectedMicrophoneId;
             if (GUILayout.Toggle(selected, label, GUI.skin.button) && !selected)
-                Select(name);
+                Select(id, label);
         }
 
         private void HandleKeys(Event current)
