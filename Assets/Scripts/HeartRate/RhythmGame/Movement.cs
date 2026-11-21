@@ -15,7 +15,7 @@ public class Movement : MonoBehaviour
 
     private void Update()
     {
-        float direction = LayoutInput.GetHorizontalAxis();
+        float direction = LayoutInput.GetHorizontalAxis(includeArrows: false);
         if (direction != 0f)
         {
             transform.rotation = Quaternion.Euler(0f, LimitRotation(transform.localEulerAngles.y, direction), 0f);

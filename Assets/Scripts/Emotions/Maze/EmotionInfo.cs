@@ -17,6 +17,15 @@ public readonly struct EmotionInfo
         return Emotions[Random.Range(0, Emotions.Length)];
     }
 
+    public static EmotionInfo GetRandomEmotionExcept(EmotionType excluded)
+    {
+        int excludedIndex = System.Array.FindIndex(Emotions, info => info.Emotion == excluded);
+        if (excludedIndex < 0)
+            return GetRandomEmotion();
+        int index = Random.Range(0, Emotions.Length - 1);
+        return Emotions[index >= excludedIndex ? index + 1 : index];
+    }
+
     public static readonly EmotionInfo[] Emotions =
     {
         new(
