@@ -5388,7 +5388,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3326336205907145282, guid: 996cf67a8dcd25e0381f1175418c4358, type: 3}
       propertyPath: doorName
-      value: Heart Beat - Horror
+      value: Heart Rate - Horror
       objectReference: {fileID: 0}
     - target: {fileID: 3326336205907145282, guid: 996cf67a8dcd25e0381f1175418c4358, type: 3}
       propertyPath: targetSceneName
@@ -44216,7 +44216,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3326336205907145282, guid: 996cf67a8dcd25e0381f1175418c4358, type: 3}
       propertyPath: doorName
-      value: Heart Beat - Rhythm
+      value: Heart Rate - Rhythm
       objectReference: {fileID: 0}
     - target: {fileID: 3326336205907145282, guid: 996cf67a8dcd25e0381f1175418c4358, type: 3}
       propertyPath: targetSceneName

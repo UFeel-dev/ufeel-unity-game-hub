@@ -71,7 +71,7 @@ All other scenes can be accessed by entering the corresponding door.
 
 **See also:** [EscapeRoom README](../SpeechToText/EscapeRoom/README.md)
 
-## Heart Beat Experiences
+## Heart Rate Experiences
 
 ### RhythmGame
 
@@ -79,4 +79,4 @@ All other scenes can be accessed by entering the corresponding door.
 
 **Main Script:** `GameManager`
 
-**See also:** [RhythmGame README](../HeartBeat/RhythmGame/README.md)
+**See also:** [RhythmGame README](../HeartRate/RhythmGame/README.md)

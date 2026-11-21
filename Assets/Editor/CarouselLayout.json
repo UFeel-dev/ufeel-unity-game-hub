@@ -45,32 +45,32 @@
             "doorName": "Eye Tracking - Runner",
             "targetSceneName": "Runner",
             "doorColor": { "r": 0.0, "g": 0.5490196, "b": 1.0, "a": 1.0 },
-            "inProgress": false
+            "inProgress": true
         },
         {
             "doorIndex": 27,
-            "doorName": "Speech To Text - EscapeRoom",
+            "doorName": "Speech To Text - Escape Room",
             "targetSceneName": "EscapeRoom",
             "doorColor": { "r": 0.74509805, "g": 0.31372547, "b": 1.0, "a": 1.0 },
             "inProgress": false
         },
         {
             "doorIndex": 28,
-            "doorName": "Speech To Text - UnlockWorld",
+            "doorName": "Speech To Text - Unlock World",
             "targetSceneName": "UnlockWorld",
             "doorColor": { "r": 0.5098039, "g": 0.0, "b": 1.0, "a": 1.0 },
             "inProgress": false
         },
         {
             "doorIndex": 37,
-            "doorName": "Heart Beat - HorrorGame",
+            "doorName": "Heart Rate - Horror",
             "targetSceneName": "HorrorGame",
             "doorColor": { "r": 1.0, "g": 0.1568627, "b": 0.1568627, "a": 1.0 },
-            "inProgress": false
+            "inProgress": true
         },
         {
             "doorIndex": 38,
-            "doorName": "Heart Beat - RhythmGame",
+            "doorName": "Heart Rate - Rhythm",
             "targetSceneName": "RhythmGame",
             "doorColor": { "r": 1.0, "g": 0.35294116, "b": 0.62745106, "a": 1.0 },
             "inProgress": false
