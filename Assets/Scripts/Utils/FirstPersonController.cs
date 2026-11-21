@@ -25,6 +25,11 @@ public class FirstPersonController : MonoBehaviour
 
     private void Update()
     {
+        if (PauseMenu.GameisPaused)
+        {
+            return;
+        }
+
         HandleMovement();
 
         if (isUsingMouseToMoveView)
@@ -32,7 +37,7 @@ public class FirstPersonController : MonoBehaviour
             HandleMouseLook();
         }
 
-        if (Input.GetKeyDown(KeyCode.Tab))
+        if (LayoutInput.GetKeyDown(KeyCode.Tab))
         {
             ToggleCursor();
         }
@@ -56,8 +61,8 @@ public class FirstPersonController : MonoBehaviour
 
     private void HandleMovement()
     {
-        float moveX = Input.GetAxis("Horizontal");
-        float moveZ = Input.GetAxis("Vertical");
+        float moveX = LayoutInput.GetHorizontalAxis();
+        float moveZ = LayoutInput.GetVerticalAxis();
 
         Vector3 move = (transform.right * moveX) + (transform.forward * moveZ);
         verticalVelocity += Gravity * Time.deltaTime;

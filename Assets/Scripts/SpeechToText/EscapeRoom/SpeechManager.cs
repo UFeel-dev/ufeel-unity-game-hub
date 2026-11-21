@@ -106,10 +106,10 @@ public class SpeechManager : MonoBehaviour
 
     private void HandleInput()
     {
-        if (Input.GetKeyUp(KeyCode.V))
+        if (LayoutInput.GetKeyUp(KeyCode.V))
             StartSpeechDetection();
 
-        if (Input.GetKeyDown(KeyCode.H))
+        if (LayoutInput.GetKeyDown(KeyCode.H))
             DisplayHint();
     }
 

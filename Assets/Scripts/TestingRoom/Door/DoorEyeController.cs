@@ -29,7 +29,7 @@ public class DoorEyeController : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.N))
+        if (LayoutInput.GetKeyDown(KeyCode.N))
         {
             ToggleCommands();
         }

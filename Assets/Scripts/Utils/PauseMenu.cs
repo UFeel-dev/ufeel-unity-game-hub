@@ -17,7 +17,7 @@ public class PauseMenu : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.M))
+        if (LayoutInput.GetKeyDown(KeyCode.M))
         {
             if (GameisPaused)
             {
@@ -32,6 +32,7 @@ public class PauseMenu : MonoBehaviour
 
     public void Resume()
     {
+        UFeelAPI.SpeechToText.HideMicrophoneSelector();
         PauseMenuUI.SetActive(false);
         Time.timeScale = 1f;
 
@@ -60,6 +61,7 @@ public class PauseMenu : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+        UFeelAPI.SpeechToText.ShowMicrophoneSelector();
 
         GameisPaused = true;
     }

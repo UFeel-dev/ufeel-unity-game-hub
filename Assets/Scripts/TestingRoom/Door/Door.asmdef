@@ -6,7 +6,8 @@
         "GUID:8f5b9cecb57722274b35c3bd3d23bb3f",
         "GUID:6055be8ebefd69e48b49212b09b47b2f",
         "GUID:1cc73362deea25d7a98c8f2266df3451",
-        "UFeel.Core"
+        "UFeel.Core",
+        "GameInput"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

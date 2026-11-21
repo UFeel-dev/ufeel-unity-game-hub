@@ -32,7 +32,7 @@ public class NoteObject : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyToPress) && canBePressed)
+        if (LayoutInput.GetKeyDown(KeyToPress) && canBePressed)
         {
             GameManager.Instance.NoteHit();
             canBePressed = false;
