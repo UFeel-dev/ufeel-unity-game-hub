@@ -8,8 +8,8 @@ namespace GameHub.EscapeRoom
     {
         [SerializeField] private string name;
         [SerializeField] private string[] words;
-        [SerializeField, Range(0.5f, 1f)] private float fuzzyThreshold = 0.72f;
-        [SerializeField, Range(0f, 10f)] private float weight = 1f;
+        [SerializeField][Range(0.5f, 1f)] private float fuzzyThreshold = 0.72f;
+        [SerializeField][Range(0f, 10f)] private float weight = 1f;
 
         public string Name => name;
         public string[] Words => words;

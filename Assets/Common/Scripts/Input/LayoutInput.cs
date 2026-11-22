@@ -7,8 +7,8 @@ namespace GameHub.Common
 {
     public static class LayoutInput
     {
-        private static readonly Dictionary<KeyCode, KeyControl> resolvedKeys = new();
-        private static readonly Dictionary<KeyCode, Key> fixedKeys = new()
+        private static readonly Dictionary<KeyCode, KeyControl> ResolvedKeys = new();
+        private static readonly Dictionary<KeyCode, Key> FixedKeys = new()
         {
             { KeyCode.Space, Key.Space },
             { KeyCode.Return, Key.Enter },
@@ -46,19 +46,19 @@ namespace GameHub.Common
 
         public static bool GetKey(KeyCode code)
         {
-            KeyControl key = Resolve(code);
+            KeyControl? key = Resolve(code);
             return key != null ? key.isPressed : Input.GetKey(code);
         }
 
         public static bool GetKeyDown(KeyCode code)
         {
-            KeyControl key = Resolve(code);
+            KeyControl? key = Resolve(code);
             return key != null ? key.wasPressedThisFrame : Input.GetKeyDown(code);
         }
 
         public static bool GetKeyUp(KeyCode code)
         {
-            KeyControl key = Resolve(code);
+            KeyControl? key = Resolve(code);
             return key != null ? key.wasReleasedThisFrame : Input.GetKeyUp(code);
         }
 
@@ -91,43 +91,45 @@ namespace GameHub.Common
                 return 0f;
             float value = 0f;
             if (keyboard[negative].isPressed || keyboard[alternativeNegative].isPressed)
-                value -= 1f;
+                value--;
             if (keyboard[positive].isPressed || keyboard[alternativePositive].isPressed)
-                value += 1f;
+                value++;
             return value;
         }
 
-        private static KeyControl Resolve(KeyCode code)
+        private static KeyControl? Resolve(KeyCode code)
         {
             Keyboard keyboard = Keyboard.current;
             if (keyboard == null)
                 return null;
             if (keyboard != cachedKeyboard || keyboard.keyboardLayout != cachedLayout)
             {
-                resolvedKeys.Clear();
+                ResolvedKeys.Clear();
                 cachedKeyboard = keyboard;
                 cachedLayout = keyboard.keyboardLayout;
             }
-            if (resolvedKeys.TryGetValue(code, out KeyControl cached))
+            if (ResolvedKeys.TryGetValue(code, out KeyControl cached))
                 return cached;
-            KeyControl key = Find(keyboard, code);
-            resolvedKeys[code] = key;
+            KeyControl? key = Find(keyboard, code);
+            if (key == null)
+                return null;
+            ResolvedKeys[code] = key;
             return key;
         }
 
-        private static KeyControl Find(Keyboard keyboard, KeyCode code)
+        private static KeyControl? Find(Keyboard keyboard, KeyCode code)
         {
-            if (code >= KeyCode.A && code <= KeyCode.Z)
+            if (code is >= KeyCode.A and <= KeyCode.Z)
             {
                 int offset = code - KeyCode.A;
                 string letter = ((char)('a' + offset)).ToString();
                 return keyboard.FindKeyOnCurrentKeyboardLayout(letter) ?? keyboard[Key.A + offset];
             }
-            if (code >= KeyCode.Alpha1 && code <= KeyCode.Alpha9)
+            if (code is >= KeyCode.Alpha1 and <= KeyCode.Alpha9)
                 return keyboard[Key.Digit1 + (code - KeyCode.Alpha1)];
             if (code == KeyCode.Alpha0)
                 return keyboard[Key.Digit0];
-            return fixedKeys.TryGetValue(code, out Key fixedKey) ? keyboard[fixedKey] : null;
+            return FixedKeys.TryGetValue(code, out Key fixedKey) ? keyboard[fixedKey] : null;
         }
     }
 }

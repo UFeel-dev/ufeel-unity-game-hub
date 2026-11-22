@@ -55,7 +55,7 @@ namespace GameHub.Hub
             float depth = (depthIsX ? extents.x : extents.z) + LabelOffset;
             float width = (depthIsX ? extents.z : extents.x) * 2f * LabelWidthRatio;
             Vector2 size = new(width, LabelHeight);
-            Vector3 center = bounds.center + (Vector3.up * extents.y * LabelRaise);
+            Vector3 center = bounds.center + (extents.y * LabelRaise * Vector3.up);
 
             CreateLabel(text, door.transform, center - (normal * depth), Quaternion.LookRotation(normal, Vector3.up), size);
             CreateLabel(text, door.transform, center + (normal * depth), Quaternion.LookRotation(-normal, Vector3.up), size);

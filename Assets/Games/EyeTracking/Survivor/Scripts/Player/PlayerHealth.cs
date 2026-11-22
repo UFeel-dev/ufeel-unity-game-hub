@@ -15,7 +15,7 @@ namespace GameHub.Survivor
 
         public void TakeDamage(int amount)
         {
-            if (!SurvivorGameManager.Instance.IsPlaying)
+            if (SurvivorGameManager.Instance == null || !SurvivorGameManager.Instance.IsPlaying)
                 return;
 
             Current = Mathf.Max(Current - amount, 0);
@@ -26,7 +26,7 @@ namespace GameHub.Survivor
 
         public void Heal(int amount)
         {
-            if (SurvivorGameManager.Instance.IsPlaying)
+            if (SurvivorGameManager.Instance != null && SurvivorGameManager.Instance.IsPlaying)
                 Current = Mathf.Min(Current + amount, maxHealth);
         }
     }

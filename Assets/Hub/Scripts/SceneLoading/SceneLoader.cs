@@ -10,7 +10,7 @@ namespace GameHub.Hub
     {
         private const string SceneRootName = "Root";
 
-        public static SceneLoader Instance { get; private set; }
+        public static SceneLoader? Instance { get; private set; }
 
         public bool IsLoading { get; private set; }
 
@@ -32,8 +32,10 @@ namespace GameHub.Hub
                 Instance = null;
         }
 
-        public void LoadAdditiveSceneAtPosition(string sceneName, Vector3 position, Action onLoaded = null)
+        public void LoadAdditiveSceneAtPosition(string sceneName, Vector3 position, Action? onLoaded = null)
         {
+            onLoaded ??= () => { };
+
             if (!IsLoading)
                 StartCoroutine(LoadAdditiveScene(sceneName, position, onLoaded));
         }

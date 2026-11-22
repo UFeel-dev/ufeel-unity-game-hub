@@ -12,8 +12,16 @@ namespace GameHub.Survivor
 
         private void Update()
         {
-            if (!SurvivorGameManager.Instance.IsPlaying)
+            if (SurvivorGameManager.Instance == null ||
+                !SurvivorGameManager.Instance.IsPlaying ||
+                ScoreManager.Instance == null ||
+                playerHealth == null ||
+                healthText == null ||
+                timeText == null ||
+                killsText == null)
+            {
                 return;
+            }
 
             healthText.text = $"HP: {playerHealth.Current}";
             timeText.text = $"Time: {ScoreManager.Instance.SurvivalTime:0.0}";

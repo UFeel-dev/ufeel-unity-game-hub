@@ -10,7 +10,7 @@ namespace UFeel
         {
             public static EmotionResult Current => Read(DetectionType.Emotions).Emotions;
 
-            /// <summary>Highest-scoring emotion, or null without a valid face.</summary>
+            /// <summary>Gets the highest-scoring emotion, or null without a valid face.</summary>
             public static EmotionType? Dominant => Current.Dominant;
 
             public static RuleKey TriggerActionOnEmotion(EmotionType emotion, Action action, bool onlyOnce)

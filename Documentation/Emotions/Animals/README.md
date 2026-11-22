@@ -2,7 +2,7 @@
 
 > [<- Scene Reference](../../GameHub/Scenes.md)
 
-![](../../Assets/animals.png)
+![Animals](../../Assets/animals.png)
 
 ## Role
 

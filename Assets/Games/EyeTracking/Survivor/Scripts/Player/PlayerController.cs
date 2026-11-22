@@ -17,15 +17,15 @@ namespace GameHub.Survivor
 
         private void Update()
         {
-            if (!SurvivorGameManager.Instance.IsPlaying)
+            if (SurvivorGameManager.Instance == null || !SurvivorGameManager.Instance.IsPlaying)
                 return;
 
             Vector3 move = Vector3.forward * forwardSpeed;
 
-            if (EyeInput.Instance.LeftPressed)
+            if (EyeInput.Instance != null && EyeInput.Instance.LeftPressed)
                 move += Vector3.left * lateralSpeed;
 
-            if (EyeInput.Instance.RightPressed)
+            if (EyeInput.Instance != null && EyeInput.Instance.RightPressed)
                 move += Vector3.right * lateralSpeed;
 
             controller.Move(move * Time.deltaTime);

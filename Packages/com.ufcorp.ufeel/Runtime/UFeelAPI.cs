@@ -8,7 +8,7 @@ namespace UFeel
     [DefaultExecutionOrder(-1000)]
     public sealed partial class UFeelAPI : MonoBehaviour
     {
-        private static readonly RuleSet Rules = new RuleSet { ErrorHandler = Debug.LogException };
+        private static readonly RuleSet Rules = new() { ErrorHandler = Debug.LogException };
 
         private static UFeelAPI? instance;
         private static UFeelSession? session;
@@ -20,7 +20,8 @@ namespace UFeel
         private UFeelCalibrationOverlay? calibrationOverlay;
         private UFeelMicrophoneOverlay? microphoneOverlay;
 
-        /// <summary>Null when the native library failed to start.</summary>
+        /// <summary>Gets the time of the last read of any feature, or 0 if none was read yet.</summary>
+        /// <remarks>Null when the native library failed to start.</remarks>
         public static UFeelSession? Session => session;
 
         public static bool IsAvailable => session != null;
@@ -48,6 +49,8 @@ namespace UFeel
         }
 
         /// <summary>Also keeps <paramref name="feature"/> running.</summary>
+        /// <param name="feature">The feature to read.</param>
+        /// <returns>The latest snapshot of the requested feature.</returns>
         internal static UFeelSnapshot Read(DetectionType feature)
         {
             session?.Demand.Request(feature);

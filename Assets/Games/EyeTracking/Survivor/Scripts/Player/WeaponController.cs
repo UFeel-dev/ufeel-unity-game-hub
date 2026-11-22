@@ -14,7 +14,7 @@ namespace GameHub.Survivor
 
         private void Update()
         {
-            if (!SurvivorGameManager.Instance.IsPlaying)
+            if (SurvivorGameManager.Instance == null || !SurvivorGameManager.Instance.IsPlaying)
                 return;
 
             timer += Time.deltaTime;
@@ -27,7 +27,7 @@ namespace GameHub.Survivor
 
         private void Fire()
         {
-            EnemyController target = FindClosestEnemy();
+            EnemyController? target = FindClosestEnemy();
             if (target == null)
                 return;
 
@@ -35,9 +35,9 @@ namespace GameHub.Survivor
             projectile.Initialize(target.transform, projectileSpeed);
         }
 
-        private EnemyController FindClosestEnemy()
+        private EnemyController? FindClosestEnemy()
         {
-            EnemyController closest = null;
+            EnemyController? closest = null;
             float closestDistance = float.MaxValue;
 
             foreach (EnemyController enemy in FindObjectsByType<EnemyController>(FindObjectsSortMode.None))

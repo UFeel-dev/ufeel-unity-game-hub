@@ -2,7 +2,7 @@
 
 > [<- Scene Reference](../../GameHub/Scenes.md)
 
-![](../../Assets/maze.png)
+![Maze](../../Assets/maze.png)
 
 ## Role
 
@@ -18,7 +18,7 @@ Emotion-driven labyrinth experience.
 
 ## Objective
 
-Reach the opposite corner of the labyrinth.
+Reach the end of the labyrinth.
 
 ## Main Script
 

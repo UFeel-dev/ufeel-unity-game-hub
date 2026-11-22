@@ -104,6 +104,9 @@ namespace GameHub.EscapeRoom
                 if (!bestMatch.Matched)
                     continue;
 
+                if (bestMatch.SpokenWord == null || bestMatch.ExpectedWord == null)
+                    continue;
+
                 SpeechConceptMatch conceptMatch = new(
                     concept.Name,
                     bestMatch.SpokenWord,

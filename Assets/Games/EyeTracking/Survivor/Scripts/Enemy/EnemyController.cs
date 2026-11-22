@@ -15,7 +15,7 @@ namespace GameHub.Survivor
 
         private void Update()
         {
-            if (!SurvivorGameManager.Instance.IsPlaying || target == null)
+            if (SurvivorGameManager.Instance == null || !SurvivorGameManager.Instance.IsPlaying || target == null)
                 return;
 
             Vector3 direction = (target.position - transform.position).normalized;
@@ -24,7 +24,8 @@ namespace GameHub.Survivor
 
         public void Die()
         {
-            ScoreManager.Instance.RegisterKill();
+            if (ScoreManager.Instance != null)
+                ScoreManager.Instance.RegisterKill();
             Destroy(gameObject);
         }
     }

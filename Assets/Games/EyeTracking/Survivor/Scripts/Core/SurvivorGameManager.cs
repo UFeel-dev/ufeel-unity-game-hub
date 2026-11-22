@@ -10,7 +10,7 @@ namespace GameHub.Survivor
 
         public event Action<GameState> StateChanged;
 
-        public static SurvivorGameManager Instance { get; private set; }
+        public static SurvivorGameManager? Instance { get; private set; }
 
         public GameState State { get; private set; } = GameState.Menu;
 

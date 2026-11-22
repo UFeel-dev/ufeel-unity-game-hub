@@ -10,7 +10,7 @@ namespace GameHub.Survivor
         private bool previousBlink;
         private float lastBlinkTime = float.NegativeInfinity;
 
-        public static BlinkDetector Instance { get; private set; }
+        public static BlinkDetector? Instance { get; private set; }
 
         public bool BlinkPressed { get; private set; }
 

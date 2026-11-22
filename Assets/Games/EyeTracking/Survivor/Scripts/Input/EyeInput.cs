@@ -5,7 +5,7 @@ namespace GameHub.Survivor
 {
     public class EyeInput : MonoBehaviour
     {
-        public static EyeInput Instance { get; private set; }
+        public static EyeInput? Instance { get; private set; }
 
         public bool LookLeft { get; private set; }
 

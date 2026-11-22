@@ -22,31 +22,36 @@ namespace GameHub.Survivor
 
         private void Update()
         {
-            if (SurvivorGameManager.Instance.IsPlaying)
+            if (SurvivorGameManager.Instance == null || !SurvivorGameManager.Instance.IsPlaying)
                 return;
 
-            if (EyeInput.Instance.RightPressed)
+            if (EyeInput.Instance != null && EyeInput.Instance.RightPressed)
             {
                 focusedIndex = (focusedIndex + 1) % buttons.Length;
                 UpdateFocus();
             }
 
-            if (EyeInput.Instance.LeftPressed)
+            if (EyeInput.Instance != null && EyeInput.Instance.LeftPressed)
             {
                 focusedIndex = (focusedIndex - 1 + buttons.Length) % buttons.Length;
                 UpdateFocus();
             }
 
-            if (BlinkDetector.Instance.DoubleBlinkPressed)
+            if (BlinkDetector.Instance != null && BlinkDetector.Instance.DoubleBlinkPressed)
                 buttons[focusedIndex].Select();
         }
 
         private static void OnButtonSelected(string buttonName)
         {
             if (buttonName.Contains("Start") || buttonName.Contains("Restart"))
-                SurvivorGameManager.Instance.StartGame();
+            {
+                if (SurvivorGameManager.Instance != null)
+                    SurvivorGameManager.Instance.StartGame();
+            }
             else if (buttonName.Contains("Quit"))
+            {
                 GameFlow.ReturnToHub();
+            }
         }
 
         private void UpdateFocus()

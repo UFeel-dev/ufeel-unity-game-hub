@@ -37,7 +37,7 @@ namespace GameHub.RhythmGame
         private int hitsTowardsMultiplier;
         private int multiplierThreshold = InitialMultiplierThreshold;
 
-        public static RhythmGameManager Instance { get; private set; }
+        public static RhythmGameManager? Instance { get; private set; }
 
         private void Awake()
         {
@@ -122,7 +122,7 @@ namespace GameHub.RhythmGame
             StartCoroutine(ReturnToHub());
         }
 
-        private IEnumerator ReturnToHub()
+        private static IEnumerator ReturnToHub()
         {
             yield return ReturnToHubDelay;
             GameFlow.ReturnToHub();
@@ -149,3 +149,5 @@ namespace GameHub.RhythmGame
         }
     }
 }
+
+// TODO: fix the issue where the arrows aren't always rotated properly when changing lane

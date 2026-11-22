@@ -16,7 +16,8 @@ namespace UFeel
         /// <summary>Relative to StreamingAssets in players.</summary>
         public const string PlayerFolder = "UFeel";
 
-        /// <summary>Editor only.</summary>
+        /// <summary>Gets the absolute path to the package root.</summary>
+        /// <remarks>Editor only.</remarks>
         public static string PackageRoot => Path.GetFullPath("Packages/" + PackageName);
 
         public static string NativeRoot

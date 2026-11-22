@@ -2,7 +2,6 @@
 
 > [<- Back to README](README.md)
 
-
 ## [2026-11]
 
 ### Changed

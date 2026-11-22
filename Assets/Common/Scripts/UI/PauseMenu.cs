@@ -69,7 +69,7 @@ namespace GameHub.Common
             GameFlow.ReturnToHub();
         }
 
-        public void QuitGame()
+        public static void QuitGame()
         {
             GameFlow.Quit();
         }

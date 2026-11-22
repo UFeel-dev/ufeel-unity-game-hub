@@ -2,7 +2,7 @@
 
 > [<- Scene Reference](../../GameHub/Scenes.md)
 
-![](../../Assets/car.png)
+![Car](../../Assets/car.png)
 
 ## Role
 

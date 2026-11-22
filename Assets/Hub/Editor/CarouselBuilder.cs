@@ -15,22 +15,22 @@ namespace GameHub.Hub.Editor
         [System.Serializable]
         public class SpecialDoorConfig
         {
-            public int doorIndex;
-            public string doorName;
-            public string targetSceneName;
-            public Color doorColor = Color.red;
-            public bool inProgress;
+            public int DoorIndex;
+            public string DoorName;
+            public string TargetSceneName;
+            public Color DoorColor = Color.red;
+            public bool InProgress;
         }
 
         [System.Serializable]
         private class CarouselLayout
         {
-            public string doorHolderPrefab;
-            public string doorHoldersPath;
-            public string wallToDisablePath;
-            public int doorCount = 44;
-            public float radius = 19.7f;
-            public List<SpecialDoorConfig> specialDoors = new();
+            public string DoorHolderPrefab;
+            public string DoorHoldersPath;
+            public string WallToDisablePath;
+            public int DoorCount = 44;
+            public float Radius = 19.7f;
+            public List<SpecialDoorConfig> SpecialDoors = new();
         }
 
         private GameObject doorHolderPrefab;
@@ -75,14 +75,14 @@ namespace GameHub.Hub.Editor
             {
                 SpecialDoorConfig config = specialDoors[i];
                 EditorGUILayout.BeginVertical("box");
-                config.doorIndex = EditorGUILayout.IntField("Door Index", config.doorIndex);
-                config.doorName = EditorGUILayout.TextField("Door Name", config.doorName);
-                config.targetSceneName = EditorGUILayout.TextField("Target Scene", config.targetSceneName);
-                config.doorColor = EditorGUILayout.ColorField("Door Color", config.doorColor);
-                config.inProgress = EditorGUILayout.Toggle(DoorTrigger.InProgressLabel, config.inProgress);
+                config.DoorIndex = EditorGUILayout.IntField("Door Index", config.DoorIndex);
+                config.DoorName = EditorGUILayout.TextField("Door Name", config.DoorName);
+                config.TargetSceneName = EditorGUILayout.TextField("Target Scene", config.TargetSceneName);
+                config.DoorColor = EditorGUILayout.ColorField("Door Color", config.DoorColor);
+                config.InProgress = EditorGUILayout.Toggle(DoorTrigger.InProgressLabel, config.InProgress);
 
-                if (!config.inProgress && !IsSceneInBuild(config.targetSceneName))
-                    EditorGUILayout.HelpBox($"Scene '{config.targetSceneName}' is not in the Build Settings: the door will show '{DoorTrigger.InProgressLabel}' and stay closed.", MessageType.Warning);
+                if (!config.InProgress && !IsSceneInBuild(config.TargetSceneName))
+                    EditorGUILayout.HelpBox($"Scene '{config.TargetSceneName}' is not in the Build Settings: the door will show '{DoorTrigger.InProgressLabel}' and stay closed.", MessageType.Warning);
 
                 if (GUILayout.Button("Remove"))
                     removedIndex = i;
@@ -152,7 +152,7 @@ namespace GameHub.Hub.Editor
             return path;
         }
 
-        private static Transform FindByHierarchyPath(string path)
+        private static Transform? FindByHierarchyPath(string path)
         {
             if (string.IsNullOrWhiteSpace(path))
                 return null;
@@ -182,17 +182,22 @@ namespace GameHub.Hub.Editor
             }
 
             CarouselLayout layout = JsonUtility.FromJson<CarouselLayout>(File.ReadAllText(LayoutPath));
-            doorHolderPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(layout.doorHolderPrefab);
-            carouselTop = FindByHierarchyPath(layout.doorHoldersPath);
-            Transform wall = FindByHierarchyPath(layout.wallToDisablePath);
+            doorHolderPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(layout.DoorHolderPrefab);
+            Transform? carouselTopTransform = FindByHierarchyPath(layout.DoorHoldersPath);
+            if (carouselTopTransform == null)
+                Debug.LogWarning($"Door holder container '{layout.DoorHoldersPath}' not found in the open scene.");
+            else
+                carouselTop = carouselTopTransform;
+            Transform? wallTransform = FindByHierarchyPath(layout.WallToDisablePath);
+            Transform? wall = FindByHierarchyPath(layout.WallToDisablePath);
             wallToDisable = wall != null ? wall.gameObject : null;
-            doorCount = layout.doorCount;
-            radius = layout.radius;
-            specialDoors = layout.specialDoors ?? new List<SpecialDoorConfig>();
-            specialDoors.Sort((a, b) => a.doorIndex.CompareTo(b.doorIndex));
+            doorCount = layout.DoorCount;
+            radius = layout.Radius;
+            specialDoors = layout.SpecialDoors ?? new List<SpecialDoorConfig>();
+            specialDoors.Sort((a, b) => a.DoorIndex.CompareTo(b.DoorIndex));
 
             if (carouselTop == null)
-                Debug.LogWarning($"Door holder container '{layout.doorHoldersPath}' not found in the open scene.");
+                Debug.LogWarning($"Door holder container '{layout.DoorHoldersPath}' not found in the open scene.");
 
             Repaint();
             Debug.Log($"Loaded carousel layout with {specialDoors.Count} special doors from {LayoutPath}.");
@@ -200,15 +205,15 @@ namespace GameHub.Hub.Editor
 
         private void SaveLayout()
         {
-            specialDoors.Sort((a, b) => a.doorIndex.CompareTo(b.doorIndex));
+            specialDoors.Sort((a, b) => a.DoorIndex.CompareTo(b.DoorIndex));
             CarouselLayout layout = new()
             {
-                doorHolderPrefab = doorHolderPrefab != null ? AssetDatabase.GetAssetPath(doorHolderPrefab) : string.Empty,
-                doorHoldersPath = GetHierarchyPath(carouselTop),
-                wallToDisablePath = wallToDisable != null ? GetHierarchyPath(wallToDisable.transform) : string.Empty,
-                doorCount = doorCount,
-                radius = radius,
-                specialDoors = specialDoors
+                DoorHolderPrefab = doorHolderPrefab != null ? AssetDatabase.GetAssetPath(doorHolderPrefab) : string.Empty,
+                DoorHoldersPath = GetHierarchyPath(carouselTop),
+                WallToDisablePath = wallToDisable != null ? GetHierarchyPath(wallToDisable.transform) : string.Empty,
+                DoorCount = doorCount,
+                Radius = radius,
+                SpecialDoors = specialDoors
             };
 
             File.WriteAllText(LayoutPath, JsonUtility.ToJson(layout, true) + "\n");
@@ -231,15 +236,15 @@ namespace GameHub.Hub.Editor
 
                 specialDoors.Add(new SpecialDoorConfig
                 {
-                    doorIndex = identifier.DoorId,
-                    doorName = identifier.DoorName,
-                    targetSceneName = targetSceneName,
-                    doorColor = references.Controller.DoorColor,
-                    inProgress = references.Trigger.InProgress,
+                    DoorIndex = identifier.DoorId,
+                    DoorName = identifier.DoorName,
+                    TargetSceneName = targetSceneName,
+                    DoorColor = references.Controller.DoorColor,
+                    InProgress = references.Trigger.InProgress,
                 });
             }
 
-            specialDoors.Sort((a, b) => a.doorIndex.CompareTo(b.doorIndex));
+            specialDoors.Sort((a, b) => a.DoorIndex.CompareTo(b.DoorIndex));
             Repaint();
             Debug.Log($"Loaded {specialDoors.Count} special doors.");
         }
@@ -262,18 +267,18 @@ namespace GameHub.Hub.Editor
                 if (!holder.TryGetComponent(out DoorIdentifier identifier))
                     identifier = holder.AddComponent<DoorIdentifier>();
 
-                SpecialDoorConfig special = specialDoors.Find(door => door.doorIndex == i);
-                SetSerializedFields(identifier, ("doorId", i), ("doorName", special?.doorName ?? string.Empty));
+                SpecialDoorConfig special = specialDoors.Find(door => door.DoorIndex == i);
+                SetSerializedFields(identifier, ("doorId", i), ("doorName", special?.DoorName ?? string.Empty));
 
                 if (special == null || !holder.TryGetComponent(out DoorReferences references))
                     continue;
 
                 SetSerializedFields(
                     references.Trigger,
-                    ("targetSceneName", special.targetSceneName),
-                    ("inProgress", special.inProgress),
+                    ("targetSceneName", special.TargetSceneName),
+                    ("inProgress", special.InProgress),
                     ("wallToDisable", wallToDisable));
-                references.Controller.SetDoorColor(special.doorColor);
+                references.Controller.SetDoorColor(special.DoorColor);
             }
 
             EditorSceneManager.MarkSceneDirty(carouselTop.gameObject.scene);

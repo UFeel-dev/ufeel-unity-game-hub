@@ -54,7 +54,7 @@ namespace GameHub.EscapeRoom
         private readonly SpeechCommandRecognizer commandRecognizer = new(RecognitionWindowSeconds, MinimumCommandScore);
 
         private EscapeStep currentStep;
-        private Coroutine hintTimerRoutine;
+        private Coroutine? hintTimerRoutine;
         private Coroutine radioLoopRoutine;
         private string lastProcessedSpeech = string.Empty;
 
@@ -84,7 +84,7 @@ namespace GameHub.EscapeRoom
             if (LayoutInput.GetKeyDown(KeyCode.H))
                 ShowHint(HintFor(currentStep));
 
-            string speech = UFeelAPI.SpeechToText.Current;
+            string? speech = UFeelAPI.SpeechToText.Current;
             if (string.IsNullOrWhiteSpace(speech) || speech == lastProcessedSpeech)
                 return;
 
@@ -95,7 +95,7 @@ namespace GameHub.EscapeRoom
             ExecuteCurrentStep();
         }
 
-        private static SpeechCommand CommandFor(EscapeStep step)
+        private static SpeechCommand? CommandFor(EscapeStep step)
         {
             return step switch
             {
@@ -147,7 +147,10 @@ namespace GameHub.EscapeRoom
         private void SetStep(EscapeStep step)
         {
             currentStep = step;
-            commandRecognizer.SetCommand(CommandFor(step));
+            SpeechCommand? command = CommandFor(step);
+            if (command == null)
+                return;
+            commandRecognizer.SetCommand(command);
             lastProcessedSpeech = string.Empty;
 
             if (hintTimerRoutine != null)

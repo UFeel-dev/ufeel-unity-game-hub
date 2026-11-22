@@ -28,7 +28,7 @@ namespace GameHub.Maze
         private Vector2Int playerRoom;
         private bool playerWon;
 
-        public static MazeManager Instance { get; private set; }
+        public static MazeManager? Instance { get; private set; }
 
         private void Awake()
         {

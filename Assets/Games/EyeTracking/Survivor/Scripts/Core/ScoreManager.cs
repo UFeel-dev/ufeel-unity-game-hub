@@ -4,7 +4,7 @@ namespace GameHub.Survivor
 {
     public class ScoreManager : MonoBehaviour
     {
-        public static ScoreManager Instance { get; private set; }
+        public static ScoreManager? Instance { get; private set; }
 
         public float SurvivalTime { get; private set; }
 
@@ -23,12 +23,13 @@ namespace GameHub.Survivor
 
         private void Start()
         {
-            SurvivorGameManager.Instance.StateChanged += OnStateChanged;
+            if (SurvivorGameManager.Instance != null)
+                SurvivorGameManager.Instance.StateChanged += OnStateChanged;
         }
 
         private void Update()
         {
-            if (SurvivorGameManager.Instance.IsPlaying)
+            if (SurvivorGameManager.Instance != null && SurvivorGameManager.Instance.IsPlaying)
                 SurvivalTime += Time.deltaTime;
         }
 

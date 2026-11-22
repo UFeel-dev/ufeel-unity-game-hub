@@ -4,7 +4,7 @@
 
 Unity project showcasing the [UFeel](../../Packages/com.ufcorp.ufeel) biometric input package through a hub of small games.
 
-![](../Assets/game_hub.png)
+![Game Hub](../Assets/game_hub.png)
 
 ## Features
 
@@ -24,7 +24,7 @@ Unity project showcasing the [UFeel](../../Packages/com.ufcorp.ufeel) biometric 
 Movement uses the key positions (WASD on QWERTY, ZQSD on AZERTY). Letter shortcuts follow the keyboard layout.
 
 | Key | Action |
-|---|---|
+| --- | --- |
 | **WASD / ZQSD / Arrow keys** | Move around |
 | **Mouse** | Look around |
 | **E** | Enter the door in front of you |
@@ -32,13 +32,14 @@ Movement uses the key positions (WASD on QWERTY, ZQSD on AZERTY). Letter shortcu
 | **F** | Toggle faster carousel rotation |
 | **Tab** | Toggle between looking around and using the door selection panel |
 | **M** | Toggle the pause menu |
+| **F1** | Camera feedback and debug data |
 | **F8** | Eye-tracking calibration |
 | **F9** | Microphone selector |
 
 ## Documentation
 
 | Document | Description |
-|---|---|
+| --- | --- |
 | [Setup Instructions](SetupInstructions.md) | How to run the project |
 | [Scene Reference](Scenes.md) | Scene-by-scene breakdown |
 | [Testing & Debugging](TestingTips.md) | Testing and debugging guide |

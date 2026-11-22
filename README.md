@@ -16,7 +16,7 @@ You can find the website [here](https://ufeel.guitt.re).
 ## Documentation
 
 | Document | Description |
-|---|---|
+| --- | --- |
 | [Architecture](ARCHITECTURE.md) | System architecture and component overview |
 | [API Reference](Packages/com.ufcorp.ufeel/Runtime/API.md) | UFeel Unity API usage guide |
 | [Game Hub](Documentation/GameHub/README.md) | Game Hub overview and controls |

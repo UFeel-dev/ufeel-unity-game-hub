@@ -2,7 +2,7 @@
 
 > [<- Scene Reference](../../GameHub/Scenes.md)
 
-![](../../Assets/rhythm_game.png)
+![Rhythm game](../../Assets/rhythm_game.png)
 
 ## Role
 
@@ -27,7 +27,7 @@ Maintain accuracy while adapting to the changing rhythm of the game.
 ## Keyboard Shortcuts
 
 | Key | Action |
-|---|---|
+| --- | --- |
 | **Any key** | Start the game |
 | **Arrow keys** | Press the matching note |
 | **A** (**Q** on AZERTY) | Pan the camera to the left |

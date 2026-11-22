@@ -18,7 +18,7 @@ namespace GameHub.Survivor
 
         private void Update()
         {
-            if (!SurvivorGameManager.Instance.IsPlaying)
+            if (SurvivorGameManager.Instance == null || !SurvivorGameManager.Instance.IsPlaying)
                 return;
 
             timer += Time.deltaTime;

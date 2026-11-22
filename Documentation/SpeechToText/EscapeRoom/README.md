@@ -2,7 +2,7 @@
 
 > [<- Scene Reference](../../GameHub/Scenes.md)
 
-![](../../Assets/escape_room.png)
+![Escape room](../../Assets/escape_room.png)
 
 ## Role
 
@@ -25,6 +25,6 @@ Solve the room's challenges and escape using voice commands.
 ## Keyboard shortcuts
 
 | Key | Action |
-|---|---|
+| --- | --- |
 | **H** | Display a hint |
 | **V** | Restart speech detection |
