@@ -1,32 +1,39 @@
-# Testing Room
+# Game Hub
 
 > [<- Back to README](../../README.md)
 
-Unity project showcasing the [UFeel](../../Packages/com.ufcorp.ufeel) biometric input package.
+Unity project showcasing the [UFeel](../../Packages/com.ufcorp.ufeel) biometric input package through a hub of small games.
 
-![](../Assets/testing_room.png)
+![](../Assets/game_hub.png)
 
 ## Features
 
-- Gaze-controlled vehicle navigation
-- Emotion-based door unlocking
-- Modular architecture with additive scene loading
+- First-person hub with a door carousel leading to each game
+- Door selection with the keyboard, a dropdown or eye tracking
+- Games driven by emotion detection, eye tracking, speech to text and heart rate
+- Additive scene loading, one assembly per game
 
 ## Technologies
 
-- Unity 6000.1.3f1
-- UFeel (emotion detection, eye tracking, speech, heart rate via webcam)
-- C# - Unity Physics and Input System
+- Unity 6000.0.58f2 (URP)
+- UFeel (emotion detection, eye tracking and speech to text through the webcam and microphone, heart rate through a sensor)
+- C#, Unity Physics and the Input System
 
 ## Keyboard shortcuts
 
+Movement uses the key positions (WASD on QWERTY, ZQSD on AZERTY). Letter shortcuts follow the keyboard layout.
+
 | Key | Action |
 |---|---|
-| **ZQSD / Arrow keys** | Move around |
-| **E** | Enter room |
-| **N** | Toggle room selection with eye-tracking |
-| **M** | Toggle Pause Menu |
-| **Tab** | Toggle selection between room movement and dropdown
+| **WASD / ZQSD / Arrow keys** | Move around |
+| **Mouse** | Look around |
+| **E** | Enter the door in front of you |
+| **N** | Toggle door selection with the eyes (look left or right then back to the center, double blink to confirm) |
+| **F** | Toggle faster carousel rotation |
+| **Tab** | Toggle between looking around and using the door selection panel |
+| **M** | Toggle the pause menu |
+| **F8** | Eye-tracking calibration |
+| **F9** | Microphone selector |
 
 ## Documentation
 

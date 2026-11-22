@@ -1,39 +1,26 @@
 # Scene Reference
 
-> [<- Testing Room](README.md)
+> [<- Game Hub](README.md)
 
-## Keyboard shortcuts
+Scenes live in `Assets/Hub/Scenes` and `Assets/Games/<Category>/<Game>/Scenes`. Every scene below is in the build settings.
 
-These keyboard shortcuts are available in all scenes:
+## Game Hub (`GameHub`)
 
-| Key | Action |
-| --- | --- |
-| **ZQSD / Arrow keys** | Move around |
-| **M** | Toggle Pause Menu |
-| **V** | Start again sensors |
+**Role:** Lobby used to reach every game.
 
-## Base Scene (TestingRoom)
+- First-person controller with mouse look.
+- Door carousel: select a door with the panel, the keyboard or the eyes, then press **E** in front of it.
+- Doors whose game is not ready show "In Progress" and stay closed.
 
-### Role
+**Main scripts:** `CarouselRotator`, `DoorSelectionManager`, `DoorTrigger`, `SceneLoader`
 
-Main hub used to access all available experiences.
-
-### Features
-
-- First-person controller.
-- Mouse controls camera rotation.
-- Scene selection through interactive doors.
-- Lighting is intentionally disabled.
-
-All other scenes can be accessed by entering the corresponding door.
-
-## Emotion-Based Experiences
+## Emotion-Based Games
 
 ### Maze
 
-**Role:** Emotion-driven labyrinth experience.
+**Role:** Emotion-driven labyrinth.
 
-**Main Script:** `MazeManager`
+**Main script:** `MazeManager`
 
 **See also:** [Maze README](../Emotions/Maze/README.md)
 
@@ -41,42 +28,52 @@ All other scenes can be accessed by entering the corresponding door.
 
 **Role:** Emotion-based memory game.
 
-**Main Script:** `AnimalsManager`
+**Main script:** `AnimalsManager`
 
 **See also:** [Animals README](../Emotions/Animals/README.md)
 
-## Eye Tracking Experiences
+## Eye-Tracking Games
 
 ### Car
 
-**Role:** Vehicle control using eye tracking.
+**Role:** Vehicle driven with the eyes.
 
-**Main Script:** `VehicleController`
+**Main script:** `VehicleController`
 
-**See also:** [Eye Tracking README](../EyeTracking/Car/README.md)
+**See also:** [Car README](../EyeTracking/Car/README.md)
 
 ### Survivor
 
-**Role:** Eye-tracking survival experience.
+**Role:** Eye-tracking survival game.
 
-**Status:** Planned for future development.
+**Status:** In progress, its door shows "In Progress".
 
-## Speech-To-Text Experiences
+**Main script:** `SurvivorGameManager`
 
-### EscapeRoom
+## Speech-To-Text Games
 
-**Role:** Voice-controlled escape room.
+### Escape Room
 
-**Main Script:** `SpeechManager`
+**Role:** Voice-controlled escape room (French commands).
 
-**See also:** [EscapeRoom README](../SpeechToText/EscapeRoom/README.md)
+**Main script:** `SpeechManager`
 
-## Heart Rate Experiences
+**See also:** [Escape Room README](../SpeechToText/EscapeRoom/README.md)
 
-### RhythmGame
+## Heart Rate Games
 
-**Role:** Heart-rate-adaptive rhythm game.
+### Rhythm Game
 
-**Main Script:** `GameManager`
+**Role:** Rhythm game whose tempo follows the heart rate.
 
-**See also:** [RhythmGame README](../HeartRate/RhythmGame/README.md)
+**Main script:** `RhythmGameManager`
+
+**See also:** [Rhythm Game README](../HeartRate/RhythmGame/README.md)
+
+### Horror Room
+
+**Role:** Proof of concept: a heartbeat sound and a red flash follow the heart rate.
+
+**Status:** In progress, its door shows "In Progress".
+
+**Main script:** `HeartbeatEffects`

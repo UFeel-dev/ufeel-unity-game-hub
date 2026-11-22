@@ -1,6 +1,6 @@
 # Animals
 
-> [<- Scene Reference](../../TestingRoom/Scenes.md)
+> [<- Scene Reference](../../GameHub/Scenes.md)
 
 ![](../../Assets/animals.png)
 
@@ -11,9 +11,9 @@ Emotion-based memory game.
 ## Gameplay
 
 - Each animal displayed on screen is associated with a specific emotion.
-- The player must perform the matching emotion to score points.
+- The player must hold the matching emotion for 2.5 seconds to score a point.
 - New animals and emotions are introduced as the game progresses.
-- Difficulty increases with each completed level.
+- Each of the 5 levels adds one animal and a little more time.
 
 ## Objective
 

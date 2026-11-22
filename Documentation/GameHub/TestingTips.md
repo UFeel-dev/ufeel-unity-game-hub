@@ -1,8 +1,8 @@
 # Testing & Debugging
 
-> [<- Testing Room](README.md)
+> [<- Game Hub](README.md)
 
-Instructions for testing and debugging the UFeel package across the main Testing Room scenes.
+Instructions for testing and debugging the UFeel package across the Game Hub scenes.
 
 ## General Requirements
 
@@ -15,10 +15,10 @@ Instructions for testing and debugging the UFeel package across the main Testing
 
 ### Testing Steps for Emotion Detection
 
-- From the base scene, enter the **Maze** scene via the carousel.
+- From the hub, enter the **Maze** door.
 - The camera feed should activate automatically.
-- Try displaying emotions like **happiness**, **surprise**, or **anger** as required by fog door labels.
-- The path will open only when the correct emotion is held for a sufficient time.
+- Display the emotion written on a fog door (**happiness**, **surprise** or **fear**) and walk into it.
+- The path opens once the emotion is held for about two seconds.
 
 ### Troubleshooting Emotion Detection
 
@@ -32,8 +32,9 @@ Instructions for testing and debugging the UFeel package across the main Testing
 
 ### Testing Steps for Eye Tracking
 
-- From the base scene, enter the **Car** scene via the carousel.
-- Ensure the eye-tracking logic works (gaze affects vehicle direction).
+- From the hub, enter the **Car** door and walk into the vehicle.
+- Accelerate with **W** (**Z** on AZERTY) and check that looking left or right steers the vehicle.
+- Press **F8** to calibrate if the gaze range feels too narrow.
 
 ### Troubleshooting Eye Tracking
 
@@ -41,20 +42,20 @@ Instructions for testing and debugging the UFeel package across the main Testing
   - Check for sufficient front-facing light.
   - Ensure your face is fully visible in the webcam's field of view.
 
-## Base Scene (TestingRoom)
+## Game Hub (`GameHub`)
 
 **Scene Purpose:** Main menu hub used to load other scenes additively.
 
-### Testing Steps for Testing Room
+### Testing Steps for the Game Hub
 
-- Run `TestingRoom.unity`.
-- Use the carousel to enter **EyeTracking** and **Emotion** scenes.
-- Return to base between tests to ensure transitions preserve webcam availability.
+- Open `Assets/Hub/Scenes/GameHub.unity` and press Play.
+- Use the carousel to enter each game, then come back through the pause menu (**M**, then the lobby button).
+- Return to the hub between tests to check that transitions keep the webcam available.
 
-### Troubleshooting Testing Room
+### Troubleshooting the Game Hub
 
-- **Scene does not load**
-  - Ensure all the scenes are referenced properly in the build settings.
+- **A door shows "In Progress"**
+  - Its game is flagged as in progress, or its scene is missing from the build settings.
 
 ## Tips
 
