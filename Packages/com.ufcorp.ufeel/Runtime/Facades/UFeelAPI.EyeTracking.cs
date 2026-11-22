@@ -12,7 +12,6 @@ namespace UFeel
         {
             public static KeyCode CalibrationKey = KeyCode.F8;
 
-            /// <summary>Smoothed gaze estimate.</summary>
             public static EyeTrackingResult Current
             {
                 get
@@ -33,7 +32,7 @@ namespace UFeel
                 }
             }
 
-            /// <summary>Normalized screen position (0..1, origin top-left).</summary>
+            /// <summary>Gets the normalized screen position (0..1, origin top-left).</summary>
             public static Vector2 Position
             {
                 get
@@ -61,7 +60,8 @@ namespace UFeel
 
             private static float headWeight;
 
-            /// <summary>Gets a value indicating whether a profile was loaded or a calibration succeeded.</summary>
+            /// <summary>Gets a value indicating whether the eye tracking is calibrated.</summary>
+            /// <remarks>Also true when a saved profile was loaded at startup.</remarks>
             public static bool IsCalibrated => Calibrated;
 
             public static bool IsCalibrating => Overlay != null && Overlay.IsRunning;
@@ -73,6 +73,8 @@ namespace UFeel
             private static UFeelCalibrationOverlay? Overlay => instance != null ? instance.calibrationOverlay : null;
 
             /// <summary>Saves the profile on success.</summary>
+            /// <returns>A task that completes with the calibration result.</returns>
+            /// <exception cref="InvalidOperationException">Thrown when UFeel is unavailable.</exception>
             public static Task<CalibrationResult> CalibrateAsync()
             {
                 UFeelCalibrationOverlay? overlay = Overlay;

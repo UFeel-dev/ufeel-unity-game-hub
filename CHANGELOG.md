@@ -2,7 +2,6 @@
 
 > [<- Back to README](README.md)
 
-
 ## [2026-11]
 
 ### Changed
@@ -11,6 +10,9 @@
 - Native processing runs on a background thread. Features run only while read.
 - `UFeelAPI.Gaze`/`GazeDirection` renamed to `UFeelAPI.EyeTracking`/`EyeTrackingDirection`.
 - `EyeTracking.Directions` and `IsBlinking` work without calibration. `IsBlinking` means both eyes closed, with hysteresis. Blinks no longer interrupt the position or directions.
+- Project reorganized by feature: `Assets/Hub`, `Assets/Common`, `Assets/Games/<Category>/<Game>` and `Assets/ThirdParty`, with one `GameHub.*` assembly and namespace per feature.
+- The Testing Room is now the Game Hub (`GameHub` scene, `Documentation/GameHub`).
+- Game scripts use private serialized fields, shared input, scene flow and heart rate helpers, and no longer compile into the UFeel package assembly.
 
 ### Added
 
@@ -19,10 +21,21 @@
 - `tools/update-ufeel.sh` to sync a ufeel package.
 - `EyeTracking.Gaze`, `BlinkCount` and `HeadWeight`.
 
+### Removed
+
+- Empty Environment, Runner and UnlockWorld scenes, the API testing scene, third-party demo scenes and unused assets.
+- Unused packages (HDRP, Visual Scripting, Timeline, AI Navigation, Collab, VS Code, Multiplayer Center, Test Framework).
+- The inactive mirror workflow and the `tools/refresh-package` script.
+
 ### Fixed
 
 - Speech rules matched in the wrong direction and fired on empty speech.
 - Calibration profile paths were passed as UTF-16.
+- The Heart Rate - Horror door targeted a missing scene.
+- The pause menu Quit and hub door selection buttons targeted wrong assemblies.
+- The Escape Room camera and Horror Room red filter references were lost.
+- The rhythm game stalled and the Horror Room effects stopped without a heart rate reading.
+- The pause state persisted across play sessions in the editor.
 
 ## [2026-07]
 

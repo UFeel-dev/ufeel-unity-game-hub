@@ -8,10 +8,11 @@ namespace UFeel
     [DefaultExecutionOrder(-1000)]
     public sealed partial class UFeelAPI : MonoBehaviour
     {
-        private static readonly RuleSet Rules = new RuleSet { ErrorHandler = Debug.LogException };
+        private static readonly RuleSet Rules = new() { ErrorHandler = Debug.LogException };
 
         private static UFeelAPI? instance;
         private static UFeelSession? session;
+        private static UFeelFrameOverlay? frameOverlay;
         private static CalibrationProfileStore? profiles;
         private static UFeelSnapshot frameSnapshot = UFeelSnapshot.Initial;
         private static int frameSnapshotFrame = -1;
@@ -19,7 +20,8 @@ namespace UFeel
         private UFeelCalibrationOverlay? calibrationOverlay;
         private UFeelMicrophoneOverlay? microphoneOverlay;
 
-        /// <summary>Null when the native library failed to start.</summary>
+        /// <summary>Gets the time of the last read of any feature, or 0 if none was read yet.</summary>
+        /// <remarks>Null when the native library failed to start.</remarks>
         public static UFeelSession? Session => session;
 
         public static bool IsAvailable => session != null;
@@ -31,7 +33,6 @@ namespace UFeel
 
         public static void RemoveRule(RuleKey key) => Rules.Remove(key);
 
-        /// <summary>Shared by every read in the current frame, so values stay consistent.</summary>
         internal static UFeelSnapshot Snapshot
         {
             get
@@ -48,6 +49,8 @@ namespace UFeel
         }
 
         /// <summary>Also keeps <paramref name="feature"/> running.</summary>
+        /// <param name="feature">The feature to read.</param>
+        /// <returns>The latest snapshot of the requested feature.</returns>
         internal static UFeelSnapshot Read(DetectionType feature)
         {
             session?.Demand.Request(feature);
@@ -73,6 +76,7 @@ namespace UFeel
             DontDestroyOnLoad(gameObject);
             calibrationOverlay = gameObject.AddComponent<UFeelCalibrationOverlay>();
             microphoneOverlay = gameObject.AddComponent<UFeelMicrophoneOverlay>();
+            frameOverlay = gameObject.AddComponent<UFeelFrameOverlay>();
 
             try
             {
@@ -96,7 +100,7 @@ namespace UFeel
                 processor.SetEyeTrackingHeadWeight(EyeTracking.HeadWeight);
                 Debug.Log($"UFeel started (eye-tracking profile: {profile}, {profiles.Path})");
 
-                session = new UFeelSession(processor);
+                session = new UFeelSession(processor, frameObserver: frameOverlay);
             }
             catch
             {

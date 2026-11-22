@@ -1,0 +1,9 @@
+{
+    "name": "GameHub.Common",
+    "rootNamespace": "GameHub.Common",
+    "references": [
+        "UFeel",
+        "UFeel.Core",
+        "Unity.InputSystem"
+    ]
+}

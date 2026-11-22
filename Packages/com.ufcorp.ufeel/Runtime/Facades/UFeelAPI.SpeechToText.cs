@@ -23,9 +23,11 @@ namespace UFeel
 
             public static bool IsRunning => session?.IsSpeechToTextEnabled ?? false;
 
-            /// <summary>Empty when silent, null while detection is stopped.</summary>
+            /// <summary>Gets the current speech-to-text result.</summary>
+            /// <remarks>Empty when silent, null while detection is stopped.</remarks>
             public static string? Current => IsRunning ? Snapshot.SpeechToText.Text : null;
 
+            /// <summary>Gets the ID of the currently selected microphone.</summary>
             /// <summary>Null while the default microphone is used.</summary>
             public static string? SelectedMicrophoneId => session?.SelectedMicrophoneId;
 
@@ -39,6 +41,7 @@ namespace UFeel
             public static void StopDetection() => SetEnabled(false);
 
             /// <summary>Restarts a running detection to rescan the devices.</summary>
+            /// <returns>True if the detection was restarted, false if it was not running.</returns>
             public static Task<IReadOnlyList<MicrophoneDevice>> GetMicrophonesAsync()
             {
                 return session?.GetMicrophonesAsync() ??
@@ -49,6 +52,8 @@ namespace UFeel
             /// Null selects the default microphone. On success, the choice is saved and applied at the next startups.
             /// Call it from the main thread.
             /// </summary>
+            /// <param name="id">The microphone ID, or null for the default one.</param>
+            /// <returns>True if the microphone was selected, false if it was unavailable.</returns
             public static async Task<bool> SelectMicrophoneAsync(string? id)
             {
                 if (session is null || !await session.SelectMicrophoneAsync(id))
@@ -70,6 +75,11 @@ namespace UFeel
             public static void HideMicrophoneSelector() => MicrophoneOverlay?.Hide();
 
             /// <summary>Case-insensitive "contains" match.</summary>
+            /// <param name="text">The text to match.</param>
+            /// <param name="action">The action to invoke when the match is found.</param>
+            /// <param name="onlyOnce">True to invoke the action only once, false to invoke it every frame while the match is found.</param>
+            /// <returns>A rule key that can be used to remove the rule.</returns>
+            /// <exception cref="ArgumentException">Thrown when the text is null or empty.</exception>
             public static RuleKey TriggerActionOnSpeech(string text, Action action, bool onlyOnce)
             {
                 if (string.IsNullOrWhiteSpace(text))

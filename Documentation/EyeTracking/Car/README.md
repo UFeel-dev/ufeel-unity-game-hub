@@ -1,8 +1,8 @@
 # Car
 
-> [<- Scene Reference](../../TestingRoom/Scenes.md)
+> [<- Scene Reference](../../GameHub/Scenes.md)
 
-![](../../Assets/car.png)
+![Car](../../Assets/car.png)
 
 ## Role
 
@@ -10,17 +10,14 @@ Vehicle navigation using eye tracking.
 
 ## Gameplay
 
-- Eye movements control the vehicle direction.
+- Walk into the vehicle to get in, press **E** to get out.
 - Looking left or right steers the vehicle.
-- Keyboard controls remain available for movement:
-
-  - **W**: Accelerate
-  - **S**: Reverse
-- The scene is designed to evaluate gaze-based navigation.
+- The keyboard controls the throttle.
+- Crossing the finish line returns to the hub.
 
 ## Objective
 
-Drive the vehicle and successfully navigate through the environment using eye tracking.
+Drive the vehicle to the finish line using eye tracking.
 
 ## Main Script
 
@@ -28,9 +25,8 @@ Drive the vehicle and successfully navigate through the environment using eye tr
 
 ## Keyboard shortcuts
 
-These keyboard shortcuts are available in all scenes:
-
 | Key | Action |
 | --- | --- |
-| **W** | Move forward (in car) |
-| **S** | Move backward (in car) |
+| **W** (**Z** on AZERTY) | Accelerate |
+| **S** | Reverse |
+| **E** | Exit the vehicle |

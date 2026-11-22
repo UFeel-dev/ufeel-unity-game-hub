@@ -74,4 +74,4 @@ tools/update-ufeel.sh ../ufeel/package/release # package built with ./build.sh a
 
 This syncs `libufeel_wrapper.so`, `dependencies/`, `models/` and the C# adapter (`Runtime/Core`). Linux player builds get `dependencies/` and `models/` copied automatically.
 
-**See also:** [Architecture](../../../ARCHITECTURE.md) - [Testing & Debugging](../../../Documentation/TestingRoom/TestingTips.md)
+**See also:** [Architecture](../../../ARCHITECTURE.md) - [Testing & Debugging](../../../Documentation/GameHub/TestingTips.md)

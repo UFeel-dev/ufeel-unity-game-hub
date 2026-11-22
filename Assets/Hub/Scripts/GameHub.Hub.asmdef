@@ -1,0 +1,11 @@
+{
+    "name": "GameHub.Hub",
+    "rootNamespace": "GameHub.Hub",
+    "references": [
+        "GameHub.Common",
+        "UFeel",
+        "UFeel.Core",
+        "Unity.TextMeshPro",
+        "UnityEngine.UI"
+    ]
+}

@@ -1,0 +1,10 @@
+{
+    "name": "GameHub.RhythmGame",
+    "rootNamespace": "GameHub.RhythmGame",
+    "references": [
+        "GameHub.Common",
+        "UFeel",
+        "UFeel.Core",
+        "UnityEngine.UI"
+    ]
+}

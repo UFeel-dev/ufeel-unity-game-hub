@@ -1,0 +1,10 @@
+{
+    "name": "GameHub.Survivor",
+    "rootNamespace": "GameHub.Survivor",
+    "references": [
+        "GameHub.Common",
+        "UFeel",
+        "UFeel.Core",
+        "UnityEngine.UI"
+    ]
+}
