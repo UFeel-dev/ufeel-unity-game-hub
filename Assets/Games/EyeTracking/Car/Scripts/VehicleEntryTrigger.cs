@@ -1,82 +1,65 @@
+using GameHub.Common;
 using UnityEngine;
 
-public class VehicleEntryTrigger : MonoBehaviour
+namespace GameHub.Car
 {
-    [SerializeField] private MonoBehaviour vehicleController;
-    [SerializeField] private Camera vehicleCamera;
-
-    private GameObject playerObject;
-    private bool hasEntered = false;
-
-    [SerializeField] private Vector3 exitOffset = new(2f, 0f, 0f);
-
-    private void Start()
+    public class VehicleEntryTrigger : MonoBehaviour
     {
-        playerObject = GameObject.FindWithTag("Player");
+        [SerializeField] private VehicleController vehicleController;
+        [SerializeField] private Camera vehicleCamera;
+        [SerializeField] private Vector3 exitOffset = new(2f, 0f, 0f);
 
-        if (vehicleController != null)
-            vehicleController.enabled = false;
+        private GameObject player;
+        private bool isInVehicle;
 
-        if (vehicleCamera != null)
-            vehicleCamera.enabled = false;
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (hasEntered) return;
-
-        if (other.CompareTag("Player"))
+        private void Start()
         {
-            hasEntered = true;
-            EnterVehicle();
-        }
-    }
-
-    private void Update()
-    {
-        if (hasEntered && LayoutInput.GetKeyDown(KeyCode.E))
-        {
-            ExitVehicle();
-        }
-    }
-
-    private void EnterVehicle()
-    {
-        playerObject.SetActive(false);
-
-        if (vehicleController != null)
-            vehicleController.enabled = true;
-
-        if (vehicleCamera != null)
-        {
-            vehicleCamera.enabled = true;
-
-            Camera mainCam = Camera.main;
-            if (mainCam != null && mainCam != vehicleCamera)
-                mainCam.enabled = false;
+            player = GameObject.FindWithTag(Tags.Player);
+            SetVehicleActive(false);
         }
 
-        Debug.Log("Entered vehicle.");
-    }
-
-    public GameObject ExitVehicle()
-    {
-        hasEntered = false;
-
-        if (playerObject != null)
+        private void Update()
         {
-            playerObject.SetActive(true);
-            playerObject.transform.position = transform.position + exitOffset;
+            if (isInVehicle && LayoutInput.GetKeyDown(KeyCode.E))
+                ExitVehicle();
         }
 
-        if (vehicleController != null)
-            vehicleController.enabled = false;
+        private void OnTriggerEnter(Collider other)
+        {
+            if (!isInVehicle && other.CompareTag(Tags.Player))
+                EnterVehicle();
+        }
 
-        if (vehicleCamera != null)
-            vehicleCamera.enabled = false;
+        public void ExitVehicle()
+        {
+            isInVehicle = false;
+            SetVehicleActive(false);
 
-        Debug.Log("Exited vehicle.");
+            if (player == null)
+                return;
 
-        return playerObject;
+            player.SetActive(true);
+            player.transform.position = transform.position + exitOffset;
+        }
+
+        private void EnterVehicle()
+        {
+            isInVehicle = true;
+            player.SetActive(false);
+            SetVehicleActive(true);
+
+            Camera mainCamera = Camera.main;
+            if (vehicleCamera != null && mainCamera != null && mainCamera != vehicleCamera)
+                mainCamera.enabled = false;
+        }
+
+        private void SetVehicleActive(bool active)
+        {
+            if (vehicleController != null)
+                vehicleController.enabled = active;
+
+            if (vehicleCamera != null)
+                vehicleCamera.enabled = active;
+        }
     }
 }

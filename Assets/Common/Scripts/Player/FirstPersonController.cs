@@ -1,86 +1,81 @@
 using UnityEngine;
 
-public class FirstPersonController : MonoBehaviour
+namespace GameHub.Common
 {
-    [Header("Movement Settings")]
-    public float MoveSpeed = 5f;
-
-    [Header("Look Settings")]
-    public Transform CameraRoot;
-    public float MouseSensitivity = 2f;
-    private float pitch = 0f;
-    private bool isUsingMouseToMoveView = true;
-
-    [Header("Gravity")]
-    public float Gravity = -9.81f;
-    private float verticalVelocity;
-    public CharacterController Controller;
-
-    private void Start()
+    public class FirstPersonController : MonoBehaviour
     {
-        Controller = gameObject.AddComponent<CharacterController>();
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-    }
+        private const float MaxPitch = 89f;
 
-    private void Update()
-    {
-        if (PauseMenu.GameisPaused)
+        [Header("Movement")]
+        [SerializeField] private float moveSpeed = 5f;
+        [SerializeField] private float gravity = -9.81f;
+
+        [Header("Look")]
+        [SerializeField] private Transform cameraRoot;
+        [SerializeField] private float mouseSensitivity = 2f;
+
+        private CharacterController controller;
+        private float pitch;
+        private float verticalVelocity;
+        private bool isMouseLookEnabled = true;
+
+        private void Awake()
         {
-            return;
+            if (!TryGetComponent(out controller))
+                controller = gameObject.AddComponent<CharacterController>();
         }
 
-        HandleMovement();
-
-        if (isUsingMouseToMoveView)
+        private void Start()
         {
-            HandleMouseLook();
+            SetCursorLocked(true);
         }
 
-        if (LayoutInput.GetKeyDown(KeyCode.Tab))
+        private void Update()
         {
-            ToggleCursor();
-        }
-    }
+            if (PauseMenu.IsPaused)
+                return;
 
-    private void ToggleCursor()
-    {
-        if (Cursor.lockState == CursorLockMode.Locked)
-        {
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
-        }
-        else
-        {
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
+            Move();
+
+            if (isMouseLookEnabled)
+                Look();
+
+            if (LayoutInput.GetKeyDown(KeyCode.Tab))
+            {
+                isMouseLookEnabled = !isMouseLookEnabled;
+                SetCursorLocked(isMouseLookEnabled);
+            }
         }
 
-        isUsingMouseToMoveView = !isUsingMouseToMoveView;
-    }
+        public void Teleport(Vector3 position)
+        {
+            controller.enabled = false;
+            transform.position = position;
+            controller.enabled = true;
+        }
 
-    private void HandleMovement()
-    {
-        float moveX = LayoutInput.GetHorizontalAxis();
-        float moveZ = LayoutInput.GetVerticalAxis();
+        private static void SetCursorLocked(bool locked)
+        {
+            Cursor.lockState = locked ? CursorLockMode.Locked : CursorLockMode.None;
+            Cursor.visible = !locked;
+        }
 
-        Vector3 move = (transform.right * moveX) + (transform.forward * moveZ);
-        verticalVelocity += Gravity * Time.deltaTime;
+        private void Move()
+        {
+            Vector3 move = (transform.right * LayoutInput.GetHorizontalAxis()) + (transform.forward * LayoutInput.GetVerticalAxis());
+            verticalVelocity += gravity * Time.deltaTime;
+            move.y = verticalVelocity;
 
-        move.y = verticalVelocity;
+            controller.Move(moveSpeed * Time.deltaTime * move);
+        }
 
-        Controller.Move(MoveSpeed * Time.deltaTime * move);
-    }
+        private void Look()
+        {
+            Vector2 delta = LayoutInput.GetMouseDelta() * mouseSensitivity;
 
-    private void HandleMouseLook()
-    {
-        float mouseX = Input.GetAxis("Mouse X") * MouseSensitivity;
-        float mouseY = Input.GetAxis("Mouse Y") * MouseSensitivity;
-
-        pitch -= mouseY;
-        pitch = Mathf.Clamp(pitch, -89f, 89f);
-
-        CameraRoot.localRotation = Quaternion.Euler(pitch, 0f, 0f);
-        transform.Rotate(Vector3.up * mouseX);
+            pitch = Mathf.Clamp(pitch - delta.y, -MaxPitch, MaxPitch);
+            cameraRoot.localRotation = Quaternion.Euler(pitch, 0f, 0f);
+            transform.Rotate(Vector3.up * delta.x);
+        }
     }
 }

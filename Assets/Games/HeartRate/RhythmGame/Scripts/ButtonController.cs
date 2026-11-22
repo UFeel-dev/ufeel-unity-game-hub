@@ -1,28 +1,29 @@
+using GameHub.Common;
 using UnityEngine;
 
-[RequireComponent(typeof(SpriteRenderer))]
-public class ButtonController : MonoBehaviour
+namespace GameHub.RhythmGame
 {
-    private SpriteRenderer sr;
-    public Sprite Image;
-    public Sprite PressedImage;
-    public KeyCode KeyToPress;
-
-    private void Start()
+    [RequireComponent(typeof(SpriteRenderer))]
+    public class ButtonController : MonoBehaviour
     {
-        sr = GetComponent<SpriteRenderer>();
-    }
+        [SerializeField] private Sprite idleSprite;
+        [SerializeField] private Sprite pressedSprite;
+        [SerializeField] private KeyCode key;
 
-    private void Update()
-    {
-        if (LayoutInput.GetKeyDown(KeyToPress))
+        private SpriteRenderer spriteRenderer;
+
+        private void Awake()
         {
-            sr.sprite = PressedImage;
+            spriteRenderer = GetComponent<SpriteRenderer>();
         }
 
-        if (LayoutInput.GetKeyUp(KeyToPress))
+        private void Update()
         {
-            sr.sprite = Image;
+            if (LayoutInput.GetKeyDown(key))
+                spriteRenderer.sprite = pressedSprite;
+
+            if (LayoutInput.GetKeyUp(key))
+                spriteRenderer.sprite = idleSprite;
         }
     }
 }

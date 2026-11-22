@@ -1,71 +1,75 @@
 using System;
 using UnityEngine;
 
-public class SurvivorGameManager : MonoBehaviour
+namespace GameHub.Survivor
 {
-    public static SurvivorGameManager Instance { get; private set; }
-
-    [SerializeField] private GameObject menuUI;
-    [SerializeField] private GameObject hudUI;
-
-    public GameState State { get; private set; }
-
-    public event Action<GameState> StateChanged;
-
-    private void Awake()
+    public class SurvivorGameManager : MonoBehaviour
     {
-        if (Instance != null)
+        [SerializeField] private GameObject menuUI;
+        [SerializeField] private GameObject hudUI;
+
+        public event Action<GameState> StateChanged;
+
+        public static SurvivorGameManager Instance { get; private set; }
+
+        public GameState State { get; private set; } = GameState.Menu;
+
+        public bool IsPlaying => State == GameState.Playing;
+
+        private void Awake()
         {
-            Destroy(gameObject);
-            return;
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            Instance = this;
         }
 
-        Instance = this;
-        State = GameState.Menu;
-    }
-
-    private void OnEnable()
-    {
-        StateChanged += HandleState;
-    }
-
-    private void OnDisable()
-    {
-        StateChanged -= HandleState;
-    }
-
-    private void HandleState(GameState state)
-    {
-        menuUI.SetActive(state is GameState.Menu or GameState.GameOver);
-        hudUI.SetActive(state == GameState.Playing);
-    }
-
-    public void StartGame()
-    {
-        ChangeState(GameState.Playing);
-    }
-
-    public void GameOver()
-    {
-        ChangeState(GameState.GameOver);
-    }
-
-    public void ReturnToMenu()
-    {
-        ChangeState(GameState.Menu);
-    }
-
-    private void ChangeState(GameState state)
-    {
-        if (State == state)
+        private void Start()
         {
-            return;
+            ApplyState();
         }
 
-        State = state;
-        StateChanged?.Invoke(State);
+        private void OnDestroy()
+        {
+            if (Instance == this)
+                Instance = null;
+        }
+
+        public void StartGame()
+        {
+            ChangeState(GameState.Playing);
+        }
+
+        public void GameOver()
+        {
+            ChangeState(GameState.GameOver);
+        }
+
+        public void ReturnToMenu()
+        {
+            ChangeState(GameState.Menu);
+        }
+
+        private void ChangeState(GameState state)
+        {
+            if (State == state)
+                return;
+
+            State = state;
+            ApplyState();
+            StateChanged?.Invoke(State);
+        }
+
+        private void ApplyState()
+        {
+            if (menuUI != null)
+                menuUI.SetActive(!IsPlaying);
+
+            if (hudUI != null)
+                hudUI.SetActive(IsPlaying);
+        }
     }
 }
-
-// TODO: !!! implement the scene in unity !!!
-// ! -> remember to add asmdef to make ufeel available in Input

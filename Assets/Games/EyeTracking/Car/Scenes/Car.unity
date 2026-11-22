@@ -230,7 +230,6 @@ GameObject:
   - component: {fileID: 137624872}
   - component: {fileID: 137624871}
   - component: {fileID: 137624874}
-  - component: {fileID: 137624875}
   m_Layer: 0
   m_Name: FloatingObject
   m_TagString: Untagged
@@ -339,21 +338,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7ff63ec44c0e49f5bbb2566d0abf933, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Amplitude: 0.5
-  Frequency: 1
---- !u!114 &137624875
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 137624869}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cc7f698eb5b985d90abfa12e5e771bfd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scriptToDisable: {fileID: 137624874}
+  amplitude: 0.5
+  frequency: 1
 --- !u!1001 &144343830
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -799,9 +785,7 @@ MonoBehaviour:
   accelerationForce: 800
   steeringTorque: 300
   maxSpeed: 20
-  sequenceTimeout: 2.5
   centerOfMass: {fileID: 16946836}
-  respawnPosition: {fileID: 1765788707}
 --- !u!54 &504246957
 Rigidbody:
   m_ObjectHideFlags: 0

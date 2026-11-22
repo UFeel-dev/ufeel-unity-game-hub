@@ -1,23 +1,20 @@
+using GameHub.Common;
 using UnityEngine;
 
-public class BeatScroller : MonoBehaviour
+namespace GameHub.RhythmGame
 {
-    public float BeatTempo;
-    public uint Bpm;
-    public bool Started;
-
-    private void Start()
+    public class BeatScroller : MonoBehaviour
     {
-        BeatTempo = 2;
-        Bpm = 60;
-    }
+        private const float UnitsPerBeat = 4f;
 
-    private void Update()
-    {
-        if (Started)
+        public uint Bpm { get; set; } = HeartRateTempo.MinBpm;
+
+        public bool IsScrolling { get; set; }
+
+        private void Update()
         {
-            BeatTempo = Bpm / 15f; // 60 / 4
-            transform.position -= new Vector3(0f, BeatTempo * Time.deltaTime, 0f);
+            if (IsScrolling)
+                transform.position += Vector3.down * (Bpm / 60f * UnitsPerBeat * Time.deltaTime);
         }
     }
 }

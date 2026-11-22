@@ -3113,13 +3113,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2241eb5a93c8925c992e55e87f892ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LeftShutter: {fileID: 1937931401}
-  RightShutter: {fileID: 1066982561}
-  OpenLeft: -7.5
-  OpenRight: 7
-  CloseLeft: -2.85
-  CloseRight: 2.15
-  Speed: 2
+  leftShutter: {fileID: 1937931401}
+  rightShutter: {fileID: 1066982561}
+  openLeftX: -7.5
+  openRightX: 7
+  closedLeftX: -2.85
+  closedRightX: 2.15
+  speed: 2
 --- !u!82 &1060289123
 AudioSource:
   m_ObjectHideFlags: 0
@@ -3594,10 +3594,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 5
+  gravity: -9.81
   cameraRoot: {fileID: 309941381}
   mouseSensitivity: 2
-  gravity: -9.81
-  Controller: {fileID: 0}
 --- !u!136 &1272033930
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -4840,15 +4839,15 @@ MonoBehaviour:
   dummyLight: {fileID: 1877735000}
   blueLight: {fileID: 1069050135}
   tvRenderer: {fileID: 2141687964}
-  tvBlueMaterial: {fileID: 2100000, guid: 9df08906f5ebd0e2d94601ad79fae8b0, type: 2}
   radioHintText: {fileID: 786860254}
   windowHintText: {fileID: 263571978}
   windowHintTextLeft: {fileID: 109684476}
   windowHintTextRight: {fileID: 823031679}
+  windowHintTextLeftTargetX: 22.16
+  windowHintTextRightTargetX: 27.14
   tvHintText: {fileID: 356141282}
   bookHintText: {fileID: 1629457743}
   endCanvasGroup: {fileID: 1989485549}
-  endText: {fileID: 535999219}
   fadeDuration: 5
   hintCanvasGroup: {fileID: 1384810715}
   hintText: {fileID: 1384810716}
@@ -5775,67 +5774,7 @@ PrefabInstance:
   m_Modification:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 3736555636481273727, guid: 938e6519f6d251245bbee3f6ec25ff90, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: b8bb6c06e92452b61a310315b1f8e94d, type: 2}
-    - target: {fileID: 8437055853651462716, guid: 938e6519f6d251245bbee3f6ec25ff90, type: 3}
-      propertyPath: m_Name
-      value: Plant
-      objectReference: {fileID: 0}
-    - target: {fileID: 9105611268096970886, guid: 938e6519f6d251245bbee3f6ec25ff90, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 11
-      objectReference: {fileID: 0}
-    - target: {fileID: 9105611268096970886, guid: 938e6519f6d251245bbee3f6ec25ff90, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 9105611268096970886, guid: 938e6519f6d251245bbee3f6ec25ff90, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 11
-      objectReference: {fileID: 0}
-    - target: {fileID: 9105611268096970886, guid: 938e6519f6d251245bbee3f6ec25ff90, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 32.11
-      objectReference: {fileID: 0}
-    - target: {fileID: 9105611268096970886, guid: 938e6519f6d251245bbee3f6ec25ff90, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.03999996
-      objectReference: {fileID: 0}
-    - target: {fileID: 9105611268096970886, guid: 938e6519f6d251245bbee3f6ec25ff90, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 48.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9105611268096970886, guid: 938e6519f6d251245bbee3f6ec25ff90, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9105611268096970886, guid: 938e6519f6d251245bbee3f6ec25ff90, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9105611268096970886, guid: 938e6519f6d251245bbee3f6ec25ff90, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9105611268096970886, guid: 938e6519f6d251245bbee3f6ec25ff90, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9105611268096970886, guid: 938e6519f6d251245bbee3f6ec25ff90, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9105611268096970886, guid: 938e6519f6d251245bbee3f6ec25ff90, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9105611268096970886, guid: 938e6519f6d251245bbee3f6ec25ff90, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
+    m_Modifications: []
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -5890,9 +5829,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8bea61e0624f6c80782e18b29c6350e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Pivot: {fileID: 2028626719}
-  OpenAngle: 90
-  Speed: 2
+  pivot: {fileID: 2028626719}
+  openAngle: 90
+  speed: 2
 --- !u!4 &2060721737 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5318535632084050904, guid: afd227f78cf0bfb439553cd1ed02009e, type: 3}

@@ -440,7 +440,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9f8404db66d0ff82af3c08c47e55ffd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Direction: 3
+  direction: 3
 --- !u!1 &2391588690755784359
 GameObject:
   m_ObjectHideFlags: 0
@@ -773,7 +773,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9f8404db66d0ff82af3c08c47e55ffd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Direction: 2
+  direction: 2
 --- !u!1 &3944537541832630697
 GameObject:
   m_ObjectHideFlags: 0
@@ -1174,7 +1174,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9f8404db66d0ff82af3c08c47e55ffd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Direction: 1
+  direction: 1
 --- !u!1 &4517711026346300831
 GameObject:
   m_ObjectHideFlags: 0
@@ -2075,14 +2075,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57bcce8959b2f133db836bcf3a9c60f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  NorthFog: {fileID: 8298431798698989725}
-  SouthFog: {fileID: 3979556876558748011}
-  EastFog: {fileID: 3886985408522349260}
-  WestFog: {fileID: 1891404734174868664}
-  NorthText: {fileID: 4563219146162025496}
-  SouthText: {fileID: 4768891171617494473}
-  EastText: {fileID: 3324325571895453443}
-  WestText: {fileID: 2641465538328054858}
+  northFog: {fileID: 8298431798698989725}
+  southFog: {fileID: 3979556876558748011}
+  eastFog: {fileID: 3886985408522349260}
+  westFog: {fileID: 1891404734174868664}
+  northText: {fileID: 4563219146162025496}
+  southText: {fileID: 4768891171617494473}
+  eastText: {fileID: 3324325571895453443}
+  westText: {fileID: 2641465538328054858}
 --- !u!1 &8298431798698989725
 GameObject:
   m_ObjectHideFlags: 0
@@ -2205,7 +2205,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9f8404db66d0ff82af3c08c47e55ffd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Direction: 0
+  direction: 0
 --- !u!1 &9107310695842567147
 GameObject:
   m_ObjectHideFlags: 0

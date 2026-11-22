@@ -64,9 +64,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5d733cf2a8f3197883aa5c7d5d3e178, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  doorID: 0
+  doorId: 0
   doorName: 
-  targetSceneName: 
 --- !u!114 &3980208049992079370
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -304,7 +303,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 030b072ca01e4658caab884fc8e1d729, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _door: {fileID: 5666496242464194362}
+  door: {fileID: 5666496242464194362}
 --- !u!4 &5672190293415079176 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4970741399400872, guid: 26790669cef646944a4d6561a0374e14, type: 3}

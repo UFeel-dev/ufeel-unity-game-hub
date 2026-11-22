@@ -1,173 +1,151 @@
 using System.Collections;
-using UFeel;
+using GameHub.Common;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class RhythmGameManager : MonoBehaviour
+namespace GameHub.RhythmGame
 {
-    private static WaitForSeconds _waitForSeconds1 = new(1f);
-    private static readonly WaitForSeconds _waitBeforeLobby = new(5f);
-    public static RhythmGameManager Instance;
-
-    public bool StartPlaying;
-    public BeatScroller Bs;
-
-    public int CurrentScore;
-    public int ScorePerNote = 100;
-
-    public Text ScoreText;
-    public Text MultiplierText;
-
-    public int CurrentMultiplier = 1;
-    public int MultiplierTracker = 0;
-    public int MultiplierThreshold = 4;
-
-    private const uint MinBpm = 60;
-    private const uint MaxBpm = 180;
-    private Coroutine actionCoroutine;
-    private Coroutine actionCoroutine2;
-
-    private const int HpGainScore = 1;
-    public Slider _slider;
-
-    public AudioSource _music;
-    public AudioSource _ECGBeep;
-
-    public bool IsGameOver { get; private set; }
-
-    private void Start()
+    public class RhythmGameManager : MonoBehaviour
     {
-        Instance = this;
-        _music.volume = 0.5f;
-        _ECGBeep.volume = 0.25f;
+        private const int InitialMultiplierThreshold = 4;
+        private const int HealthGainPerMultiplier = 1;
+        private const int HealthLossPerMiss = 5;
+        private const float MusicVolume = 0.5f;
+        private const float EcgBeepVolume = 0.25f;
 
-        actionCoroutine = StartCoroutine(UpdateBPM());
-        actionCoroutine2 = StartCoroutine(PlayECGBeep());
-    }
+        private static readonly WaitForSeconds BpmRefreshDelay = new(1f);
+        private static readonly WaitForSeconds ReturnToHubDelay = new(5f);
 
-    private void Update()
-    {
-        if (IsGameOver)
+        [Header("Gameplay")]
+        [SerializeField] private BeatScroller beatScroller;
+        [SerializeField] private int scorePerNote = 100;
+
+        [Header("UI")]
+        [SerializeField] private Text scoreText;
+        [SerializeField] private Text multiplierText;
+        [SerializeField] private Slider healthSlider;
+
+        [Header("Audio")]
+        [SerializeField] private AudioSource music;
+        [SerializeField] private AudioSource ecgBeep;
+
+        private Coroutine ecgBeepRoutine;
+        private bool hasStarted;
+        private bool isGameOver;
+        private int score;
+        private int multiplier = 1;
+        private int hitsTowardsMultiplier;
+        private int multiplierThreshold = InitialMultiplierThreshold;
+
+        public static RhythmGameManager Instance { get; private set; }
+
+        private void Awake()
         {
-            return;
+            Instance = this;
         }
 
-        if (!StartPlaying && Input.anyKeyDown)
+        private void Start()
         {
-            StartPlaying = true;
-            Bs.Started = true;
-            _music.Play();
+            music.volume = MusicVolume;
+            ecgBeep.volume = EcgBeepVolume;
+
+            StartCoroutine(FollowHeartRate());
+            ecgBeepRoutine = StartCoroutine(PlayEcgBeep());
         }
 
-        if (StartPlaying && _slider.value <= _slider.minValue)
+        private void Update()
         {
-            GameOver();
-        }
-    }
+            if (isGameOver)
+                return;
 
-    private void GameOver()
-    {
-        IsGameOver = true;
-        Bs.Started = false;
-        _music.Stop();
+            if (!hasStarted && LayoutInput.AnyKeyDown())
+            {
+                hasStarted = true;
+                beatScroller.IsScrolling = true;
+                music.Play();
+            }
 
-        if (actionCoroutine2 != null)
-        {
-            StopCoroutine(actionCoroutine2);
-            actionCoroutine2 = null;
+            if (hasStarted && healthSlider.value <= healthSlider.minValue)
+                GameOver();
         }
 
-        ScoreText.text = $"<color=red>Game Over</color>\nScore: {CurrentScore}";
-        StartCoroutine(ReturnToLobby());
-    }
-
-    private static IEnumerator ReturnToLobby()
-    {
-        yield return _waitBeforeLobby;
-
-        PauseMenu.GoToLobby();
-    }
-
-    public void NoteHit()
-    {
-        if (IsGameOver)
+        private void OnDestroy()
         {
-            return;
+            if (Instance == this)
+                Instance = null;
         }
 
-        MultiplierTracker++;
-
-        if (MultiplierTracker >= MultiplierThreshold)
+        public void NoteHit()
         {
-            MultiplierTracker = 0;
-            MultiplierThreshold *= 2;
-            CurrentMultiplier++;
+            if (isGameOver)
+                return;
+
+            hitsTowardsMultiplier++;
+            if (hitsTowardsMultiplier >= multiplierThreshold)
+            {
+                hitsTowardsMultiplier = 0;
+                multiplierThreshold *= 2;
+                multiplier++;
+            }
+
+            score += scorePerNote * multiplier;
+            scoreText.text = $"Score: {score}";
+            multiplierText.text = $"Multiplier: x{multiplier}";
+            ChangeHealth(HealthGainPerMultiplier * multiplier);
         }
 
-        CurrentScore += ScorePerNote * CurrentMultiplier;
-        ScoreText.text = "Score: " + CurrentScore;
-        MultiplierText.text = "Multiplier: x" + CurrentMultiplier;
-        _slider.value = Mathf.Clamp(_slider.value + (HpGainScore * CurrentMultiplier), _slider.minValue, _slider.maxValue);
-    }
-
-    public void NoteMissed()
-    {
-        if (IsGameOver)
+        public void NoteMissed()
         {
-            return;
+            if (isGameOver)
+                return;
+
+            multiplier = 1;
+            hitsTowardsMultiplier = 0;
+            multiplierThreshold = InitialMultiplierThreshold;
+            multiplierText.text = $"Multiplier: x{multiplier}";
+            ChangeHealth(-HealthLossPerMiss);
         }
 
-        CurrentMultiplier = 1;
-        MultiplierTracker = 0;
-        MultiplierThreshold = 4;
-        MultiplierText.text = "Multiplier: x" + CurrentMultiplier;
-        _slider.value = Mathf.Clamp(_slider.value - 5, _slider.minValue, _slider.maxValue);
-    }
-
-    private IEnumerator UpdateBPM()
-    {
-        while (true)
+        private void ChangeHealth(float amount)
         {
-            uint bpm = GetBPM();
-
-            Bs.Bpm = bpm;
-            _music.pitch = bpm / (float)MinBpm;
-
-            yield return _waitForSeconds1;
+            healthSlider.value = Mathf.Clamp(healthSlider.value + amount, healthSlider.minValue, healthSlider.maxValue);
         }
-    }
 
-    private IEnumerator PlayECGBeep()
-    {
-        while (true)
+        private void GameOver()
         {
-            _ECGBeep.Play();
+            isGameOver = true;
+            beatScroller.IsScrolling = false;
+            music.Stop();
+            StopCoroutine(ecgBeepRoutine);
 
-            yield return new WaitForSeconds(1f / (Bs.Bpm / 60f));
+            scoreText.text = $"<color=red>Game Over</color>\nScore: {score}";
+            StartCoroutine(ReturnToHub());
         }
-    }
 
-    private static uint GetBPM()
-    {
-        uint currentBPM = UFeelAPI.HeartRate.Current;
+        private IEnumerator ReturnToHub()
+        {
+            yield return ReturnToHubDelay;
+            GameFlow.ReturnToHub();
+        }
 
-        if (currentBPM == 0)
-            return currentBPM;
+        private IEnumerator FollowHeartRate()
+        {
+            while (true)
+            {
+                uint bpm = HeartRateTempo.TryGetBpm(out uint reading) ? reading : HeartRateTempo.MinBpm;
+                beatScroller.Bpm = bpm;
+                music.pitch = bpm / (float)HeartRateTempo.MinBpm;
+                yield return BpmRefreshDelay;
+            }
+        }
 
-        if (currentBPM < MinBpm)
-            return MinBpm;
-
-        if (currentBPM > MaxBpm)
-            return MaxBpm;
-
-        return currentBPM;
-    }
-
-    private void OnDestroy()
-    {
-        if (actionCoroutine != null)
-            StopCoroutine(actionCoroutine);
-        if (actionCoroutine2 != null)
-            StopCoroutine(actionCoroutine2);
+        private IEnumerator PlayEcgBeep()
+        {
+            while (true)
+            {
+                ecgBeep.Play();
+                yield return new WaitForSeconds(60f / beatScroller.Bpm);
+            }
+        }
     }
 }

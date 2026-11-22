@@ -1,37 +1,34 @@
 using UnityEngine;
 
-[RequireComponent(typeof(CharacterController))]
-public class PlayerController : MonoBehaviour
+namespace GameHub.Survivor
 {
-    [SerializeField] private float forwardSpeed = 6f;
-    [SerializeField] private float lateralSpeed = 5f;
-
-    private CharacterController controller;
-
-    private void Awake()
+    [RequireComponent(typeof(CharacterController))]
+    public class PlayerController : MonoBehaviour
     {
-        controller = GetComponent<CharacterController>();
-    }
+        [SerializeField] private float forwardSpeed = 6f;
+        [SerializeField] private float lateralSpeed = 5f;
 
-    private void Update()
-    {
-        if (SurvivorGameManager.Instance.State != GameState.Playing)
+        private CharacterController controller;
+
+        private void Awake()
         {
-            return;
+            controller = GetComponent<CharacterController>();
         }
 
-        Vector3 move = Vector3.forward * forwardSpeed;
-
-        if (EyeInput.Instance.LeftPressed)
+        private void Update()
         {
-            move += Vector3.left * lateralSpeed;
-        }
+            if (!SurvivorGameManager.Instance.IsPlaying)
+                return;
 
-        if (EyeInput.Instance.RightPressed)
-        {
-            move += Vector3.right * lateralSpeed;
-        }
+            Vector3 move = Vector3.forward * forwardSpeed;
 
-        controller.Move(move * Time.deltaTime);
+            if (EyeInput.Instance.LeftPressed)
+                move += Vector3.left * lateralSpeed;
+
+            if (EyeInput.Instance.RightPressed)
+                move += Vector3.right * lateralSpeed;
+
+            controller.Move(move * Time.deltaTime);
+        }
     }
 }

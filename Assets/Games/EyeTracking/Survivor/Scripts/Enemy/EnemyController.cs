@@ -1,35 +1,31 @@
 using UnityEngine;
 
-public class EnemyController : MonoBehaviour
+namespace GameHub.Survivor
 {
-    [SerializeField] private float speed = 2.5f;
-
-    private Transform target;
-
-    private void Start()
+    public class EnemyController : MonoBehaviour
     {
-        target = FindFirstObjectByType<PlayerController>().transform;
-    }
+        [SerializeField] private float speed = 2.5f;
 
-    private void Update()
-    {
-        if (SurvivorGameManager.Instance.State != GameState.Playing)
+        private Transform target;
+
+        private void Start()
         {
-            return;
+            target = FindFirstObjectByType<PlayerController>().transform;
         }
 
-        if (target == null)
+        private void Update()
         {
-            return;
+            if (!SurvivorGameManager.Instance.IsPlaying || target == null)
+                return;
+
+            Vector3 direction = (target.position - transform.position).normalized;
+            transform.position += speed * Time.deltaTime * direction;
         }
 
-        Vector3 dir = (target.position - transform.position).normalized;
-        transform.position += speed * Time.deltaTime * dir;
-    }
-
-    public void Die()
-    {
-        ScoreManager.Instance.RegisterKill();
-        Destroy(gameObject);
+        public void Die()
+        {
+            ScoreManager.Instance.RegisterKill();
+            Destroy(gameObject);
+        }
     }
 }

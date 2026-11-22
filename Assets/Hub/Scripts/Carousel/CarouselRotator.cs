@@ -1,124 +1,86 @@
+using System.Collections.Generic;
+using GameHub.Common;
 using UnityEngine;
 
-public class CarouselRotator : MonoBehaviour
+namespace GameHub.Hub
 {
-    [Header("Rotation Settings")]
-    public float rotationSpeed = 0.5f;
-    public bool isRotatingContinuously = true;
-    public float radius = 19.7f;
-    public Transform doorHoldersParent;
-
-    [Header("Target Rotation")]
-    public bool rotateToTarget;
-    public float targetAngle;
-    public float rotationSmoothSpeed = 3f;
-
-    private static float acceleratedRotationSpeedMultiplier = 5f;
-    private bool rotationSpeedAccerelated = false;
-
-    private Transform[] doorHolders;
-    private float currentAngle;
-
-    private void Start()
+    public class CarouselRotator : MonoBehaviour
     {
-        doorHolders = new Transform[doorHoldersParent.childCount];
+        private const float FullTurnSeconds = 20f;
+        private const float AcceleratedSpeedMultiplier = 5f;
 
-        int i = 0;
-        foreach (Transform child in doorHoldersParent)
+        [Header("Layout")]
+        [SerializeField] private Transform doorHoldersParent;
+        [SerializeField] private float radius = 19.7f;
+
+        [Header("Rotation")]
+        [SerializeField] private float rotationSpeed = 0.5f;
+        [SerializeField] private bool isRotatingContinuously = true;
+        [SerializeField] private float rotationSmoothSpeed = 3f;
+
+        private Transform[] doorHolders;
+        private float currentAngle;
+        private float targetAngle;
+        private bool isAccelerated;
+
+        public bool IsRotatingToTarget { get; private set; }
+
+        private float AngleStep => 360f / doorHolders.Length;
+
+        private void Start()
         {
-            if (child.CompareTag("DoorHolder"))
+            List<Transform> holders = new();
+            foreach (Transform child in doorHoldersParent)
             {
-                doorHolders[i] = child;
-                i++;
+                if (child.CompareTag(Tags.DoorHolder))
+                    holders.Add(child);
             }
-        }
 
-        PositionDoors();
-    }
-
-    private void Update()
-    {
-        if (rotateToTarget)
-        {
-            RotateToAngle(targetAngle);
-        }
-        else if (isRotatingContinuously)
-        {
-            currentAngle += rotationSpeed * Time.deltaTime * 360f / 20f;
+            doorHolders = holders.ToArray();
             PositionDoors();
         }
 
-        HandleInput();
-    }
-
-    private void HandleInput()
-    {
-        // if (Input.GetKeyDown(KeyCode.R))
-        // {
-        //     isRotatingContinuously = !isRotatingContinuously;
-        // }
-
-        if (LayoutInput.GetKeyDown(KeyCode.F))
+        private void Update()
         {
-            ToggleRotationSpeedAcceleration();
+            if (IsRotatingToTarget)
+            {
+                RotateTowardsTarget();
+            }
+            else if (isRotatingContinuously)
+            {
+                currentAngle += rotationSpeed * Time.deltaTime * 360f / FullTurnSeconds;
+                PositionDoors();
+            }
+
+            if (LayoutInput.GetKeyDown(KeyCode.F))
+                isAccelerated = !isAccelerated;
         }
-    }
 
-    private void ToggleRotationSpeedAcceleration()
-    {
-        rotationSpeedAccerelated = !rotationSpeedAccerelated;
-    }
-
-    private void PositionDoors()
-    {
-        float angleStep = 360f / doorHolders.Length;
-
-        for (int i = 0; i < doorHolders.Length; i++)
+        public void RotateToDoor(int doorIndex)
         {
-            float angle = (i * angleStep) + currentAngle;
-            float angleRad = Mathf.Deg2Rad * angle;
-            float x = Mathf.Sin(angleRad) * radius;
-            float z = Mathf.Cos(angleRad) * radius;
-
-            doorHolders[i].localPosition = new Vector3(x, doorHolders[i].localPosition.y, z);
+            targetAngle = -doorIndex * AngleStep;
+            IsRotatingToTarget = true;
+            isRotatingContinuously = false;
         }
-    }
 
-    public void RotateCarousel(float amount)
-    {
-        currentAngle += amount;
-        PositionDoors();
-    }
-
-    public void SetIsRotating(bool shouldRotate)
-    {
-        isRotatingContinuously = shouldRotate;
-    }
-
-    public void RotateToAngle(float angle)
-    {
-        float actualRotationSpeed = rotationSpeedAccerelated ? rotationSmoothSpeed * acceleratedRotationSpeedMultiplier : rotationSmoothSpeed;
-        float newAngle = Mathf.MoveTowardsAngle(currentAngle, angle, actualRotationSpeed * Time.deltaTime);
-        currentAngle = newAngle;
-        PositionDoors();
-
-        if (Mathf.Approximately(newAngle, angle))
+        private void RotateTowardsTarget()
         {
-            rotateToTarget = false;
+            float speed = isAccelerated ? rotationSmoothSpeed * AcceleratedSpeedMultiplier : rotationSmoothSpeed;
+            currentAngle = Mathf.MoveTowardsAngle(currentAngle, targetAngle, speed * Time.deltaTime);
+            PositionDoors();
+
+            if (Mathf.Approximately(currentAngle, targetAngle))
+                IsRotatingToTarget = false;
         }
-    }
 
-    public void TriggerRotateTo(float angle)
-    {
-        targetAngle = angle;
-        rotateToTarget = true;
-        isRotatingContinuously = false;
-    }
-
-    public void RotateToDoor(int doorIndex)
-    {
-        float angleStep = 360f / doorHolders.Length;
-        float targetDoorAngle = -doorIndex * angleStep;
-        TriggerRotateTo(targetDoorAngle);
+        private void PositionDoors()
+        {
+            for (int i = 0; i < doorHolders.Length; i++)
+            {
+                float angle = Mathf.Deg2Rad * ((i * AngleStep) + currentAngle);
+                Vector3 position = doorHolders[i].localPosition;
+                doorHolders[i].localPosition = new Vector3(Mathf.Sin(angle) * radius, position.y, Mathf.Cos(angle) * radius);
+            }
+        }
     }
 }

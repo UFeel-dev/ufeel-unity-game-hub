@@ -1,46 +1,48 @@
-using UnityEngine;
 using UFeel;
+using UnityEngine;
 
-public class BlinkDetector : MonoBehaviour
+namespace GameHub.Survivor
 {
-    public static BlinkDetector Instance { get; private set; }
-
-    [SerializeField] private float doubleBlinkWindow = 0.35f;
-
-    public bool BlinkPressed { get; private set; }
-    public bool DoubleBlinkPressed { get; private set; }
-
-    private bool previousBlink;
-    private float lastBlinkTime;
-
-    private void Awake()
+    public class BlinkDetector : MonoBehaviour
     {
-        if (Instance != null)
+        [SerializeField] private float doubleBlinkWindow = 0.35f;
+
+        private bool previousBlink;
+        private float lastBlinkTime = float.NegativeInfinity;
+
+        public static BlinkDetector Instance { get; private set; }
+
+        public bool BlinkPressed { get; private set; }
+
+        public bool DoubleBlinkPressed { get; private set; }
+
+        private void Awake()
         {
-            Destroy(gameObject);
-            return;
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            Instance = this;
         }
 
-        Instance = this;
-    }
-
-    private void Update()
-    {
-        BlinkPressed = false;
-        DoubleBlinkPressed = false;
-
-        bool blink = UFeelAPI.EyeTracking.IsBlinking;
-
-        bool blinkEdge = blink && !previousBlink;
-
-        if (blinkEdge)
+        private void Update()
         {
-            float timeSinceLast = Time.time - lastBlinkTime;
+            bool blink = UFeelAPI.EyeTracking.IsBlinking;
+            bool blinkStarted = blink && !previousBlink;
+            previousBlink = blink;
 
-            if (timeSinceLast <= doubleBlinkWindow)
+            BlinkPressed = false;
+            DoubleBlinkPressed = false;
+
+            if (!blinkStarted)
+                return;
+
+            if (Time.time - lastBlinkTime <= doubleBlinkWindow)
             {
                 DoubleBlinkPressed = true;
-                lastBlinkTime = 0f;
+                lastBlinkTime = float.NegativeInfinity;
             }
             else
             {
@@ -49,6 +51,10 @@ public class BlinkDetector : MonoBehaviour
             }
         }
 
-        previousBlink = blink;
+        private void OnDestroy()
+        {
+            if (Instance == this)
+                Instance = null;
+        }
     }
 }

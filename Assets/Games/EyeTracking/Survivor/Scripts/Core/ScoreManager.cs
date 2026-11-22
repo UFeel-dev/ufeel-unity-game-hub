@@ -1,56 +1,56 @@
 using UnityEngine;
 
-public class ScoreManager : MonoBehaviour
+namespace GameHub.Survivor
 {
-    public static ScoreManager Instance { get; private set; }
-
-    public float SurvivalTime { get; private set; }
-
-    public int EnemiesKilled { get; private set; }
-
-    private void Awake()
+    public class ScoreManager : MonoBehaviour
     {
-        if (Instance != null)
+        public static ScoreManager Instance { get; private set; }
+
+        public float SurvivalTime { get; private set; }
+
+        public int EnemiesKilled { get; private set; }
+
+        private void Awake()
         {
-            Destroy(gameObject);
-            return;
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            Instance = this;
         }
 
-        Instance = this;
-    }
-
-    private void OnEnable()
-    {
-        SurvivorGameManager.Instance.StateChanged += OnStateChanged;
-    }
-
-    private void OnDisable()
-    {
-        if (SurvivorGameManager.Instance != null)
+        private void Start()
         {
-            SurvivorGameManager.Instance.StateChanged -= OnStateChanged;
-        }
-    }
-
-    private void Update()
-    {
-        if (SurvivorGameManager.Instance.State != GameState.Playing)
-        {
-            return;
+            SurvivorGameManager.Instance.StateChanged += OnStateChanged;
         }
 
-        SurvivalTime += Time.deltaTime;
-    }
-
-    public void RegisterKill()
-    {
-        EnemiesKilled++;
-    }
-
-    private void OnStateChanged(GameState state)
-    {
-        if (state == GameState.Playing)
+        private void Update()
         {
+            if (SurvivorGameManager.Instance.IsPlaying)
+                SurvivalTime += Time.deltaTime;
+        }
+
+        private void OnDestroy()
+        {
+            if (SurvivorGameManager.Instance != null)
+                SurvivorGameManager.Instance.StateChanged -= OnStateChanged;
+
+            if (Instance == this)
+                Instance = null;
+        }
+
+        public void RegisterKill()
+        {
+            EnemiesKilled++;
+        }
+
+        private void OnStateChanged(GameState state)
+        {
+            if (state != GameState.Playing)
+                return;
+
             SurvivalTime = 0f;
             EnemiesKilled = 0;
         }

@@ -1,39 +1,33 @@
 using UnityEngine;
 
-public class PlayerHealth : MonoBehaviour
+namespace GameHub.Survivor
 {
-    [SerializeField] private int maxHealth = 5;
-
-    public int Current { get; private set; }
-
-    private void Awake()
+    public class PlayerHealth : MonoBehaviour
     {
-        Current = maxHealth;
-    }
+        [SerializeField] private int maxHealth = 5;
 
-    public void TakeDamage(int amount)
-    {
-        if (SurvivorGameManager.Instance.State != GameState.Playing)
+        public int Current { get; private set; }
+
+        private void Awake()
         {
-            return;
+            Current = maxHealth;
         }
 
-        Current -= amount;
-
-        if (Current <= 0)
+        public void TakeDamage(int amount)
         {
-            Current = 0;
-            SurvivorGameManager.Instance.GameOver();
-        }
-    }
+            if (!SurvivorGameManager.Instance.IsPlaying)
+                return;
 
-    public void Heal(int amount)
-    {
-        if (SurvivorGameManager.Instance.State != GameState.Playing)
-        {
-            return;
+            Current = Mathf.Max(Current - amount, 0);
+
+            if (Current == 0)
+                SurvivorGameManager.Instance.GameOver();
         }
 
-        Current = Mathf.Min(Current + amount, maxHealth);
+        public void Heal(int amount)
+        {
+            if (SurvivorGameManager.Instance.IsPlaying)
+                Current = Mathf.Min(Current + amount, maxHealth);
+        }
     }
 }

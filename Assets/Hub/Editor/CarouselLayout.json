@@ -64,7 +64,7 @@
         {
             "doorIndex": 37,
             "doorName": "Heart Rate - Horror",
-            "targetSceneName": "HorrorGame",
+            "targetSceneName": "HorrorRoom",
             "doorColor": { "r": 1.0, "g": 0.1568627, "b": 0.1568627, "a": 1.0 },
             "inProgress": true
         },

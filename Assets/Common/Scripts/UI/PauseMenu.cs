@@ -1,95 +1,77 @@
 using UFeel;
 using UnityEngine;
 
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
-
-using UnityEngine.SceneManagement;
-
-public class PauseMenu : MonoBehaviour
+namespace GameHub.Common
 {
-    public static bool GameisPaused = false;
-
-    public GameObject PauseMenuUI;
-    public FirstPersonController PlayerController;
-    private bool disabledPlayer;
-
-    private void Update()
+    public class PauseMenu : MonoBehaviour
     {
-        if (LayoutInput.GetKeyDown(KeyCode.M))
+        [SerializeField] private GameObject pauseMenuUI;
+        [SerializeField] private FirstPersonController playerController;
+
+        private bool disabledPlayer;
+
+        public static bool IsPaused { get; private set; }
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStaticsWithoutDomainReload()
         {
-            if (GameisPaused)
-            {
+            IsPaused = false;
+        }
+
+        private void Update()
+        {
+            if (!LayoutInput.GetKeyDown(KeyCode.M))
+                return;
+
+            if (IsPaused)
                 Resume();
-            }
             else
-            {
                 Pause();
+        }
+
+        public void Resume()
+        {
+            UFeelAPI.SpeechToText.HideMicrophoneSelector();
+            pauseMenuUI.SetActive(false);
+            Time.timeScale = 1f;
+
+            if (disabledPlayer)
+            {
+                playerController.enabled = true;
+                disabledPlayer = false;
             }
+
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+            IsPaused = false;
         }
-    }
 
-    public void Resume()
-    {
-        UFeelAPI.SpeechToText.HideMicrophoneSelector();
-        PauseMenuUI.SetActive(false);
-        Time.timeScale = 1f;
-
-        if (disabledPlayer)
+        public void Pause()
         {
-            PlayerController.enabled = true;
-            disabledPlayer = false;
+            pauseMenuUI.SetActive(true);
+            Time.timeScale = 0f;
+
+            if (playerController.enabled)
+            {
+                playerController.enabled = false;
+                disabledPlayer = true;
+            }
+
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            UFeelAPI.SpeechToText.ShowMicrophoneSelector();
+            IsPaused = true;
         }
 
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-
-        GameisPaused = false;
-    }
-
-    public void Pause()
-    {
-        PauseMenuUI.SetActive(true);
-        Time.timeScale = 0f;
-
-        if (PlayerController.enabled)
+        public void LoadLobby()
         {
-            PlayerController.enabled = false;
-            disabledPlayer = true;
+            Resume();
+            GameFlow.ReturnToHub();
         }
 
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-        UFeelAPI.SpeechToText.ShowMicrophoneSelector();
-
-        GameisPaused = true;
-    }
-
-    public static void GoToLobby()
-    {
-        if (SceneManager.GetActiveScene().name != "GameHub")
+        public void QuitGame()
         {
-            SceneManager.LoadScene("GameHub");
+            GameFlow.Quit();
         }
-
-        UFeelAPI.SpeechToText.StopDetection();
-    }
-
-    public void LoadLobby()
-    {
-        Debug.Log("Load Lobby");
-        Resume();
-        GoToLobby();
-    }
-
-    public static void QuitGame()
-    {
-        Debug.Log("Quit Game");
-#if UNITY_EDITOR
-        EditorApplication.isPlaying = false;
-#else
-        Application.Quit();
-#endif
     }
 }

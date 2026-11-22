@@ -1,49 +1,40 @@
+using GameHub.Common;
 using UnityEngine;
 
-public class FogTrigger : MonoBehaviour
+namespace GameHub.Maze
 {
-    [Header("Fog Settings")]
-    public Direction Direction;
-
-    private RoomController room;
-
-    private void Awake()
+    public class FogTrigger : MonoBehaviour
     {
-        room = GetComponentInParent<RoomController>();
+        [SerializeField] private Direction direction;
+        [SerializeField] private float checkInterval = 0.5f;
 
-        if (room == null)
+        private RoomController room;
+        private float timer;
+
+        private void Awake()
         {
-            Debug.LogError(
-                $"No RoomController found for fog {gameObject.name}"
-            );
+            room = GetComponentInParent<RoomController>();
+            if (room == null)
+                Debug.LogError($"No RoomController found for fog {name}.", this);
         }
-    }
 
-    private float timer;
-    [SerializeField] private float checkInterval = 0.5f;
-
-    private void OnTriggerStay(Collider other)
-    {
-        if (!other.CompareTag("Adventurer"))
-            return;
-
-        timer += Time.deltaTime;
-
-        if (timer >= checkInterval)
+        private void OnTriggerEnter(Collider other)
         {
+            if (room != null && other.CompareTag(Tags.Adventurer))
+                MazeManager.Instance.TryMove(room, direction);
+        }
+
+        private void OnTriggerStay(Collider other)
+        {
+            if (room == null || !other.CompareTag(Tags.Adventurer))
+                return;
+
+            timer += Time.deltaTime;
+            if (timer < checkInterval)
+                return;
+
             timer = 0f;
-            MazeManager.Instance.TryMove(room, Direction);
+            MazeManager.Instance.TryMove(room, direction);
         }
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (!other.CompareTag("Adventurer"))
-            return;
-
-        if (room == null)
-            return;
-
-        MazeManager.Instance.TryMove(room, Direction);
     }
 }

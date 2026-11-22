@@ -1,44 +1,47 @@
 using UFeel;
 using UnityEngine;
 
-public class EyeInput : MonoBehaviour
+namespace GameHub.Survivor
 {
-    public static EyeInput Instance { get; private set; }
-
-    public bool LookLeft { get; private set; }
-    public bool LookRight { get; private set; }
-
-    public bool LeftPressed { get; private set; }
-    public bool RightPressed { get; private set; }
-
-    private bool previousLeft;
-    private bool previousRight;
-
-    private void Awake()
+    public class EyeInput : MonoBehaviour
     {
-        if (Instance != null)
+        public static EyeInput Instance { get; private set; }
+
+        public bool LookLeft { get; private set; }
+
+        public bool LookRight { get; private set; }
+
+        public bool LeftPressed { get; private set; }
+
+        public bool RightPressed { get; private set; }
+
+        private void Awake()
         {
-            Destroy(gameObject);
-            return;
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            Instance = this;
         }
 
-        Instance = this;
-    }
+        private void Update()
+        {
+            EyeTrackingDirection directions = UFeelAPI.EyeTracking.Directions;
+            bool left = directions.HasDirection(EyeTrackingDirection.Left);
+            bool right = directions.HasDirection(EyeTrackingDirection.Right);
 
-    private void Update()
-    {
-        EyeTrackingDirection data = UFeelAPI.EyeTracking.Directions;
+            LeftPressed = left && !LookLeft;
+            RightPressed = right && !LookRight;
+            LookLeft = left;
+            LookRight = right;
+        }
 
-        bool left = data.HasDirection(EyeTrackingDirection.Left);
-        bool right = data.HasDirection(EyeTrackingDirection.Right);
-
-        LookLeft = left;
-        LookRight = right;
-
-        LeftPressed = left && !previousLeft;
-        RightPressed = right && !previousRight;
-
-        previousLeft = left;
-        previousRight = right;
+        private void OnDestroy()
+        {
+            if (Instance == this)
+                Instance = null;
+        }
     }
 }

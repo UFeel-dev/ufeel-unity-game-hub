@@ -1194,17 +1194,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94c36bf6cf5932467b45b97810d7a6d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SpawnPoint: {fileID: 1512753755}
-  AnimalPrefabs:
+  spawnPoint: {fileID: 1512753755}
+  animalPrefabs:
   - {fileID: 1474675655}
   - {fileID: 1850088679}
   - {fileID: 1581083301}
   - {fileID: 1993335764}
   - {fileID: 45812042}
-  InstructionText: {fileID: 615035620}
-  TimerText: {fileID: 1942205653}
-  ScoreText: {fileID: 967958411}
-  EmotionProgressBar: {fileID: 1627858474}
+  instructionText: {fileID: 615035620}
+  timerText: {fileID: 1942205653}
+  scoreText: {fileID: 967958411}
+  emotionProgressBar: {fileID: 1627858474}
 --- !u!4 &821079349
 Transform:
   m_ObjectHideFlags: 0

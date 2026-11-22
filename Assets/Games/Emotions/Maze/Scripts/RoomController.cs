@@ -3,114 +3,91 @@ using TMPro;
 using UFeel;
 using UnityEngine;
 
-public class RoomController : MonoBehaviour
+namespace GameHub.Maze
 {
-    [Header("Room Data")]
-    public RoomData Data;
-
-    [Header("Fog References")]
-    public GameObject NorthFog;
-    public GameObject SouthFog;
-    public GameObject EastFog;
-    public GameObject WestFog;
-    public TMP_Text NorthText;
-    public TMP_Text SouthText;
-    public TMP_Text EastText;
-    public TMP_Text WestText;
-
-    public void Setup(int x, int y)
+    public class RoomController : MonoBehaviour
     {
-        EmotionInfo[] emotions = PickRoomEmotions(x, y);
-        EmotionInfo northData = emotions[(int)Direction.North];
-        EmotionInfo southData = emotions[(int)Direction.South];
-        EmotionInfo eastData = emotions[(int)Direction.East];
-        EmotionInfo westData = emotions[(int)Direction.West];
+        [Header("Fogs")]
+        [SerializeField] private GameObject northFog;
+        [SerializeField] private GameObject southFog;
+        [SerializeField] private GameObject eastFog;
+        [SerializeField] private GameObject westFog;
 
-        Data = new RoomData
+        [Header("Labels")]
+        [SerializeField] private TMP_Text northText;
+        [SerializeField] private TMP_Text southText;
+        [SerializeField] private TMP_Text eastText;
+        [SerializeField] private TMP_Text westText;
+
+        private readonly EmotionType[] doorEmotions = new EmotionType[4];
+
+        public Vector2Int Coordinates { get; private set; }
+
+        public void Setup(Vector2Int coordinates)
         {
-            X = x,
-            Z = y,
-            NorthCondition = new EmotionCondition(northData.Emotion),
-            SouthCondition = new EmotionCondition(southData.Emotion),
-            EastCondition = new EmotionCondition(eastData.Emotion),
-            WestCondition = new EmotionCondition(westData.Emotion)
-        };
+            Coordinates = coordinates;
+            EmotionInfo[] emotions = PickDoorEmotions(coordinates);
 
-        NorthFog.GetComponent<Renderer>().material.color = northData.Color;
-        SouthFog.GetComponent<Renderer>().material.color = southData.Color;
-        EastFog.GetComponent<Renderer>().material.color = eastData.Color;
-        WestFog.GetComponent<Renderer>().material.color = westData.Color;
-
-        NorthText.text = northData.Emotion.ToString();
-        SouthText.text = southData.Emotion.ToString();
-        EastText.text = eastData.Emotion.ToString();
-        WestText.text = westData.Emotion.ToString();
-
-        DisableBorders();
-    }
-
-    private static EmotionInfo[] PickRoomEmotions(int x, int z)
-    {
-        EmotionInfo[] emotions = new EmotionInfo[4];
-        for (int i = 0; i < emotions.Length; i++)
-        {
-            emotions[i] = EmotionInfo.GetRandomEmotion();
+            for (int i = 0; i < emotions.Length; i++)
+            {
+                Direction direction = (Direction)i;
+                doorEmotions[i] = emotions[i].Emotion;
+                FogOf(direction).GetComponent<Renderer>().material.color = emotions[i].Color;
+                LabelOf(direction).text = emotions[i].Emotion.ToString();
+                if (!MazeGrid.IsInside(coordinates + MazeGrid.OffsetOf(direction)))
+                    FogOf(direction).SetActive(false);
+            }
         }
 
-        List<int> openDirections = new();
-        if (z < MazeManager.MazeSize - 1)
-            openDirections.Add((int)Direction.North);
-        if (z > 0)
-            openDirections.Add((int)Direction.South);
-        if (x < MazeManager.MazeSize - 1)
-            openDirections.Add((int)Direction.East);
-        if (x > 0)
-            openDirections.Add((int)Direction.West);
-        if (openDirections.Count < 2)
-            openDirections = new List<int> { 0, 1, 2, 3 };
-
-        EmotionType first = emotions[openDirections[0]].Emotion;
-        if (openDirections.TrueForAll(direction => emotions[direction].Emotion == first))
+        public EmotionType GetDoorEmotion(Direction direction)
         {
-            int changed = openDirections[Random.Range(0, openDirections.Count)];
-            emotions[changed] = EmotionInfo.GetRandomEmotionExcept(first);
+            return doorEmotions[(int)direction];
         }
 
-        return emotions;
-    }
-
-    public void DisableBorders()
-    {
-        if (Data.X == 0 && WestFog != null)
+        private static EmotionInfo[] PickDoorEmotions(Vector2Int coordinates)
         {
-            WestFog.SetActive(false);
+            EmotionInfo[] emotions = new EmotionInfo[4];
+            List<int> openDoors = new();
+            for (int i = 0; i < emotions.Length; i++)
+            {
+                emotions[i] = EmotionInfo.Random();
+                if (MazeGrid.IsInside(coordinates + MazeGrid.OffsetOf((Direction)i)))
+                    openDoors.Add(i);
+            }
+
+            if (openDoors.Count == 0)
+                return emotions;
+
+            EmotionType first = emotions[openDoors[0]].Emotion;
+            if (openDoors.TrueForAll(door => emotions[door].Emotion == first))
+            {
+                int changed = openDoors[Random.Range(0, openDoors.Count)];
+                emotions[changed] = EmotionInfo.RandomExcept(first);
+            }
+
+            return emotions;
         }
 
-        if (Data.X == MazeManager.MazeSize - 1 && EastFog != null)
+        private GameObject FogOf(Direction direction)
         {
-            EastFog.SetActive(false);
+            return direction switch
+            {
+                Direction.North => northFog,
+                Direction.South => southFog,
+                Direction.East => eastFog,
+                _ => westFog,
+            };
         }
 
-        if (Data.Z == 0 && SouthFog != null)
+        private TMP_Text LabelOf(Direction direction)
         {
-            SouthFog.SetActive(false);
+            return direction switch
+            {
+                Direction.North => northText,
+                Direction.South => southText,
+                Direction.East => eastText,
+                _ => westText,
+            };
         }
-
-        if (Data.Z == MazeManager.MazeSize - 1 && NorthFog != null)
-        {
-            NorthFog.SetActive(false);
-        }
-    }
-
-    public FogCondition GetCondition(Direction direction)
-    {
-        return direction switch
-        {
-            Direction.North => Data.NorthCondition,
-            Direction.South => Data.SouthCondition,
-            Direction.East => Data.EastCondition,
-            Direction.West => Data.WestCondition,
-            _ => Data.NorthCondition
-        };
     }
 }

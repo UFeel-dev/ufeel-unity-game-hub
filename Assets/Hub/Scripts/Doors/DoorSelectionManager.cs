@@ -1,166 +1,111 @@
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class DoorSelectionManager : MonoBehaviour
+namespace GameHub.Hub
 {
-    public CarouselRotator carouselRotator;
-    public Transform doorHoldersParent;
-    public TMP_InputField doorIDInput;
-    public TMP_Dropdown doorNameDropdown;
-
-    private string currentDropdownSelection = string.Empty;
-    private DoorChainController savedChainControllers = null;
-
-    private void Awake()
+    public class DoorSelectionManager : MonoBehaviour
     {
-        SetupDoorDropdownOptions();
-    }
+        [SerializeField] private CarouselRotator carouselRotator;
+        [SerializeField] private Transform doorHoldersParent;
+        [SerializeField] private TMP_InputField doorIdInput;
+        [SerializeField] private TMP_Dropdown doorNameDropdown;
 
-    public void SetupDoorDropdownOptions()
-    {
-        List<string> options = new() { string.Empty };
+        private DoorChainController loweredChain;
 
-        foreach (Transform child in doorHoldersParent)
+        private bool HasDropdownSelection => doorNameDropdown.value != 0;
+
+        private void Awake()
         {
-            if (child.TryGetComponent(out DoorIdentifier doorIDComponent) && doorIDComponent.doorName != string.Empty)
+            List<string> options = new() { string.Empty };
+            foreach (Transform child in doorHoldersParent)
             {
-                string doorName = doorIDComponent.doorName;
-                options.Add(doorName);
+                if (child.TryGetComponent(out DoorIdentifier identifier) && !string.IsNullOrEmpty(identifier.DoorName))
+                    options.Add(identifier.DoorName);
             }
+
+            doorNameDropdown.ClearOptions();
+            doorNameDropdown.AddOptions(options);
         }
 
-        doorNameDropdown.ClearOptions();
-        doorNameDropdown.AddOptions(options);
-
-        doorNameDropdown.onValueChanged.AddListener(OnDropdownValueChanged);
-    }
-
-    private void OnDropdownValueChanged(int index)
-    {
-        currentDropdownSelection = doorNameDropdown.options[index].text;
-    }
-
-    public void SelectDoorFromInput()
-    {
-        if (int.TryParse(doorIDInput.text, out int id))
+        public void SelectDoor()
         {
-            SelectDoorByID(id);
-        }
-        else
-        {
-            Debug.LogWarning("Invalid Door ID input.");
-        }
-    }
-
-    public void SelectDoor()
-    {
-        if (currentDropdownSelection != string.Empty)
-        {
-            SelectDoorFromDropdown();
-        }
-        else
-        {
-            SelectDoorFromInput();
-        }
-    }
-
-    public void SelectDoorFromDropdown()
-    {
-        // TODO: check if we can setup enum instead of strings, or anything cleaner and more specific at least
-        SelectDoorByName(currentDropdownSelection);
-    }
-
-    public void SelectDoorByID(int id)
-    {
-        foreach (Transform child in doorHoldersParent)
-        {
-            if (child.TryGetComponent(out DoorIdentifier doorIDComponent) && doorIDComponent.doorID == id)
+            if (HasDropdownSelection)
             {
-                carouselRotator.RotateToDoor(id);
-                StartCoroutine(WaitAndDropDoor(child));
+                ConfirmCurrentSelection();
                 return;
             }
+
+            if (int.TryParse(doorIdInput.text, out int id))
+                SelectDoorWhere(identifier => identifier.DoorId == id);
+            else
+                Debug.LogWarning($"Invalid door ID: '{doorIdInput.text}'.", this);
         }
 
-        Debug.LogWarning("Door ID not found: " + id);
-    }
-
-    public void SelectDoorByName(string name)
-    {
-        foreach (Transform child in doorHoldersParent)
+        public void ConfirmCurrentSelection()
         {
-            if (child.TryGetComponent(out DoorIdentifier doorIDComponent) && doorIDComponent.doorName == name)
-            {
-                carouselRotator.RotateToDoor(doorIDComponent.doorID);
-                StartCoroutine(WaitAndDropDoor(child));
+            if (!HasDropdownSelection)
                 return;
+
+            string selectedName = doorNameDropdown.options[doorNameDropdown.value].text;
+            SelectDoorWhere(identifier => identifier.DoorName == selectedName);
+        }
+
+        public void SelectNextDoor()
+        {
+            int count = doorNameDropdown.options.Count;
+            if (count <= 1)
+                return;
+
+            int next = doorNameDropdown.value + 1;
+            SetDropdownValue(next >= count ? 1 : next);
+        }
+
+        public void SelectPreviousDoor()
+        {
+            int count = doorNameDropdown.options.Count;
+            if (count <= 1)
+                return;
+
+            int previous = doorNameDropdown.value - 1;
+            SetDropdownValue(previous < 1 ? count - 1 : previous);
+        }
+
+        private void SetDropdownValue(int value)
+        {
+            doorNameDropdown.value = value;
+            doorNameDropdown.RefreshShownValue();
+        }
+
+        private void SelectDoorWhere(System.Predicate<DoorIdentifier> match)
+        {
+            foreach (Transform child in doorHoldersParent)
+            {
+                if (child.TryGetComponent(out DoorIdentifier identifier) && match(identifier))
+                {
+                    carouselRotator.RotateToDoor(identifier.DoorId);
+                    StartCoroutine(LowerDoorWhenAligned(child));
+                    return;
+                }
             }
+
+            Debug.LogWarning("No door matches the selection.", this);
         }
-    }
 
-    public string SelectedDoorName() => currentDropdownSelection;
-
-    public void SetSelectedDoor(int dropdownIndex)
-    {
-        if (dropdownIndex < 0 || dropdownIndex >= doorNameDropdown.options.Count)
-            return;
-
-        doorNameDropdown.value = dropdownIndex;
-        doorNameDropdown.RefreshShownValue();
-    }
-
-    public void SelectNextDoor()
-    {
-        if (doorNameDropdown.options.Count <= 1)
-            return;
-
-        int next = doorNameDropdown.value + 1;
-
-        if (next >= doorNameDropdown.options.Count)
-            next = 1;
-
-        SetSelectedDoor(next);
-    }
-
-    public void SelectPreviousDoor()
-    {
-        if (doorNameDropdown.options.Count <= 1)
-            return;
-
-        int previous = doorNameDropdown.value - 1;
-
-        if (previous < 1)
-            previous = doorNameDropdown.options.Count - 1;
-
-        SetSelectedDoor(previous);
-    }
-
-    public bool HasSelection()
-    {
-        return doorNameDropdown.value != 0;
-    }
-
-    public void ConfirmCurrentSelection()
-    {
-        if (!HasSelection())
-            return;
-
-        SelectDoorFromDropdown();
-    }
-
-    private System.Collections.IEnumerator WaitAndDropDoor(Transform doorHolder)
-    {
-        if (savedChainControllers?.IsExtending() ?? false)
+        private IEnumerator LowerDoorWhenAligned(Transform doorHolder)
         {
-            savedChainControllers.ToggleChainExtension();
-        }
-        yield return new WaitUntil(() => !carouselRotator.rotateToTarget);
-        DoorChainController chainController = doorHolder.GetComponentInChildren<DoorChainController>();
-        if (chainController != null)
-        {
-            chainController.ToggleChainExtension();
-            savedChainControllers = chainController;
+            if (loweredChain != null && loweredChain.IsExtending)
+                loweredChain.ToggleExtension();
+
+            yield return new WaitUntil(() => !carouselRotator.IsRotatingToTarget);
+
+            DoorChainController chain = doorHolder.GetComponentInChildren<DoorChainController>();
+            if (chain == null)
+                yield break;
+
+            chain.ToggleExtension();
+            loweredChain = chain;
         }
     }
 }

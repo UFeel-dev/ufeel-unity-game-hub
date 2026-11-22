@@ -2,169 +2,172 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public sealed class SpeechCommandRecognizer
+namespace GameHub.EscapeRoom
 {
-    private readonly float recognitionWindowSeconds;
-    private readonly float minimumOverallScore;
-
-    private readonly Dictionary<string, float> matchedConceptScores = new();
-    private readonly Dictionary<string, SpeechConceptMatch> matchedConcepts = new();
-
-    private SpeechCommand currentCommand;
-    private float lastSpeechChangeTime;
-    private string lastSpeech = string.Empty;
-
-    public SpeechCommandRecognizer(
-        float recognitionWindowSeconds = 4f,
-        float minimumOverallScore = 0.75f)
+    public sealed class SpeechCommandRecognizer
     {
-        this.recognitionWindowSeconds = recognitionWindowSeconds;
-        this.minimumOverallScore = minimumOverallScore;
-    }
+        private readonly float recognitionWindowSeconds;
+        private readonly float minimumOverallScore;
 
-    public void SetCommand(SpeechCommand command)
-    {
-        currentCommand = command;
-        Reset();
-    }
+        private readonly Dictionary<string, float> matchedConceptScores = new();
+        private readonly Dictionary<string, SpeechConceptMatch> matchedConcepts = new();
 
-    public void Reset()
-    {
-        matchedConceptScores.Clear();
-        matchedConcepts.Clear();
+        private SpeechCommand currentCommand;
+        private float lastSpeechChangeTime;
+        private string lastSpeech = string.Empty;
 
-        lastSpeech = string.Empty;
-        lastSpeechChangeTime = 0f;
-    }
-
-    public SpeechRecognitionResult ProcessSpeech(string speech)
-    {
-        if (currentCommand == null)
-            return CreateEmptyResult();
-
-        if (string.IsNullOrWhiteSpace(speech))
-            return CreateEmptyResult();
-
-        if (!string.Equals(speech, lastSpeech, StringComparison.Ordinal))
+        public SpeechCommandRecognizer(
+            float recognitionWindowSeconds = 4f,
+            float minimumOverallScore = 0.75f)
         {
-            lastSpeech = speech;
-            lastSpeechChangeTime = Time.time;
-
-            ProcessTokens(SpeechNormalizer.Tokenize(speech));
+            this.recognitionWindowSeconds = recognitionWindowSeconds;
+            this.minimumOverallScore = minimumOverallScore;
         }
 
-        if (Time.time - lastSpeechChangeTime > recognitionWindowSeconds)
+        public void SetCommand(SpeechCommand command)
         {
+            currentCommand = command;
             Reset();
-            lastSpeech = speech;
-            lastSpeechChangeTime = Time.time;
-
-            ProcessTokens(SpeechNormalizer.Tokenize(speech));
         }
 
-        return BuildResult();
-    }
-
-    private void ProcessTokens(string[] tokens)
-    {
-        for (int i = 0; i < tokens.Length; i++)
+        public void Reset()
         {
-            TryMatchToken(tokens[i]);
+            matchedConceptScores.Clear();
+            matchedConcepts.Clear();
+
+            lastSpeech = string.Empty;
+            lastSpeechChangeTime = 0f;
         }
-    }
 
-    private void TryMatchToken(string token)
-    {
-        SpeechConcept[] concepts = currentCommand.RequiredConcepts;
-
-        for (int i = 0; i < concepts.Length; i++)
+        public SpeechRecognitionResult ProcessSpeech(string speech)
         {
-            SpeechConcept concept = concepts[i];
+            if (currentCommand == null)
+                return CreateEmptyResult();
 
-            if (matchedConcepts.ContainsKey(concept.Name))
-                continue;
+            if (string.IsNullOrWhiteSpace(speech))
+                return CreateEmptyResult();
 
-            string[] expectedWords = concept.Words;
-
-            SpeechWordMatch bestMatch = default;
-
-            for (int j = 0; j < expectedWords.Length; j++)
+            if (!string.Equals(speech, lastSpeech, StringComparison.Ordinal))
             {
-                SpeechWordMatch match = SpeechMatcher.Match(
-                    token,
-                    expectedWords[j],
-                    concept.FuzzyThreshold);
+                lastSpeech = speech;
+                lastSpeechChangeTime = Time.time;
 
-                if (match.Score > bestMatch.Score)
-                    bestMatch = match;
+                ProcessTokens(SpeechNormalizer.Tokenize(speech));
             }
 
-            if (!bestMatch.Matched)
-                continue;
+            if (Time.time - lastSpeechChangeTime > recognitionWindowSeconds)
+            {
+                Reset();
+                lastSpeech = speech;
+                lastSpeechChangeTime = Time.time;
 
-            SpeechConceptMatch conceptMatch = new(
-                concept.Name,
-                bestMatch.SpokenWord,
-                bestMatch.ExpectedWord,
-                bestMatch.Score);
+                ProcessTokens(SpeechNormalizer.Tokenize(speech));
+            }
 
-            matchedConcepts.Add(concept.Name, conceptMatch);
-            matchedConceptScores.Add(concept.Name, bestMatch.Score);
-
-            return;
-        }
-    }
-
-    private SpeechRecognitionResult BuildResult()
-    {
-        if (currentCommand.RequiredConcepts == null ||
-            currentCommand.RequiredConcepts.Length == 0)
-        {
-            return CreateEmptyResult();
+            return BuildResult();
         }
 
-        float totalWeight = 0f;
-        float matchedWeight = 0f;
-
-        for (int i = 0; i < currentCommand.RequiredConcepts.Length; i++)
+        private void ProcessTokens(string[] tokens)
         {
-            SpeechConcept concept = currentCommand.RequiredConcepts[i];
+            for (int i = 0; i < tokens.Length; i++)
+            {
+                TryMatchToken(tokens[i]);
+            }
+        }
 
-            totalWeight += concept.Weight;
+        private void TryMatchToken(string token)
+        {
+            SpeechConcept[] concepts = currentCommand.RequiredConcepts;
 
-            if (matchedConceptScores.TryGetValue(
+            for (int i = 0; i < concepts.Length; i++)
+            {
+                SpeechConcept concept = concepts[i];
+
+                if (matchedConcepts.ContainsKey(concept.Name))
+                    continue;
+
+                string[] expectedWords = concept.Words;
+
+                SpeechWordMatch bestMatch = default;
+
+                for (int j = 0; j < expectedWords.Length; j++)
+                {
+                    SpeechWordMatch match = SpeechMatcher.Match(
+                        token,
+                        expectedWords[j],
+                        concept.FuzzyThreshold);
+
+                    if (match.Score > bestMatch.Score)
+                        bestMatch = match;
+                }
+
+                if (!bestMatch.Matched)
+                    continue;
+
+                SpeechConceptMatch conceptMatch = new(
                     concept.Name,
-                    out float score))
-            {
-                matchedWeight += score * concept.Weight;
+                    bestMatch.SpokenWord,
+                    bestMatch.ExpectedWord,
+                    bestMatch.Score);
+
+                matchedConcepts.Add(concept.Name, conceptMatch);
+                matchedConceptScores.Add(concept.Name, bestMatch.Score);
+
+                return;
             }
         }
 
-        float overallScore = totalWeight <= 0f
-            ? 0f
-            : matchedWeight / totalWeight;
+        private SpeechRecognitionResult BuildResult()
+        {
+            if (currentCommand.RequiredConcepts == null ||
+                currentCommand.RequiredConcepts.Length == 0)
+            {
+                return CreateEmptyResult();
+            }
 
-        bool allConceptsMatched =
-            matchedConcepts.Count == currentCommand.RequiredConcepts.Length;
+            float totalWeight = 0f;
+            float matchedWeight = 0f;
 
-        bool valid =
-            allConceptsMatched &&
-            overallScore >= minimumOverallScore;
+            for (int i = 0; i < currentCommand.RequiredConcepts.Length; i++)
+            {
+                SpeechConcept concept = currentCommand.RequiredConcepts[i];
 
-        List<SpeechConceptMatch> matches =
-            new(matchedConcepts.Values);
+                totalWeight += concept.Weight;
 
-        return new SpeechRecognitionResult(
-            valid,
-            overallScore,
-            matches);
-    }
+                if (matchedConceptScores.TryGetValue(
+                        concept.Name,
+                        out float score))
+                {
+                    matchedWeight += score * concept.Weight;
+                }
+            }
 
-    private static SpeechRecognitionResult CreateEmptyResult()
-    {
-        return new SpeechRecognitionResult(
-            false,
-            0f,
-            new List<SpeechConceptMatch>());
+            float overallScore = totalWeight <= 0f
+                ? 0f
+                : matchedWeight / totalWeight;
+
+            bool allConceptsMatched =
+                matchedConcepts.Count == currentCommand.RequiredConcepts.Length;
+
+            bool valid =
+                allConceptsMatched &&
+                overallScore >= minimumOverallScore;
+
+            List<SpeechConceptMatch> matches =
+                new(matchedConcepts.Values);
+
+            return new SpeechRecognitionResult(
+                valid,
+                overallScore,
+                matches);
+        }
+
+        private static SpeechRecognitionResult CreateEmptyResult()
+        {
+            return new SpeechRecognitionResult(
+                false,
+                0f,
+                new List<SpeechConceptMatch>());
+        }
     }
 }

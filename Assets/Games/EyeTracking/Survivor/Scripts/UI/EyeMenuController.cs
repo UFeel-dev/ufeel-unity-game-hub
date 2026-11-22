@@ -1,72 +1,58 @@
+using GameHub.Common;
 using UnityEngine;
 
-public class EyeMenuController : MonoBehaviour
+namespace GameHub.Survivor
 {
-    [SerializeField] private EyeMenuButton[] buttons;
-
-    private int index;
-
-    private void Start()
+    public class EyeMenuController : MonoBehaviour
     {
-        for (int i = 0; i < buttons.Length; i++)
+        [SerializeField] private EyeMenuButton[] buttons;
+
+        private int focusedIndex;
+
+        private void Start()
         {
-            int captured = i;
-            buttons[i].OnSelected = () => OnButtonSelected(captured);
+            foreach (EyeMenuButton button in buttons)
+            {
+                string buttonName = button.gameObject.name;
+                button.Selected += () => OnButtonSelected(buttonName);
+            }
+
+            UpdateFocus();
         }
 
-        UpdateVisuals();
-    }
-
-    private void Update()
-    {
-        if (SurvivorGameManager.Instance.State is not GameState.Menu and not GameState.GameOver)
+        private void Update()
         {
-            return;
+            if (SurvivorGameManager.Instance.IsPlaying)
+                return;
+
+            if (EyeInput.Instance.RightPressed)
+            {
+                focusedIndex = (focusedIndex + 1) % buttons.Length;
+                UpdateFocus();
+            }
+
+            if (EyeInput.Instance.LeftPressed)
+            {
+                focusedIndex = (focusedIndex - 1 + buttons.Length) % buttons.Length;
+                UpdateFocus();
+            }
+
+            if (BlinkDetector.Instance.DoubleBlinkPressed)
+                buttons[focusedIndex].Select();
         }
 
-        if (EyeInput.Instance.RightPressed)
+        private static void OnButtonSelected(string buttonName)
         {
-            index++;
-            if (index >= buttons.Length) index = 0;
-            UpdateVisuals();
+            if (buttonName.Contains("Start") || buttonName.Contains("Restart"))
+                SurvivorGameManager.Instance.StartGame();
+            else if (buttonName.Contains("Quit"))
+                GameFlow.ReturnToHub();
         }
 
-        if (EyeInput.Instance.LeftPressed)
+        private void UpdateFocus()
         {
-            index--;
-            if (index < 0) index = buttons.Length - 1;
-            UpdateVisuals();
-        }
-
-        if (BlinkDetector.Instance.DoubleBlinkPressed)
-        {
-            buttons[index].Select();
-        }
-    }
-
-    private void UpdateVisuals()
-    {
-        for (int i = 0; i < buttons.Length; i++)
-        {
-            buttons[i].SetFocused(i == index);
-        }
-    }
-
-    private void OnButtonSelected(int i)
-    {
-        string label = buttons[i].gameObject.name;
-
-        if (label.Contains("Start"))
-        {
-            SurvivorGameManager.Instance.StartGame();
-        }
-        else if (label.Contains("Restart"))
-        {
-            SurvivorGameManager.Instance.StartGame();
-        }
-        else if (label.Contains("Quit"))
-        {
-            Application.Quit();
+            for (int i = 0; i < buttons.Length; i++)
+                buttons[i].SetFocused(i == focusedIndex);
         }
     }
 }

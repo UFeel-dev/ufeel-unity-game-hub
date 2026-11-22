@@ -1,6 +1,9 @@
-public enum GameState
+namespace GameHub.Survivor
 {
-    Menu,
-    Playing,
-    GameOver
+    public enum GameState
+    {
+        Menu,
+        Playing,
+        GameOver,
+    }
 }

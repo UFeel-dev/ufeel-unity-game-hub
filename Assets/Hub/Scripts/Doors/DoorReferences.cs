@@ -1,7 +1,14 @@
 using UnityEngine;
 
-public class DoorReferences : MonoBehaviour
+namespace GameHub.Hub
 {
-    public DoorTrigger trigger;
-    public DoorController controller;
+    public class DoorReferences : MonoBehaviour
+    {
+        [SerializeField] private DoorTrigger trigger;
+        [SerializeField] private DoorController controller;
+
+        public DoorTrigger Trigger => trigger;
+
+        public DoorController Controller => controller;
+    }
 }

@@ -1,66 +1,45 @@
 using System.Collections;
-using System.Globalization;
-using UFeel;
+using GameHub.Common;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class HeartbeatEffects : MonoBehaviour
+namespace GameHub.HorrorRoom
 {
-    public AudioSource AudioSource;
-    public Image RedFilter;
-    private const uint MinBpm = 60;
-    private const uint MaxBpm = 180;
-    private uint bpm = 0;
-    private Coroutine actionCoroutine;
-
-    private static uint GetBPM()
+    public class HeartbeatEffects : MonoBehaviour
     {
-        uint currentBPM = UFeelAPI.HeartRate.Current;
+        private const float FilterAlpha = 0.25f;
 
-        if (currentBPM == 0)
-            return currentBPM;
+        [SerializeField] private AudioSource heartbeatAudio;
+        [SerializeField] private Image redFilter;
 
-        if (currentBPM < MinBpm)
-            return MinBpm;
+        private bool isFilterVisible;
 
-        if (currentBPM > MaxBpm)
-            return MaxBpm;
-
-        return currentBPM;
-    }
-
-    private void Start()
-    {
-        bpm = GetBPM();
-        RedFilter.color = new Color(1, 0, 0, 0);
-
-        actionCoroutine = StartCoroutine(RunAudio());
-    }
-
-    private IEnumerator RunAudio()
-    {
-        while (true)
+        private void Start()
         {
-            bpm = GetBPM();
-            Debug.Log("BPM = " + bpm.ToString(CultureInfo.InvariantCulture));
-
-            if (bpm == 0)
-                yield break;
-
-            AudioSource.Play();
-
-            float newAlpha = RedFilter.color.a == 0 ? 0.25f : 0;
-            RedFilter.color = new Color(1, 0, 0, newAlpha);
-
-            Debug.Log(RedFilter.color);
-
-            float wait = 1.0f / bpm * MinBpm;
-            yield return new WaitForSeconds(wait);
+            SetFilterVisible(false);
+            StartCoroutine(PlayHeartbeat());
         }
-    }
 
-    private void OnDestroy()
-    {
-        StopCoroutine(actionCoroutine);
+        private IEnumerator PlayHeartbeat()
+        {
+            while (true)
+            {
+                if (!HeartRateTempo.TryGetBpm(out uint bpm))
+                {
+                    yield return null;
+                    continue;
+                }
+
+                heartbeatAudio.Play();
+                SetFilterVisible(!isFilterVisible);
+                yield return new WaitForSeconds(60f / bpm);
+            }
+        }
+
+        private void SetFilterVisible(bool visible)
+        {
+            isFilterVisible = visible;
+            redFilter.color = new Color(1f, 0f, 0f, visible ? FilterAlpha : 0f);
+        }
     }
 }

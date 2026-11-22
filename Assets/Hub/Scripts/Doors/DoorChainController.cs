@@ -1,57 +1,43 @@
 using UnityEngine;
 
-public class DoorChainController : MonoBehaviour
+namespace GameHub.Hub
 {
-    [Header("Chain Settings")]
-    public Transform chain;
-    public Transform door;
-    public float chainExtensionSpeed = 5f;
-    public float maxChainLength = 5.9f;
-
-    private float originalChainLength;
-    private bool isExtending;
-
-    private void Start()
+    public class DoorChainController : MonoBehaviour
     {
-        originalChainLength = chain.localScale.y;
-    }
+        [SerializeField] private Transform chain;
+        [SerializeField] private Transform door;
+        [SerializeField] private float chainExtensionSpeed = 5f;
+        [SerializeField] private float maxChainLength = 5.9f;
 
-    private void Update()
-    {
-        // if (Input.GetKeyDown(KeyCode.E))
-        //     isExtending = true;
-        // if (Input.GetKeyDown(KeyCode.F))
-        //     isExtending = false;
+        private float originalChainLength;
 
-        ExtendChainAndMoveDoor();
-    }
+        public bool IsExtending { get; private set; }
 
-    public void ToggleChainExtension() // TODO: toggle the door light when the door is down
-    {
-        isExtending = !isExtending;
-    }
+        private void Start()
+        {
+            originalChainLength = chain.localScale.y;
+        }
 
-    // ? isExtending is still true even when the door is down so it can be used for extended checks
-    private void ExtendChainAndMoveDoor()
-    {
-        // TODO: check if door is already extended and ignore this logic if it is
-        float delta = chainExtensionSpeed * Time.deltaTime;
-        float scaleDelta = delta * 0.5f;
+        private void Update()
+        {
+            float scaleDelta = chainExtensionSpeed * Time.deltaTime * 0.5f;
+            Vector3 scale = chain.localScale;
+            float targetScaleY = IsExtending
+                ? Mathf.Min(scale.y + scaleDelta, maxChainLength)
+                : Mathf.Max(scale.y - scaleDelta, originalChainLength);
 
-        float currentScaleY = chain.localScale.y;
-        float targetScaleY = isExtending
-            ? Mathf.Min(currentScaleY + scaleDelta, maxChainLength)
-            : Mathf.Max(currentScaleY - scaleDelta, originalChainLength);
+            float appliedDelta = targetScaleY - scale.y;
+            if (appliedDelta == 0f)
+                return;
 
-        float appliedScaleDelta = targetScaleY - currentScaleY;
+            chain.localScale = new Vector3(scale.x, targetScaleY, scale.z);
+            chain.position += Vector3.down * appliedDelta;
+            door.position += Vector3.down * (appliedDelta * 2f);
+        }
 
-        chain.localScale = new Vector3(chain.localScale.x, targetScaleY, chain.localScale.z);
-        chain.position += Vector3.down * appliedScaleDelta;
-        door.position += Vector3.down * (appliedScaleDelta * 2f);
-    }
-
-    public bool IsExtending()
-    {
-        return isExtending;
+        public void ToggleExtension()
+        {
+            IsExtending = !IsExtending;
+        }
     }
 }

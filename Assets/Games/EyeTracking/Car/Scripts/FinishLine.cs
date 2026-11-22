@@ -1,16 +1,19 @@
+using GameHub.Common;
 using UnityEngine;
 
-public class FinishLine : MonoBehaviour
+namespace GameHub.Car
 {
-    [SerializeField] private VehicleEntryTrigger vehicleEntryTrigger;
-
-    private void OnTriggerEnter(Collider other)
+    public class FinishLine : MonoBehaviour
     {
-        if (!other.CompareTag("Vehicle")) return;
+        [SerializeField] private VehicleEntryTrigger vehicleEntryTrigger;
 
-        GameObject playerObject = vehicleEntryTrigger.ExitVehicle();
-        if (!playerObject) return;
+        private void OnTriggerEnter(Collider other)
+        {
+            if (!other.CompareTag(Tags.Vehicle))
+                return;
 
-        PauseMenu.GoToLobby();
+            vehicleEntryTrigger.ExitVehicle();
+            GameFlow.ReturnToHub();
+        }
     }
 }

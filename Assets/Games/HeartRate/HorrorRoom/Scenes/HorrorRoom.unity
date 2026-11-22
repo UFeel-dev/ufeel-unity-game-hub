@@ -417,7 +417,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d80c30fe8b2133618bd3b9f8a8d78d80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  audioSource: {fileID: 1414597861}
+  heartbeatAudio: {fileID: 0}
   redFilter: {fileID: 506209841}
 --- !u!4 &1124225807
 Transform:

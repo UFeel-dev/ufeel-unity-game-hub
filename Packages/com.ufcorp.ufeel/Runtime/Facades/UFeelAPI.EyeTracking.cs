@@ -12,7 +12,6 @@ namespace UFeel
         {
             public static KeyCode CalibrationKey = KeyCode.F8;
 
-            /// <summary>Smoothed gaze estimate.</summary>
             public static EyeTrackingResult Current
             {
                 get
@@ -61,7 +60,7 @@ namespace UFeel
 
             private static float headWeight;
 
-            /// <summary>Gets a value indicating whether a profile was loaded or a calibration succeeded.</summary>
+            /// <summary>Also true when a saved profile was loaded at startup.</summary>
             public static bool IsCalibrated => Calibrated;
 
             public static bool IsCalibrating => Overlay != null && Overlay.IsRunning;

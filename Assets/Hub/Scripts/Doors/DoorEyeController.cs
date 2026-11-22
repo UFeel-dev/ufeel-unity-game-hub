@@ -1,119 +1,65 @@
+using GameHub.Common;
 using UFeel;
 using UnityEngine;
 
-public class DoorEyeController : MonoBehaviour
+namespace GameHub.Hub
 {
-    [Header("References")]
-    [SerializeField] private DoorSelectionManager doorSelectionManager;
-
-    [Header("Settings")]
-    [SerializeField] private float doubleBlinkWindow = 0.5f;
-
-    private bool previousBlink;
-
-    private EyeTrackingDirection previousEyeTrackingDirection = EyeTrackingDirection.Center;
-
-    private float lastBlinkTime = -10f;
-
-    private bool commandsEnabled = false;
-
-    private void Awake()
+    public class DoorEyeController : MonoBehaviour
     {
-        if (doorSelectionManager == null)
+        [SerializeField] private DoorSelectionManager doorSelectionManager;
+        [SerializeField] private float doubleBlinkWindow = 0.5f;
+
+        private bool commandsEnabled;
+        private bool previousBlink;
+        private int previousDirection;
+        private float lastBlinkTime = float.NegativeInfinity;
+
+        private void Awake()
         {
-            Debug.LogError("DoorSelectionManager reference missing.");
+            if (doorSelectionManager != null)
+                return;
+
+            Debug.LogError("DoorSelectionManager reference missing.", this);
             enabled = false;
-            // return;
         }
-    }
 
-    private void Update()
-    {
-        if (LayoutInput.GetKeyDown(KeyCode.N))
+        private void Update()
         {
-            ToggleCommands();
+            if (LayoutInput.GetKeyDown(KeyCode.N))
+                commandsEnabled = !commandsEnabled;
+
+            if (!commandsEnabled)
+                return;
+
+            int direction = GazeInput.HorizontalDirection();
+            if (direction == 0 && previousDirection < 0)
+                doorSelectionManager.SelectPreviousDoor();
+            else if (direction == 0 && previousDirection > 0)
+                doorSelectionManager.SelectNextDoor();
+
+            previousDirection = direction;
+
+            if (DetectDoubleBlink())
+                doorSelectionManager.ConfirmCurrentSelection();
         }
 
-        if (!commandsEnabled)
+        private bool DetectDoubleBlink()
         {
-            return;
-        }
+            bool blink = UFeelAPI.EyeTracking.IsBlinking;
+            bool blinkStarted = blink && !previousBlink;
+            previousBlink = blink;
 
-        EyeTrackingDirection directions = UFeelAPI.EyeTracking.Directions;
-        bool? blinkStatus = UFeelAPI.EyeTracking.IsBlinking;
+            if (!blinkStarted)
+                return false;
 
-        ProcessInput(directions, blinkStatus == true);
-    }
+            if (Time.time - lastBlinkTime <= doubleBlinkWindow)
+            {
+                lastBlinkTime = float.NegativeInfinity;
+                return true;
+            }
 
-    private void ToggleCommands()
-    {
-        commandsEnabled = !commandsEnabled;
-    }
-
-    private void ProcessInput(EyeTrackingDirection directions, bool blink)
-    {
-        bool blinkPressed = blink && !previousBlink;
-        previousBlink = blink;
-        bool doubleBlink = DetectDoubleBlink(blinkPressed);
-
-        (bool leftGesture, bool rightGesture) = ProcessGaze(directions);
-
-        if (leftGesture)
-        {
-            doorSelectionManager.SelectPreviousDoor();
-        }
-
-        if (rightGesture)
-        {
-            doorSelectionManager.SelectNextDoor();
-        }
-
-        if (doubleBlink)
-        {
-            doorSelectionManager.ConfirmCurrentSelection();
-        }
-    }
-
-    private static EyeTrackingDirection GetEyeTrackingDirection(EyeTrackingDirection directions)
-    {
-        if (directions.HasDirection(EyeTrackingDirection.Left) && !directions.HasDirection(EyeTrackingDirection.Right))
-            return EyeTrackingDirection.Left;
-
-        if (directions.HasDirection(EyeTrackingDirection.Right) && !directions.HasDirection(EyeTrackingDirection.Left))
-            return EyeTrackingDirection.Right;
-
-        return EyeTrackingDirection.Center;
-    }
-
-    private (bool Left, bool Right) ProcessGaze(EyeTrackingDirection directions)
-    {
-        EyeTrackingDirection currentDirection = GetEyeTrackingDirection(directions);
-
-        bool leftGesture =
-            previousEyeTrackingDirection.HasDirection(EyeTrackingDirection.Left) &&
-            currentDirection.HasDirection(EyeTrackingDirection.Center);
-
-        bool rightGesture =
-            previousEyeTrackingDirection.HasDirection(EyeTrackingDirection.Right) &&
-            currentDirection.HasDirection(EyeTrackingDirection.Center);
-
-        previousEyeTrackingDirection = currentDirection;
-
-        return (leftGesture, rightGesture);
-    }
-
-    private bool DetectDoubleBlink(bool blinkPressed)
-    {
-        if (!blinkPressed)
+            lastBlinkTime = Time.time;
             return false;
-
-        if (Time.time - lastBlinkTime <= doubleBlinkWindow)
-        {
-            lastBlinkTime = -10f;
-            return true;
         }
-
-        lastBlinkTime = Time.time;
-        return false;
     }
 }

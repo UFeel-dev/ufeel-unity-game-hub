@@ -1,46 +1,41 @@
 using UnityEngine;
 
-public class EnemySpawner : MonoBehaviour
+namespace GameHub.Survivor
 {
-    [SerializeField] private EnemyController enemyPrefab;
-    [SerializeField] private float radius = 18f;
-    [SerializeField] private float interval = 2f;
-
-    private float timer;
-    private Transform player;
-
-    private void Start()
+    public class EnemySpawner : MonoBehaviour
     {
-        player = FindFirstObjectByType<PlayerController>().transform;
-    }
+        [SerializeField] private EnemyController enemyPrefab;
+        [SerializeField] private float radius = 18f;
+        [SerializeField] private float interval = 2f;
 
-    private void Update()
-    {
-        if (SurvivorGameManager.Instance.State != GameState.Playing)
+        private Transform player;
+        private float timer;
+
+        private void Start()
         {
-            return;
+            player = FindFirstObjectByType<PlayerController>().transform;
         }
 
-        timer += Time.deltaTime;
-
-        if (timer >= interval)
+        private void Update()
         {
+            if (!SurvivorGameManager.Instance.IsPlaying)
+                return;
+
+            timer += Time.deltaTime;
+            if (timer < interval)
+                return;
+
             timer = 0f;
             Spawn();
         }
-    }
 
-    private void Spawn()
-    {
-        if (player == null)
+        private void Spawn()
         {
-            return;
+            if (player == null)
+                return;
+
+            Vector2 offset = Random.insideUnitCircle.normalized * radius;
+            Instantiate(enemyPrefab, player.position + new Vector3(offset.x, 0f, offset.y), Quaternion.identity);
         }
-
-        Vector2 circle = Random.insideUnitCircle.normalized * radius;
-
-        Vector3 pos = player.position + new Vector3(circle.x, 0f, circle.y);
-
-        Instantiate(enemyPrefab, pos, Quaternion.identity);
     }
 }

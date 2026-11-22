@@ -1,148 +1,71 @@
+using System;
 using System.Collections;
+using GameHub.Common;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class SceneLoader : MonoBehaviour
+namespace GameHub.Hub
 {
-    public static SceneLoader Instance { get; private set; }
-
-    private bool isLoading;
-
-    private void Awake()
+    public class SceneLoader : MonoBehaviour
     {
-        if (Instance == null)
+        private const string SceneRootName = "Root";
+
+        public static SceneLoader Instance { get; private set; }
+
+        public bool IsLoading { get; private set; }
+
+        private void Awake()
         {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
             Instance = this;
             DontDestroyOnLoad(gameObject);
         }
-        else
+
+        private void OnDestroy()
         {
-            Destroy(gameObject);
-        }
-    }
-
-    public void LoadSceneAsync(string sceneName, float delay = 0.0f)
-    {
-        if (!isLoading)
-        {
-            StartCoroutine(LoadSceneCoroutine(sceneName, delay));
-        }
-    }
-
-    private IEnumerator LoadSceneCoroutine(string sceneName, float delay)
-    {
-        yield return new WaitForSeconds(delay);
-
-        isLoading = true;
-
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
-
-        asyncLoad.allowSceneActivation = false;
-
-        while (asyncLoad.progress < 0.9f)
-        {
-            yield return null;
+            if (Instance == this)
+                Instance = null;
         }
 
-        asyncLoad.allowSceneActivation = true;
-
-        while (!asyncLoad.isDone)
+        public void LoadAdditiveSceneAtPosition(string sceneName, Vector3 position, Action onLoaded = null)
         {
-            yield return null;
+            if (!IsLoading)
+                StartCoroutine(LoadAdditiveScene(sceneName, position, onLoaded));
         }
 
-        isLoading = false;
-    }
-
-    public void LoadAdditiveSceneAtPosition(string sceneName, Vector3 targetPosition, System.Action onLoaded = null)
-    {
-        if (!isLoading)
+        private static void HideHub()
         {
-            StartCoroutine(LoadAdditiveSceneCoroutine(sceneName, targetPosition, onLoaded));
-        }
-    }
+            GameObject player = GameObject.FindGameObjectWithTag(Tags.Player);
+            if (player != null)
+                player.SetActive(false);
 
-    private IEnumerator LoadAdditiveSceneCoroutine(string sceneName, Vector3 targetPosition, System.Action onLoaded)
-    {
-        isLoading = true;
-
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
-
-        while (!asyncLoad.isDone)
-            yield return null;
-
-        Scene loadedScene = SceneManager.GetSceneByName(sceneName);
-        while (!loadedScene.isLoaded)
-            yield return null;
-
-        bool foundRoot = false;
-
-        foreach (GameObject rootObj in loadedScene.GetRootGameObjects())
-        {
-            if (rootObj.name == "Root") // TODO: check if this main object detection logic is appropriate
-            {
-                rootObj.transform.position = targetPosition;
-                foundRoot = true;
-                break;
-            }
+            GameObject environment = GameObject.FindGameObjectWithTag(Tags.Environment);
+            if (environment != null)
+                environment.SetActive(false);
         }
 
-        if (!foundRoot)
+        private IEnumerator LoadAdditiveScene(string sceneName, Vector3 position, Action onLoaded)
         {
-            GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
-            if (playerObject != null)
-            {
-                playerObject.SetActive(false);
-            }
+            IsLoading = true;
 
-            GameObject environmentObject = GameObject.FindGameObjectWithTag("Environment");
-            if (environmentObject != null)
-            {
-                environmentObject.SetActive(false);
-            }
+            yield return SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
+
+            Scene loadedScene = SceneManager.GetSceneByName(sceneName);
+            GameObject root = Array.Find(loadedScene.GetRootGameObjects(), rootObject => rootObject.name == SceneRootName);
+            if (root != null)
+                root.transform.position = position;
+            else
+                HideHub();
+
+            SceneManager.SetActiveScene(loadedScene);
+            onLoaded?.Invoke();
+
+            IsLoading = false;
         }
-
-        ApplySceneLighting(loadedScene);
-        onLoaded?.Invoke();
-
-        isLoading = false;
-    }
-
-    private static void ApplySceneLighting(Scene scene)
-    {
-        SceneManager.SetActiveScene(scene);
-    }
-
-    public void UnloadAdditiveScene(string sceneName, System.Action complete = null)
-    {
-        if (!isLoading)
-        {
-            StartCoroutine(UnloadAdditiveSceneCoroutine(sceneName, complete));
-        }
-    }
-
-    private IEnumerator UnloadAdditiveSceneCoroutine(string sceneName, System.Action complete)
-    {
-        isLoading = true; // TODO: check if we should set loading to true while unloading.
-                          // -> probably important to avoid spamming unload
-                          // -> but the "isLoading" name is not appropriate in this case as it handles both loading and unloading
-
-        AsyncOperation asyncUnload = SceneManager.UnloadSceneAsync(sceneName);
-
-        while (!asyncUnload.isDone)
-            yield return null;
-
-        isLoading = false;
-
-        Scene testingRoomScene = SceneManager.GetSceneByName("GameHub");
-        ApplySceneLighting(testingRoomScene);
-        complete?.Invoke();
-    }
-
-    public bool IsLoading()
-    {
-        return isLoading;
     }
 }
-
-// TODO: perform fade-out transition

@@ -333,11 +333,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc972728d3a336719ba069e8117375e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MoveSpeed: 5
-  CameraRoot: {fileID: 2016516443}
-  MouseSensitivity: 2
-  Gravity: -9.81
-  Controller: {fileID: 0}
+  moveSpeed: 5
+  gravity: -9.81
+  cameraRoot: {fileID: 2016516443}
+  mouseSensitivity: 2
 --- !u!136 &1489305191
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -753,7 +752,7 @@ MonoBehaviour:
   roomPrefab: {fileID: 6843624912501542543, guid: 63afb187dda6b6e71a784e1b202c6709, type: 3}
   playerObject: {fileID: 1489305189}
   emotionDebugText: {fileID: 708054045}
-  RoomSpacing: 25
+  roomSpacing: 25
 --- !u!4 &2128694441
 Transform:
   m_ObjectHideFlags: 0

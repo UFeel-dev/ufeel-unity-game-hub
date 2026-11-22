@@ -1,286 +1,211 @@
 using System.Collections;
 using System.Collections.Generic;
+using GameHub.Common;
 using TMPro;
 using UFeel;
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum AnimalType
+namespace GameHub.Animals
 {
-    Cat,
-    Deer,
-    Tiger,
-    Penguin,
-    Spider
-}
-
-public class AnimalsManager : MonoBehaviour
-{
-    private static readonly WaitForSeconds _waitForSeconds1_5 = new(1.5f);
-    private static readonly WaitForSeconds _waitForSeconds2 = new(2f);
-    private static readonly WaitForSeconds _waitForSeconds5 = new(5f);
-
-    [Header("Scene References")]
-    public Transform SpawnPoint;
-    public GameObject[] AnimalPrefabs;
-    public TextMeshProUGUI InstructionText;
-    public TextMeshProUGUI TimerText;
-    public TextMeshProUGUI ScoreText;
-
-    [Header("Game Settings")]
-    private int currentLevel = 1;
-    private float timer;
-    private int score;
-    private bool isLevelActive;
-
-    private List<AnimalType> animalsList = new();
-    private GameObject currentAnimalGO;
-    private readonly Dictionary<AnimalType, EmotionType> animalEmotions =
-        new()
+    public class AnimalsManager : MonoBehaviour
     {
-        { AnimalType.Cat, EmotionType.Happy },
-        { AnimalType.Deer, EmotionType.Surprised },
-        { AnimalType.Tiger, EmotionType.Angry },
-        { AnimalType.Penguin, EmotionType.Sad },
-        { AnimalType.Spider, EmotionType.Fearful }
-    };
+        private const float EmotionHoldDuration = 2.5f;
+        private const float EmotionDecayRatio = 1f / 3f;
 
-    public Slider EmotionProgressBar;
-    private Image barFillImage;
-
-    [Header("Progress Settings")]
-    private float currentProgress = 0f;
-    private const float MaxProgressDuration = 2.5f;
-    private bool isTrackingEmotion = false;
-    private AnimalType currentTargetAnimal;
-
-    private void Start()
-    {
-        if (EmotionProgressBar != null)
+        private static readonly AnimalDefinition[] Animals =
         {
-            barFillImage = EmotionProgressBar.fillRect.GetComponent<Image>();
-        }
+            new(AnimalType.Cat, EmotionType.Happy, "Happiness"),
+            new(AnimalType.Deer, EmotionType.Surprised, "Surprise"),
+            new(AnimalType.Tiger, EmotionType.Angry, "Anger"),
+            new(AnimalType.Penguin, EmotionType.Sad, "Sadness"),
+            new(AnimalType.Spider, EmotionType.Fearful, "Fear"),
+        };
 
-        StartCoroutine(GameLoop());
-    }
+        private static readonly float[] LevelDurations = { 35f, 40f, 50f, 60f, 75f };
 
-    private IEnumerator GameLoop()
-    {
-        while (currentLevel <= 5)
+        private static readonly WaitForSeconds MessageDelay = new(5f);
+        private static readonly WaitForSeconds LevelCompletedDelay = new(2f);
+        private static readonly WaitForSeconds NextAnimalDelay = new(1.5f);
+
+        [Header("Scene References")]
+        [SerializeField] private Transform spawnPoint;
+        [Tooltip("One prefab per AnimalType, in the enum order.")]
+        [SerializeField] private GameObject[] animalPrefabs;
+
+        [Header("UI")]
+        [SerializeField] private TextMeshProUGUI instructionText;
+        [SerializeField] private TextMeshProUGUI timerText;
+        [SerializeField] private TextMeshProUGUI scoreText;
+        [SerializeField] private Slider emotionProgressBar;
+
+        private readonly List<AnimalType> remainingAnimals = new();
+        private Image progressFill;
+        private GameObject currentAnimal;
+        private AnimalType currentAnimalType;
+        private float timer;
+        private float progress;
+        private int score;
+        private bool isLevelActive;
+        private bool isTrackingEmotion;
+
+        private void Start()
         {
-            yield return StartCoroutine(InitLevel(currentLevel));
-            yield return StartCoroutine(PlayLevel());
-
-            if (timer <= 0 && animalsList.Count > 0)
+            if (animalPrefabs.Length != Animals.Length)
             {
-                InstructionText.text = "GAME OVER...";
-                yield return _waitForSeconds5;
-                PauseMenu.GoToLobby();
-                yield break;
+                Debug.LogError($"{nameof(AnimalsManager)} needs {Animals.Length} animal prefabs, one per {nameof(AnimalType)}.", this);
+                enabled = false;
+                return;
             }
 
-            currentLevel++;
+            if (emotionProgressBar != null)
+                progressFill = emotionProgressBar.fillRect.GetComponent<Image>();
+
+            StartCoroutine(GameLoop());
         }
 
-        InstructionText.text = "CONGRATULATIONS! YOU ARE A MASTER OF EMOTIONS!";
-
-        yield return _waitForSeconds5;
-        PauseMenu.GoToLobby();
-    }
-
-    private IEnumerator InitLevel(int level)
-    {
-        isLevelActive = false;
-        string newAnimalInfo = string.Empty;
-
-        switch (level)
+        private void Update()
         {
-            case 1: newAnimalInfo = "Cat -> Happiness"; break;
-            case 2: newAnimalInfo = "Deer -> Surprise"; break;
-            case 3: newAnimalInfo = "Tiger -> Anger"; break;
-            case 4: newAnimalInfo = "Penguin -> Sadness"; break;
-            case 5: newAnimalInfo = "Spider -> Fear"; break;
+            if (!isLevelActive || !isTrackingEmotion || currentAnimal == null)
+                return;
+
+            bool isExpectedEmotion = UFeelAPI.Emotion.Dominant == Animals[(int)currentAnimalType].Emotion;
+            float step = Time.deltaTime / EmotionHoldDuration;
+            progress = Mathf.Clamp01(isExpectedEmotion ? progress + step : progress - (step * EmotionDecayRatio));
+
+            if (progressFill != null)
+                progressFill.color = isExpectedEmotion ? Color.green : Color.red;
+
+            if (emotionProgressBar != null)
+                emotionProgressBar.value = progress;
+
+            if (progress >= 1f)
+                OnAnimalMatched();
         }
 
-        InstructionText.text = $"LEVEL {level}\n\n{newAnimalInfo}";
-        yield return _waitForSeconds5;
-
-        timer = GetLevelTime(level);
-        animalsList = GenerateAnimals(level);
-        isLevelActive = true;
-    }
-
-    private IEnumerator PlayLevel()
-    {
-        InstructionText.text = string.Empty;
-        SpawnAnimal();
-
-        while (isLevelActive && timer > 0)
+        private static List<AnimalType> ShuffledAnimalsForLevel(int level)
         {
-            timer -= Time.deltaTime;
-            string text = $"Time: 0:{Mathf.CeilToInt(timer)}";
-            TimerText.SetText(text);
+            AnimalType newAnimal = Animals[level - 1].Type;
+            List<AnimalType> animals = new();
+            for (int i = 0; i < level - 1; i++)
+                animals.Add(Animals[i].Type);
 
-            if (animalsList.Count == 0 && currentAnimalGO == null)
+            for (int i = animals.Count - 1; i > 0; i--)
             {
-                isLevelActive = false;
-                InstructionText.text = "LEVEL COMPLETED !";
-                yield return _waitForSeconds2;
+                int swapIndex = Random.Range(0, i + 1);
+                (animals[i], animals[swapIndex]) = (animals[swapIndex], animals[i]);
             }
-            yield return null;
+
+            animals.Insert(0, newAnimal);
+            return animals;
         }
-    }
 
-    private static List<AnimalType> GenerateAnimals(int level)
-    {
-        List<AnimalType> pool = new() { AnimalType.Cat };
-        if (level >= 2) pool.Add(AnimalType.Deer);
-        if (level >= 3) pool.Add(AnimalType.Tiger);
-        if (level >= 4) pool.Add(AnimalType.Penguin);
-        if (level >= 5) pool.Add(AnimalType.Spider);
-
-        List<AnimalType> result = new();
-        int totalTarget = GetAnimalNumber(level);
-        const int minPerAnimal = 1;
-
-        AnimalType firstAnimal = (AnimalType)(level - 1);
-        Debug.Log($"First animal for level {level} is {firstAnimal}");
-        result.Add(firstAnimal);
-
-        foreach (AnimalType type in pool)
+        private IEnumerator GameLoop()
         {
-            for (int i = 0; i < minPerAnimal; i++)
+            for (int level = 1; level <= Animals.Length; level++)
             {
-                if (result.Count < totalTarget)
+                yield return StartLevel(level);
+                yield return PlayLevel();
+
+                if (remainingAnimals.Count > 0)
                 {
-                    result.Add(type);
+                    yield return EndGame("GAME OVER...");
+                    yield break;
                 }
             }
+
+            yield return EndGame("CONGRATULATIONS! YOU ARE A MASTER OF EMOTIONS!");
         }
 
-        while (result.Count < totalTarget)
+        private IEnumerator StartLevel(int level)
         {
-            result.Add(pool[Random.Range(0, pool.Count)]);
-        }
+            AnimalDefinition newAnimal = Animals[level - 1];
+            isLevelActive = false;
+            instructionText.text = $"LEVEL {level}\n\n{newAnimal.Type} -> {newAnimal.EmotionLabel}";
+            yield return MessageDelay;
 
-        Shuffle(result);
-        return result;
-    }
-
-    // Fisher-Yates shuffle algorithm to randomize the order of animals in the list
-    private static void Shuffle<T>(List<T> list)
-    {
-        for (int i = 1; i < list.Count; i++)
-        {
-            T temp = list[i];
-            int randomIndex = Random.Range(i, list.Count);
-            list[i] = list[randomIndex];
-            list[randomIndex] = temp;
-        }
-    }
-
-    private void SpawnAnimal()
-    {
-        if (animalsList.Count == 0)
-        {
-            Debug.Log("LEVEL COMPLETE");
+            timer = LevelDurations[level - 1];
+            remainingAnimals.Clear();
+            remainingAnimals.AddRange(ShuffledAnimalsForLevel(level));
             isLevelActive = true;
-            return;
         }
 
-        AnimalType animal = animalsList[0];
-
-        Quaternion rotation180 = Quaternion.Euler(0f, 180f, 0f);
-
-        currentAnimalGO = Instantiate(AnimalPrefabs[(int)animal], SpawnPoint.position, rotation180);
-        Debug.Log($"Emotion: {animalEmotions[animal]} for {animal}");
-
-        CheckEmotion(animal);
-    }
-
-    private void UpdateScore()
-    {
-        score++;
-        if (ScoreText != null)
+        private IEnumerator PlayLevel()
         {
-            string tmp = $"Score: {score}";
-            ScoreText.SetText(tmp);
-        }
-    }
+            instructionText.text = string.Empty;
+            SpawnNextAnimal();
 
-    private void CheckEmotion(AnimalType animal)
-    {
-        currentTargetAnimal = animal;
-        isTrackingEmotion = true;
-        currentProgress = 0f;
-        if (EmotionProgressBar != null) EmotionProgressBar.value = 0f;
-    }
+            while (isLevelActive && timer > 0f)
+            {
+                timer -= Time.deltaTime;
+                int seconds = Mathf.CeilToInt(timer);
+                timerText.SetText($"Time: {seconds / 60}:{seconds % 60:00}");
 
-    private IEnumerator WaitAndSpawn()
-    {
-        yield return _waitForSeconds1_5;
-        SpawnAnimal();
-    }
+                if (remainingAnimals.Count == 0 && currentAnimal == null)
+                {
+                    isLevelActive = false;
+                    instructionText.text = "LEVEL COMPLETED!";
+                    yield return LevelCompletedDelay;
+                }
 
-    private static float GetLevelTime(int level)
-    {
-        if (level == 1) return 35f;
-        if (level == 2) return 40f;
-        if (level == 3) return 50f;
-        if (level == 4) return 60f;
-        return 75f;
-    }
-
-    private static int GetAnimalNumber(int level)
-    {
-        return level switch
-        {
-            1 => 1,
-            2 => 2,
-            3 => 3,
-            4 => 4,
-            5 => 5,
-            _ => 1,
-        };
-    }
-
-    private void Update()
-    {
-        if (!isLevelActive || !isTrackingEmotion || currentAnimalGO == null) return;
-
-        EmotionType? dominantEmotion = UFeelAPI.Emotion.Dominant;
-        EmotionType targetEmotion = animalEmotions[currentTargetAnimal];
-
-        if (dominantEmotion == targetEmotion)
-        {
-            currentProgress += Time.deltaTime / MaxProgressDuration;
-            if (barFillImage != null) barFillImage.color = Color.green;
-        }
-        else
-        {
-            currentProgress -= Time.deltaTime / MaxProgressDuration / 3;
-            if (barFillImage != null) barFillImage.color = Color.red;
+                yield return null;
+            }
         }
 
-        currentProgress = Mathf.Clamp01(currentProgress);
+        private IEnumerator EndGame(string message)
+        {
+            instructionText.text = message;
+            yield return MessageDelay;
+            GameFlow.ReturnToHub();
+        }
 
-        if (EmotionProgressBar != null) EmotionProgressBar.value = currentProgress;
+        private void SpawnNextAnimal()
+        {
+            if (remainingAnimals.Count == 0)
+                return;
 
-        if (currentProgress >= 1f)
+            currentAnimalType = remainingAnimals[0];
+            currentAnimal = Instantiate(animalPrefabs[(int)currentAnimalType], spawnPoint.position, Quaternion.Euler(0f, 180f, 0f));
+            isTrackingEmotion = true;
+            progress = 0f;
+
+            if (emotionProgressBar != null)
+                emotionProgressBar.value = 0f;
+        }
+
+        private void OnAnimalMatched()
         {
             isTrackingEmotion = false;
-            OnAnimalSuccess();
+            score++;
+
+            if (scoreText != null)
+                scoreText.SetText($"Score: {score}");
+
+            Destroy(currentAnimal);
+            remainingAnimals.RemoveAt(0);
+            StartCoroutine(SpawnNextAnimalAfterDelay());
         }
-    }
 
-    private void OnAnimalSuccess()
-    {
-        Debug.Log("CORRECT EMOTION MAINTAINED FOR 5S!");
-        UpdateScore();
+        private IEnumerator SpawnNextAnimalAfterDelay()
+        {
+            yield return NextAnimalDelay;
+            SpawnNextAnimal();
+        }
 
-        Destroy(currentAnimalGO);
-        animalsList.RemoveAt(0);
+        private readonly struct AnimalDefinition
+        {
+            public AnimalDefinition(AnimalType type, EmotionType emotion, string emotionLabel)
+            {
+                Type = type;
+                Emotion = emotion;
+                EmotionLabel = emotionLabel;
+            }
 
-        StartCoroutine(WaitAndSpawn());
+            public AnimalType Type { get; }
+
+            public EmotionType Emotion { get; }
+
+            public string EmotionLabel { get; }
+        }
     }
 }

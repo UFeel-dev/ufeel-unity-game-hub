@@ -1,32 +1,24 @@
 using UnityEngine;
 
-public class VoiceDoorController : MonoBehaviour
+namespace GameHub.EscapeRoom
 {
-    public Transform Pivot;
-    public float OpenAngle = 90f;
-    public float Speed = 2f;
-
-    private bool isOpen = false;
-
-    public void OpenDoor()
+    public class VoiceDoorController : MonoBehaviour
     {
-        isOpen = true;
-    }
+        [SerializeField] private Transform pivot;
+        [SerializeField] private float openAngle = 90f;
+        [SerializeField] private float speed = 2f;
 
-    public void CloseDoor()
-    {
-        isOpen = false;
-    }
+        private bool isOpen;
 
-    private void Update()
-    {
-        float targetY = isOpen ? OpenAngle : 0f;
-        Vector3 targetRotation = new(0, targetY, 0);
+        private void Update()
+        {
+            Quaternion target = Quaternion.Euler(0f, isOpen ? openAngle : 0f, 0f);
+            pivot.localRotation = Quaternion.Lerp(pivot.localRotation, target, Time.deltaTime * speed);
+        }
 
-        Pivot.localRotation = Quaternion.Lerp(
-            Pivot.localRotation,
-            Quaternion.Euler(targetRotation),
-            Time.deltaTime * Speed
-        );
+        public void Open()
+        {
+            isOpen = true;
+        }
     }
 }

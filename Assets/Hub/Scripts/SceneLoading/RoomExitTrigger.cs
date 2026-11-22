@@ -1,17 +1,16 @@
+using GameHub.Common;
 using UnityEngine;
 
-public class RoomExitTrigger : MonoBehaviour
+namespace GameHub.Hub
 {
-    [SerializeField] private GameObject environmentToDisable;
-
-    private void OnTriggerEnter(Collider other)
+    public class RoomExitTrigger : MonoBehaviour
     {
-        if (!other.CompareTag("Player")) return;
+        [SerializeField] private GameObject environmentToDisable;
 
-        if (environmentToDisable != null)
+        private void OnTriggerEnter(Collider other)
         {
-            environmentToDisable.SetActive(false);
-            // Debug.Log("Environment disabled after player passed through the door.");
+            if (other.CompareTag(Tags.Player) && environmentToDisable != null)
+                environmentToDisable.SetActive(false);
         }
     }
 }

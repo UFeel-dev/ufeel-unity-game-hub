@@ -1,7 +1,10 @@
-public enum Direction
+namespace GameHub.Maze
 {
-    North,
-    South,
-    East,
-    West
+    public enum Direction
+    {
+        North,
+        South,
+        East,
+        West,
+    }
 }

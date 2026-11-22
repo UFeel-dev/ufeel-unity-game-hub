@@ -1,42 +1,37 @@
-﻿using UnityEngine;
-namespace DoorScript
+using UnityEngine;
+
+namespace GameHub.Hub
 {
     [RequireComponent(typeof(AudioSource))]
-
     public class Door : MonoBehaviour
     {
-        public bool open;
-        public float smooth = 1.0f;
-        private readonly float doorOpenAngle = -90.0f;
-        private readonly float doorCloseAngle;
-        public AudioSource asource;
-        public AudioClip openDoor;
-        public AudioClip closeDoor;
+        private const float OpenAngle = -90f;
+        private const float ClosedAngle = 0f;
+        private const float BaseSpeed = 5f;
 
-        void Start()
+        [SerializeField] private float speed = 1f;
+        [SerializeField] private AudioClip openClip;
+        [SerializeField] private AudioClip closeClip;
+
+        private AudioSource audioSource;
+        private bool isOpen;
+
+        private void Awake()
         {
-            asource = GetComponent<AudioSource>();
+            audioSource = GetComponent<AudioSource>();
         }
 
-        void Update()
+        private void Update()
         {
-            if (open)
-            {
-                Quaternion target = Quaternion.Euler(0, doorOpenAngle, 0);
-                transform.localRotation = Quaternion.Slerp(transform.localRotation, target, Time.deltaTime * 5 * smooth);
-            }
-            else
-            {
-                Quaternion target1 = Quaternion.Euler(0, doorCloseAngle, 0);
-                transform.localRotation = Quaternion.Slerp(transform.localRotation, target1, Time.deltaTime * 5 * smooth);
-            }
+            Quaternion target = Quaternion.Euler(0f, isOpen ? OpenAngle : ClosedAngle, 0f);
+            transform.localRotation = Quaternion.Slerp(transform.localRotation, target, Time.deltaTime * BaseSpeed * speed);
         }
 
-        public void ToggleDoor()
+        public void Toggle()
         {
-            open = !open;
-            asource.clip = open ? openDoor : closeDoor;
-            asource.Play();
+            isOpen = !isOpen;
+            audioSource.clip = isOpen ? openClip : closeClip;
+            audioSource.Play();
         }
     }
 }

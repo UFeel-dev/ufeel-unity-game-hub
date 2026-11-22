@@ -1,19 +1,22 @@
 using UnityEngine;
 
-public class FloatUpDown : MonoBehaviour
+namespace GameHub.Car
 {
-    public float Amplitude = 0.5f;
-    public float Frequency = 1f;
-
-    private Vector3 startPos;
-
-    private void Start()
+    public class FloatUpDown : MonoBehaviour
     {
-        startPos = transform.position;
-    }
+        [SerializeField] private float amplitude = 0.5f;
+        [SerializeField] private float frequency = 1f;
 
-    private void Update()
-    {
-        transform.position = startPos + (Amplitude * Mathf.Sin(Time.time * Frequency) * Vector3.up);
+        private Vector3 startPosition;
+
+        private void Start()
+        {
+            startPosition = transform.position;
+        }
+
+        private void Update()
+        {
+            transform.position = startPosition + (amplitude * Mathf.Sin(Time.time * frequency) * Vector3.up);
+        }
     }
 }

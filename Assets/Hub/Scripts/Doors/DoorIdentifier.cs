@@ -1,11 +1,14 @@
 using UnityEngine;
 
-// public enum DoorIdentifierName { EyeTracking, DemoScene }
-
-public class DoorIdentifier : MonoBehaviour
+namespace GameHub.Hub
 {
-    public int doorID;
-    public string doorName;
-    // public DoorIdentifierName targetSceneName;
-    public string targetSceneName;
+    public class DoorIdentifier : MonoBehaviour
+    {
+        [SerializeField] private int doorId;
+        [SerializeField] private string doorName;
+
+        public int DoorId => doorId;
+
+        public string DoorName => doorName;
+    }
 }

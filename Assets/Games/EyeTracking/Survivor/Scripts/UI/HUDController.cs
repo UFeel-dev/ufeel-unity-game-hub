@@ -1,43 +1,23 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class HUDController : MonoBehaviour
+namespace GameHub.Survivor
 {
-    [SerializeField] private PlayerHealth playerHealth;
-    [SerializeField] private Text healthText;
-
-    [SerializeField] private Text timeText;
-    [SerializeField] private Text killsText;
-
-    private void Update()
+    public class HUDController : MonoBehaviour
     {
-        if (SurvivorGameManager.Instance.State != GameState.Playing)
+        [SerializeField] private PlayerHealth playerHealth;
+        [SerializeField] private Text healthText;
+        [SerializeField] private Text timeText;
+        [SerializeField] private Text killsText;
+
+        private void Update()
         {
-            return;
+            if (!SurvivorGameManager.Instance.IsPlaying)
+                return;
+
+            healthText.text = $"HP: {playerHealth.Current}";
+            timeText.text = $"Time: {ScoreManager.Instance.SurvivalTime:0.0}";
+            killsText.text = $"Kills: {ScoreManager.Instance.EnemiesKilled}";
         }
-
-        healthText.text = "HP: " + playerHealth.Current;
-
-        timeText.text = "Time: " + ScoreManager.Instance.SurvivalTime.ToString("0.0");
-
-        killsText.text = "Kills: " + ScoreManager.Instance.EnemiesKilled;
-    }
-
-    private void OnEnable()
-    {
-        SurvivorGameManager.Instance.StateChanged += OnStateChanged;
-    }
-
-    private void OnDisable()
-    {
-        if (SurvivorGameManager.Instance != null)
-        {
-            SurvivorGameManager.Instance.StateChanged -= OnStateChanged;
-        }
-    }
-
-    private void OnStateChanged(GameState state)
-    {
-        gameObject.SetActive(state == GameState.Playing);
     }
 }

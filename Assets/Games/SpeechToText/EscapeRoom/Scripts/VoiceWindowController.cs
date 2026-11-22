@@ -1,41 +1,36 @@
 using UnityEngine;
 
-public class VoiceWindowController : MonoBehaviour
+namespace GameHub.EscapeRoom
 {
-    public Transform LeftShutter;
-    public Transform RightShutter;
-
-    public float OpenLeft = -7.5f;
-    public float OpenRight = 7f;
-
-    public float CloseLeft = -2.85f;
-    public float CloseRight = 2.15f;
-
-    public float Speed = 2f;
-    private bool isOpen = true;
-
-    public void OpenWindow()
+    public class VoiceWindowController : MonoBehaviour
     {
-        isOpen = true;
-    }
+        [SerializeField] private Transform leftShutter;
+        [SerializeField] private Transform rightShutter;
 
-    public void CloseWindow()
-    {
-        isOpen = false;
-    }
+        [SerializeField] private float openLeftX = -7.5f;
+        [SerializeField] private float openRightX = 7f;
+        [SerializeField] private float closedLeftX = -2.85f;
+        [SerializeField] private float closedRightX = 2.15f;
+        [SerializeField] private float speed = 2f;
 
-    public Vector3 ShutterPositions => new(LeftShutter.localPosition.x, RightShutter.localPosition.x, 0);
+        private bool isOpen = true;
 
-    private void Update()
-    {
-        Vector3 leftPos = LeftShutter.localPosition;
-        Vector3 rightPos = RightShutter.localPosition;
+        private void Update()
+        {
+            MoveShutter(leftShutter, isOpen ? openLeftX : closedLeftX);
+            MoveShutter(rightShutter, isOpen ? openRightX : closedRightX);
+        }
 
-        leftPos.x = Mathf.Lerp(leftPos.x, isOpen ? OpenLeft : CloseLeft, Time.deltaTime * Speed);
+        public void Close()
+        {
+            isOpen = false;
+        }
 
-        rightPos.x = Mathf.Lerp(rightPos.x, isOpen ? OpenRight : CloseRight, Time.deltaTime * Speed);
-
-        LeftShutter.localPosition = leftPos;
-        RightShutter.localPosition = rightPos;
+        private void MoveShutter(Transform shutter, float targetX)
+        {
+            Vector3 position = shutter.localPosition;
+            position.x = Mathf.Lerp(position.x, targetX, Time.deltaTime * speed);
+            shutter.localPosition = position;
+        }
     }
 }

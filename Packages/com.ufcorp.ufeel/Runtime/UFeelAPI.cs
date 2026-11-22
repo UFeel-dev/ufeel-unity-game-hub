@@ -32,7 +32,6 @@ namespace UFeel
 
         public static void RemoveRule(RuleKey key) => Rules.Remove(key);
 
-        /// <summary>Shared by every read in the current frame, so values stay consistent.</summary>
         internal static UFeelSnapshot Snapshot
         {
             get
