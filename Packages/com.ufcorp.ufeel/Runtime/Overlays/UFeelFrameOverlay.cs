@@ -119,7 +119,6 @@ namespace UFeel
 
             if (image != null)
             {
-                // Rows are stored top-down, but Unity textures are bottom-up, so flip vertically.
                 GUI.DrawTextureWithTexCoords(
                     new Rect(x, y, panelWidth, imageHeight),
                     image,
