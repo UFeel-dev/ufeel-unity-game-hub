@@ -6,41 +6,29 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/TestingRoom/TestingRoom.unity
+    path: Assets/Hub/Scenes/GameHub.unity
     guid: aa48f6d4e0f5ee7c48a295ea29a6bfca
   - enabled: 1
-    path: Assets/Scenes/Emotions/Maze.unity
+    path: Assets/Games/Emotions/Maze/Scenes/Maze.unity
     guid: a302f46c670e34aefb088595c9cf204f
   - enabled: 1
-    path: Assets/Scenes/Emotions/Animals.unity
+    path: Assets/Games/Emotions/Animals/Scenes/Animals.unity
     guid: 8d9f3754d9202e18ba7f8b61e029e895
   - enabled: 1
-    path: Assets/Scenes/Emotions/Environment.unity
-    guid: 6940be7684c86c90f9810bb42a02c169
-  - enabled: 1
-    path: Assets/Scenes/EyeTracking/Runner.unity
-    guid: 3ac06909940e7262e8c4d614c4f5764c
-  - enabled: 1
-    path: Assets/Scenes/EyeTracking/Survivor.unity
+    path: Assets/Games/EyeTracking/Survivor/Scenes/Survivor.unity
     guid: 4e4a33e4774e6a0cd9d884f8d3bcb7dc
   - enabled: 1
-    path: Assets/Scenes/SpeechToText/EscapeRoom.unity
+    path: Assets/Games/SpeechToText/EscapeRoom/Scenes/EscapeRoom.unity
     guid: 6455e8cf3238604b3bdc1381928d3e48
   - enabled: 1
-    path: Assets/Scenes/SpeechToText/UnlockWorld.unity
-    guid: d9cb4ef7d1e951f0aa351d21be351839
-  - enabled: 1
-    path: Assets/Scenes/HeartRate/HorrorRoom.unity
+    path: Assets/Games/HeartRate/HorrorRoom/Scenes/HorrorRoom.unity
     guid: 57a982748e7ce0b839aac53579df0df8
   - enabled: 1
-    path: Assets/Scenes/HeartRate/RhythmGame.unity
+    path: Assets/Games/HeartRate/RhythmGame/Scenes/RhythmGame.unity
     guid: a7efac3f0da73e7439004acd29203987
   - enabled: 1
-    path: Assets/Scenes/EyeTracking/Car.unity
+    path: Assets/Games/EyeTracking/Car/Scenes/Car.unity
     guid: 6170d2c256c9e91d9b878c8ef374679f
-  - enabled: 0
-    path: Assets/Scenes/API/APITesting.unity
-    guid: 9ffba2e96027a7a06a407830352662e3
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

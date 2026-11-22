@@ -109,8 +109,8 @@ namespace UFeel
 
             GUIStyle style = TextStyle(scale);
             float lineHeight = TextSize * scale * LineSpacing;
-            float textHeight = lines.Length * lineHeight + Padding * 2 * scale;
-            var box = new Rect(x, y, panelWidth, imageHeight + textHeight);
+            float textHeight = (lines.Length * lineHeight) + (Padding * 2 * scale);
+            Rect box = new(x, y, panelWidth, imageHeight + textHeight);
 
             Color previous = GUI.color;
             GUI.color = Backdrop;
@@ -125,10 +125,10 @@ namespace UFeel
                     new Rect(0.0F, 1.0F, 1.0F, -1.0F));
             }
 
-            float textY = y + imageHeight + Padding * scale;
+            float textY = y + imageHeight + (Padding * scale);
             foreach (string line in lines)
             {
-                GUI.Label(new Rect(x + Padding * scale, textY, panelWidth - Padding * 2 * scale, lineHeight), line, style);
+                GUI.Label(new Rect(x + (Padding * scale), textY, panelWidth - (Padding * 2 * scale), lineHeight), line, style);
                 textY += lineHeight;
             }
 
@@ -166,7 +166,7 @@ namespace UFeel
             if (!UFeelAPI.SpeechToText.IsRunning)
                 return "Disabled";
 
-            return string.IsNullOrEmpty(UFeelAPI.SpeechToText.Current) ? "..." : UFeelAPI.SpeechToText.Current!;
+            return string.IsNullOrEmpty(UFeelAPI.SpeechToText.Current) ? "..." : UFeelAPI.SpeechToText.Current;
         }
 
         private static string HeartRateLine()

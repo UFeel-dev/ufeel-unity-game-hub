@@ -1,0 +1,79 @@
+# Scene Reference
+
+> [<- Game Hub](README.md)
+
+Scenes live in `Assets/Hub/Scenes` and `Assets/Games/<Category>/<Game>/Scenes`. Every scene below is in the build settings.
+
+## Game Hub (`GameHub`)
+
+**Role:** Lobby used to reach every game.
+
+- First-person controller with mouse look.
+- Door carousel: select a door with the panel, the keyboard or the eyes, then press **E** in front of it.
+- Doors whose game is not ready show "In Progress" and stay closed.
+
+**Main scripts:** `CarouselRotator`, `DoorSelectionManager`, `DoorTrigger`, `SceneLoader`
+
+## Emotion-Based Games
+
+### Maze
+
+**Role:** Emotion-driven labyrinth.
+
+**Main script:** `MazeManager`
+
+**See also:** [Maze README](../Emotions/Maze/README.md)
+
+### Animals
+
+**Role:** Emotion-based memory game.
+
+**Main script:** `AnimalsManager`
+
+**See also:** [Animals README](../Emotions/Animals/README.md)
+
+## Eye-Tracking Games
+
+### Car
+
+**Role:** Vehicle driven with the eyes.
+
+**Main script:** `VehicleController`
+
+**See also:** [Car README](../EyeTracking/Car/README.md)
+
+### Survivor
+
+**Role:** Eye-tracking survival game.
+
+**Status:** In progress, its door shows "In Progress".
+
+**Main script:** `SurvivorGameManager`
+
+## Speech-To-Text Games
+
+### Escape Room
+
+**Role:** Voice-controlled escape room (French commands).
+
+**Main script:** `SpeechManager`
+
+**See also:** [Escape Room README](../SpeechToText/EscapeRoom/README.md)
+
+## Heart Rate Games
+
+### Rhythm Game
+
+**Role:** Rhythm game whose tempo follows the heart rate.
+
+**Main script:** `RhythmGameManager`
+
+**See also:** [Rhythm Game README](../HeartRate/RhythmGame/README.md)
+
+### Horror Room
+
+**Role:** Proof of concept: a heartbeat sound and a red flash follow the heart rate.
+
+**Status:** In progress, its door shows "In Progress".
+
+**Main script:** `HeartbeatEffects`

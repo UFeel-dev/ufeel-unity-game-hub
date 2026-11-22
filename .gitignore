@@ -73,33 +73,20 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
-# Others
-
+# Editors
 .vscode
-__pycache__
 
-# TO AVOID PUSHING TOO BIG ASSETS, DOWNLOAD THE CORRESPONDING UNITY PACKAGE INSTEAD
+# Large Asset Store packs used by the Car terrain, imported locally from their Unity packages
 Assets/TerrainSampleAssets
 Assets/TerrainSampleAssets.meta
 Assets/GrassFlowers
 Assets/GrassFlowers.meta
-Assets/HDRPDefaultResources
-Assets/HDRPDefaultResources.meta
-Assets/Watermelon
-Assets/Watermelon.meta
-Assets/YughuesFreeGroundMaterials
-Assets/YughuesFreeGroundMaterials.meta
-Assets/TextMesh Pro
-Assets/TextMesh Pro.meta
-# TODO: push when we can
 
+# Native libraries, except the UFeel plugin
 *.so
 *.so*
 !/Packages/com.ufcorp.ufeel/Runtime/Plugins/**
 *.a
-*.blob
-*.log
-venv
 
+*.log
 BUILDS
-.coverage

@@ -1,0 +1,79 @@
+{
+    "DoorHolderPrefab": "Assets/Hub/Prefabs/DoorHolder.prefab",
+    "DoorHoldersPath": "Environment/CarouselSystem/CarouselTop/DoorHolders",
+    "WallToDisablePath": "Environment/Room/Wall_Front/Removable",
+    "DoorCount": 44,
+    "Radius": 19.7,
+    "SpecialDoors": [
+        {
+            "DoorIndex": 0,
+            "DoorName": "Emotions - Maze",
+            "TargetSceneName": "Maze",
+            "DoorColor": { "r": 1.0, "g": 0.6666667, "b": 0.0, "a": 1.0 },
+            "InProgress": false
+        },
+        {
+            "DoorIndex": 1,
+            "DoorName": "Emotions - Animals",
+            "TargetSceneName": "Animals",
+            "DoorColor": { "r": 1.0, "g": 0.92156863, "b": 0.35294116, "a": 1.0 },
+            "InProgress": false
+        },
+        {
+            "DoorIndex": 2,
+            "DoorName": "Emotions - Environment",
+            "TargetSceneName": "Environment",
+            "DoorColor": { "r": 1.0, "g": 0.47058815, "b": 0.0, "a": 1.0 },
+            "InProgress": true
+        },
+        {
+            "DoorIndex": 17,
+            "DoorName": "Eye Tracking - Survivor",
+            "TargetSceneName": "Survivor",
+            "DoorColor": { "r": 0.0, "g": 0.8627451, "b": 0.78431374, "a": 1.0 },
+            "InProgress": true
+        },
+        {
+            "DoorIndex": 18,
+            "DoorName": "Eye Tracking - Car",
+            "TargetSceneName": "Car",
+            "DoorColor": { "r": 0.3003738, "g": 0.6508866, "b": 0.8490566, "a": 1.0 },
+            "InProgress": false
+        },
+        {
+            "DoorIndex": 19,
+            "DoorName": "Eye Tracking - Runner",
+            "TargetSceneName": "Runner",
+            "DoorColor": { "r": 0.0, "g": 0.5490196, "b": 1.0, "a": 1.0 },
+            "InProgress": true
+        },
+        {
+            "DoorIndex": 27,
+            "DoorName": "Speech To Text - Escape Room",
+            "TargetSceneName": "EscapeRoom",
+            "DoorColor": { "r": 0.74509805, "g": 0.31372547, "b": 1.0, "a": 1.0 },
+            "InProgress": false
+        },
+        {
+            "DoorIndex": 28,
+            "DoorName": "Speech To Text - Unlock World",
+            "TargetSceneName": "UnlockWorld",
+            "DoorColor": { "r": 0.5098039, "g": 0.0, "b": 1.0, "a": 1.0 },
+            "InProgress": true
+        },
+        {
+            "DoorIndex": 37,
+            "DoorName": "Heart Rate - Horror",
+            "TargetSceneName": "HorrorRoom",
+            "DoorColor": { "r": 1.0, "g": 0.1568627, "b": 0.1568627, "a": 1.0 },
+            "InProgress": true
+        },
+        {
+            "DoorIndex": 38,
+            "DoorName": "Heart Rate - Rhythm",
+            "TargetSceneName": "RhythmGame",
+            "DoorColor": { "r": 1.0, "g": 0.35294116, "b": 0.62745106, "a": 1.0 },
+            "InProgress": false
+        }
+    ]
+}

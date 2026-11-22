@@ -1,8 +1,8 @@
-# EscapeRoom
+# Escape Room
 
-> [<- Scene Reference](../../TestingRoom/Scenes.md)
+> [<- Scene Reference](../../GameHub/Scenes.md)
 
-![](../../Assets/escape_room.png)
+![Escape room](../../Assets/escape_room.png)
 
 ## Role
 
@@ -10,7 +10,7 @@ Voice-controlled escape room experience.
 
 ## Gameplay
 
-- The player interacts with the environment using spoken commands.
+- The player interacts with the environment using spoken French commands.
 - Different actions must be performed in the correct order.
 - Progress depends on successful speech recognition.
 
@@ -25,5 +25,6 @@ Solve the room's challenges and escape using voice commands.
 ## Keyboard shortcuts
 
 | Key | Action |
-|---|---|
+| --- | --- |
 | **H** | Display a hint |
+| **V** | Restart speech detection |

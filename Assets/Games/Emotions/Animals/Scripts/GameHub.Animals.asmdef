@@ -1,0 +1,11 @@
+{
+    "name": "GameHub.Animals",
+    "rootNamespace": "GameHub.Animals",
+    "references": [
+        "GameHub.Common",
+        "UFeel",
+        "UFeel.Core",
+        "Unity.TextMeshPro",
+        "UnityEngine.UI"
+    ]
+}

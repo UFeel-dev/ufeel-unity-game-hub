@@ -10,7 +10,7 @@ namespace UFeel
         {
             public static HeartRateResult Result => Read(DetectionType.HeartRate).HeartRate;
 
-            /// <summary>Beats per minute, or 0 without a valid reading.</summary>
+            /// <summary>Gets the beats per minute, or 0 without a valid reading.</summary>
             public static uint Current
             {
                 get
