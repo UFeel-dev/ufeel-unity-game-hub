@@ -1,0 +1,4 @@
+{
+    "name": "RhythmGame",
+    "references": ["UFeel", "UFeel.Core", "UnityEngine.UI", "GameInput", "Utils"]
+}

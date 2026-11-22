@@ -1,4 +1,7 @@
 {
-  "name": "UFeel",
-  "autoReferenced": false
+    "name": "UFeel",
+    "references": [
+        "UFeel.Core"
+    ],
+    "autoReferenced": false
 }

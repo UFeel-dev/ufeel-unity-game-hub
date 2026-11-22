@@ -25,3 +25,12 @@ Drive the vehicle and successfully navigate through the environment using eye tr
 ## Main Script
 
 `VehicleController`
+
+## Keyboard shortcuts
+
+These keyboard shortcuts are available in all scenes:
+
+| Key | Action |
+| --- | --- |
+| **W** | Move forward (in car) |
+| **S** | Move backward (in car) |

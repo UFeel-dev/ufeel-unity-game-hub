@@ -2,9 +2,9 @@ using UFeel;
 
 public class EmotionCondition : FogCondition
 {
-    private EmotionData.EmotionType _emotionType;
+    private EmotionType _emotionType;
 
-    public EmotionCondition(EmotionData.EmotionType emotionType)
+    public EmotionCondition(EmotionType emotionType)
     {
         _emotionType = emotionType;
     }

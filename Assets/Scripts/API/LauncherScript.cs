@@ -1,4 +1,3 @@
-using UFeel;
 using UnityEditor;
 using UnityEngine;
 
@@ -6,16 +5,14 @@ public class LauncherScript : MonoBehaviour
 {
     private int currentStep = 0;
 
-    private async void Start()
+    private void Start()
     {
-        await UFeelAPI.StartAPI();
-
         ApplyStep();
     }
 
     private void Update()
     {
-        if (Input.GetKeyUp(KeyCode.N))
+        if (LayoutInput.GetKeyUp(KeyCode.N))
         {
             currentStep++;
             currentStep = Mathf.Clamp(currentStep, 0, 6);
@@ -23,7 +20,7 @@ public class LauncherScript : MonoBehaviour
             ApplyStep();
         }
 
-        if (Input.GetKeyUp(KeyCode.B))
+        if (LayoutInput.GetKeyUp(KeyCode.B))
         {
             currentStep--;
             currentStep = Mathf.Clamp(currentStep, 0, 6);
@@ -34,9 +31,6 @@ public class LauncherScript : MonoBehaviour
 
     private static void StopUnity()
     {
-        UFeelAPI.StopAPI();
-        UFeelAPI.Status();
-
 #if UNITY_EDITOR
         EditorApplication.isPlaying = false;
 #else
@@ -44,41 +38,27 @@ public class LauncherScript : MonoBehaviour
 #endif
     }
 
-    private void StopAllDetections()
-    {
-        UFeelAPI.StopEmotionDetection();
-        UFeelAPI.StopEyeTrackingDetection();
-        UFeelAPI.StopSpeechDetection();
-        UFeelAPI.StopHeartRateDetection();
-    }
-
     private void ApplyStep()
     {
-        StopAllDetections();
-
         switch (currentStep)
         {
             case 0:
                 break;
 
             case 1:
-                Debug.Log("=== Emotion Detection ===");
-                UFeelAPI.StartEmotionDetection();
+                Debug.Log("=== Eye Tracking Detection ===");
                 break;
 
             case 2:
-                Debug.Log("=== Eye Tracking Detection ===");
-                UFeelAPI.StartEyeTrackingDetection();
+                Debug.Log("=== Emotion Detection ===");
                 break;
 
             case 3:
                 Debug.Log("=== Speech Detection ===");
-                UFeelAPI.StartSpeechDetection();
                 break;
 
             case 4:
                 Debug.Log("=== Heart Rate Detection ===");
-                UFeelAPI.StartHeartRateDetection();
                 break;
 
             case 5:

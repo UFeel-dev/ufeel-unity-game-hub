@@ -9,9 +9,9 @@ public enum AnimalType
 {
     Cat,
     Deer,
-    Spider,
     Tiger,
-    Penguin
+    Penguin,
+    Spider
 }
 
 public class AnimalsManager : MonoBehaviour
@@ -35,14 +35,14 @@ public class AnimalsManager : MonoBehaviour
 
     private List<AnimalType> animalsList = new();
     private GameObject currentAnimalGO;
-    private readonly Dictionary<AnimalType, EmotionData.EmotionType> animalEmotions =
+    private readonly Dictionary<AnimalType, EmotionType> animalEmotions =
         new()
     {
-        { AnimalType.Cat, EmotionData.EmotionType.Happiness },
-        { AnimalType.Deer, EmotionData.EmotionType.Surprise },
-        { AnimalType.Spider, EmotionData.EmotionType.Fear },
-        { AnimalType.Tiger, EmotionData.EmotionType.Anger },
-        { AnimalType.Penguin, EmotionData.EmotionType.Sadness }
+        { AnimalType.Cat, EmotionType.Happy },
+        { AnimalType.Deer, EmotionType.Surprised },
+        { AnimalType.Tiger, EmotionType.Angry },
+        { AnimalType.Penguin, EmotionType.Sad },
+        { AnimalType.Spider, EmotionType.Fearful }
     };
 
     public Slider EmotionProgressBar;
@@ -56,10 +56,7 @@ public class AnimalsManager : MonoBehaviour
 
     private void Start()
     {
-        UFeelAPI.ToggleOffEverything();
         UFeelDebugHUD.Clear();
-
-        InitializeDetection();
 
         if (EmotionProgressBar != null)
         {
@@ -74,7 +71,7 @@ public class AnimalsManager : MonoBehaviour
         while (currentLevel <= 5)
         {
             yield return StartCoroutine(InitLevel(currentLevel));
-            yield return StartCoroutine(PlayLevel(currentLevel));
+            yield return StartCoroutine(PlayLevel());
 
             if (timer <= 0 && animalsList.Count > 0)
             {
@@ -102,9 +99,9 @@ public class AnimalsManager : MonoBehaviour
         {
             case 1: newAnimalInfo = "Cat -> Happiness"; break;
             case 2: newAnimalInfo = "Deer -> Surprise"; break;
-            case 3: newAnimalInfo = "Spider -> Fear"; break;
-            case 4: newAnimalInfo = "Tiger -> Anger"; break;
-            case 5: newAnimalInfo = "Penguin -> Sadness"; break;
+            case 3: newAnimalInfo = "Tiger -> Anger"; break;
+            case 4: newAnimalInfo = "Penguin -> Sadness"; break;
+            case 5: newAnimalInfo = "Spider -> Fear"; break;
         }
 
         InstructionText.text = $"LEVEL {level}\n\n{newAnimalInfo}";
@@ -115,7 +112,7 @@ public class AnimalsManager : MonoBehaviour
         isLevelActive = true;
     }
 
-    private IEnumerator PlayLevel(int level)
+    private IEnumerator PlayLevel()
     {
         InstructionText.text = string.Empty;
         SpawnAnimal();
@@ -123,7 +120,9 @@ public class AnimalsManager : MonoBehaviour
         while (isLevelActive && timer > 0)
         {
             timer -= Time.deltaTime;
-            TimerText.text = $"Time: 0:{Mathf.CeilToInt(timer)}";
+            string text = $"Time: 0:{Mathf.CeilToInt(timer)}";
+            TimerText.SetText(text);
+
             if (animalsList.Count == 0 && currentAnimalGO == null)
             {
                 isLevelActive = false;
@@ -138,15 +137,18 @@ public class AnimalsManager : MonoBehaviour
     {
         List<AnimalType> pool = new() { AnimalType.Cat };
         if (level >= 2) pool.Add(AnimalType.Deer);
-        if (level >= 5) pool.Add(AnimalType.Spider);
         if (level >= 3) pool.Add(AnimalType.Tiger);
         if (level >= 4) pool.Add(AnimalType.Penguin);
+        if (level >= 5) pool.Add(AnimalType.Spider);
 
         List<AnimalType> result = new();
         int totalTarget = GetAnimalNumber(level);
-        const int minPerAnimal = 2;
+        const int minPerAnimal = 1;
 
-        // adding at least 2 of each type in the pool
+        AnimalType firstAnimal = (AnimalType)(level - 1);
+        Debug.Log($"First animal for level {level} is {firstAnimal}");
+        result.Add(firstAnimal);
+
         foreach (AnimalType type in pool)
         {
             for (int i = 0; i < minPerAnimal; i++)
@@ -170,7 +172,7 @@ public class AnimalsManager : MonoBehaviour
     // Fisher-Yates shuffle algorithm to randomize the order of animals in the list
     private static void Shuffle<T>(List<T> list)
     {
-        for (int i = 0; i < list.Count; i++)
+        for (int i = 1; i < list.Count; i++)
         {
             T temp = list[i];
             int randomIndex = Random.Range(i, list.Count);
@@ -203,7 +205,8 @@ public class AnimalsManager : MonoBehaviour
         score++;
         if (ScoreText != null)
         {
-            ScoreText.text = $"Score: {score}";
+            string tmp = $"Score: {score}";
+            ScoreText.SetText(tmp);
         }
     }
 
@@ -234,33 +237,23 @@ public class AnimalsManager : MonoBehaviour
     {
         return level switch
         {
-            1 => 3,
-            2 => 5,
-            3 => 7,
-            4 => 9,
-            5 => 12,
-            _ => 3,
+            1 => 1,
+            2 => 2,
+            3 => 3,
+            4 => 4,
+            5 => 5,
+            _ => 1,
         };
-    }
-
-    private static void InitializeDetection()
-    {
-        UFeelAPI.StartEmotionDetection();
-        UFeelAPI.Status();
     }
 
     private void Update()
     {
-        if (Input.GetKeyUp(KeyCode.V))
-        {
-            InitializeDetection();
-        }
         if (!isLevelActive || !isTrackingEmotion || currentAnimalGO == null) return;
 
-        EmotionData.EmotionType? dominantEmotion = UFeelAPI.DominantEmotion;
-        EmotionData.EmotionType targetEmotion = animalEmotions[currentTargetAnimal];
+        EmotionType? dominantEmotion = UFeelAPI.Emotion.Dominant;
+        EmotionType targetEmotion = animalEmotions[currentTargetAnimal];
 
-        if (dominantEmotion.HasValue && dominantEmotion.Value == targetEmotion)
+        if (dominantEmotion == targetEmotion)
         {
             currentProgress += Time.deltaTime / MaxProgressDuration;
             if (barFillImage != null) barFillImage.color = Color.green;

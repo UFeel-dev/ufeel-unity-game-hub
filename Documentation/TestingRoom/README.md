@@ -18,6 +18,16 @@ Unity project showcasing the [UFeel](../../Packages/com.ufcorp.ufeel) biometric 
 - UFeel (emotion detection, eye tracking, speech, heart rate via webcam)
 - C# - Unity Physics and Input System
 
+## Keyboard shortcuts
+
+| Key | Action |
+|---|---|
+| **ZQSD / Arrow keys** | Move around |
+| **E** | Enter room |
+| **N** | Toggle room selection with eye-tracking |
+| **M** | Toggle Pause Menu |
+| **Tab** | Toggle selection between room movement and dropdown
+
 ## Documentation
 
 | Document | Description |

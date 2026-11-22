@@ -599,7 +599,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 1, y: 1, z: 4}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &184183142
 MeshRenderer:
@@ -1952,7 +1952,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 4, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &629643513
 MeshRenderer:
@@ -2447,7 +2447,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 1, y: 1, z: 4}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &787531102
 MeshRenderer:
@@ -2555,7 +2555,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 1, y: 1, z: 4}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &801752807
 MeshRenderer:
@@ -4139,7 +4139,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 4, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &1548760897
 MeshRenderer:
@@ -4273,20 +4273,58 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6030289579915068387, guid: 35ab7df63f5d63649a89a1935907e2bb, type: 3}
+      propertyPath: m_Size.x
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 6030289579915068387, guid: 35ab7df63f5d63649a89a1935907e2bb, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6373382304501097413, guid: 35ab7df63f5d63649a89a1935907e2bb, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: b8bb6c06e92452b61a310315b1f8e94d, type: 2}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 6030289579915068387, guid: 35ab7df63f5d63649a89a1935907e2bb, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3939293063410420708, guid: 35ab7df63f5d63649a89a1935907e2bb, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1564726538}
   m_SourcePrefab: {fileID: 100100000, guid: 35ab7df63f5d63649a89a1935907e2bb, type: 3}
 --- !u!4 &1564726536 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5204438975830530218, guid: 35ab7df63f5d63649a89a1935907e2bb, type: 3}
   m_PrefabInstance: {fileID: 1564726535}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1564726537 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3939293063410420708, guid: 35ab7df63f5d63649a89a1935907e2bb, type: 3}
+  m_PrefabInstance: {fileID: 1564726535}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &1564726538
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1564726537}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.8, y: 2.1, z: 0.15}
+  m_Center: {x: -0.3666397, y: 1.0850114, z: -0.0031797886}
 --- !u!1001 &1570853705
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4574,7 +4612,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 1, y: 1, z: 4}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &1666501962
 MeshRenderer:
@@ -5039,7 +5077,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 1, y: 1, z: 4}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &1863760454
 MeshRenderer:
@@ -5147,7 +5185,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 1, y: 1, z: 4}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &1869253472
 MeshRenderer:
@@ -5376,7 +5414,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 1, y: 1, z: 4}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &1898785039
 MeshRenderer:

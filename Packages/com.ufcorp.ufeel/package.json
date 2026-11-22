@@ -1,8 +1,8 @@
 {
   "name": "com.ufcorp.ufeel",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "displayName": "UFeel",
-  "description": "A C# wrapper for the UFeel library that enables emotion detection, eye tracking, speech-to-text, and heartbeat sensing in Unity projects through a unified API.",
+  "description": "Unity integration of the UFeel native library (emotion detection, eye tracking, speech-to-text, heart rate) through the UFeel.Core C# adapter.",
   "unity": "6000.0",
   "author": {
     "name": "ufCorp",

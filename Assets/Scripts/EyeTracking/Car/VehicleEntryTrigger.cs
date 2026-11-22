@@ -34,7 +34,7 @@ public class VehicleEntryTrigger : MonoBehaviour
 
     private void Update()
     {
-        if (hasEntered && Input.GetKeyDown(KeyCode.E))
+        if (hasEntered && LayoutInput.GetKeyDown(KeyCode.E))
         {
             ExitVehicle();
         }

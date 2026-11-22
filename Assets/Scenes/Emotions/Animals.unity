@@ -582,9 +582,9 @@ Transform:
   m_Children:
   - {fileID: 1474675654}
   - {fileID: 1850088678}
-  - {fileID: 45812041}
   - {fileID: 1581083300}
   - {fileID: 1993335763}
+  - {fileID: 45812041}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &348793224
@@ -1198,9 +1198,9 @@ MonoBehaviour:
   AnimalPrefabs:
   - {fileID: 1474675655}
   - {fileID: 1850088679}
-  - {fileID: 45812042}
   - {fileID: 1581083301}
   - {fileID: 1993335764}
+  - {fileID: 45812042}
   InstructionText: {fileID: 615035620}
   TimerText: {fileID: 1942205653}
   ScoreText: {fileID: 967958411}

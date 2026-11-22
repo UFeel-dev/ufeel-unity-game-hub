@@ -16,21 +16,21 @@ public class UFeelDebugHUD : MonoBehaviour
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void AutoCreate()
     {
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
+// #if UNITY_EDITOR || DEVELOPMENT_BUILD
         if (_instance != null)
             return;
 
         GameObject obj = new("UFeelDebugHUD");
         _instance = obj.AddComponent<UFeelDebugHUD>();
         DontDestroyOnLoad(obj);
-#endif
+// #endif
     }
 
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
+// #if UNITY_EDITOR || DEVELOPMENT_BUILD
     internal const bool DEBUG_MODE = true;
-#else
-    internal const bool DEBUG_MODE = false;
-#endif
+// #else
+//     internal const bool DEBUG_MODE = false;
+// #endif
 
     private static readonly Dictionary<string, Func<string>> _entries = new();
 
@@ -118,6 +118,13 @@ public class UFeelDebugHUD : MonoBehaviour
             return;
 #endif
 
+        float scaleX = Screen.width / 1920f * 2;
+        float scaleY = Screen.height / 1080f * 2;
+        float scale = Mathf.Min(scaleX, scaleY);
+
+        Matrix4x4 oldMatrix = GUI.matrix;
+        GUI.matrix = Matrix4x4.Scale(new Vector3(scale, scale, 1));
+
         (float width, List<string> lines) = GetWidthAndLines();
         float height = 40 + (_entries.Count * LineHeight);
 
@@ -129,5 +136,6 @@ public class UFeelDebugHUD : MonoBehaviour
             GUI.Label(new Rect(BaseX + Padding, currentY, width - (Padding * 2), LineHeight), line);
             currentY += LineHeight;
         }
+        GUI.matrix = oldMatrix;
     }
 }

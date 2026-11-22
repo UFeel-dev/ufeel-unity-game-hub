@@ -95,6 +95,7 @@ Assets/TextMesh Pro.meta
 
 *.so
 *.so*
+!/Packages/com.ufcorp.ufeel/Runtime/Plugins/**
 *.a
 *.blob
 *.log

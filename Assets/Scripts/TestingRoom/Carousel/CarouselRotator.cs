@@ -13,10 +13,13 @@ public class CarouselRotator : MonoBehaviour
     public float targetAngle;
     public float rotationSmoothSpeed = 3f;
 
+    private static float acceleratedRotationSpeedMultiplier = 5f;
+    private bool rotationSpeedAccerelated = false;
+
     private Transform[] doorHolders;
     private float currentAngle;
 
-    void Start()
+    private void Start()
     {
         doorHolders = new Transform[doorHoldersParent.childCount];
 
@@ -50,10 +53,20 @@ public class CarouselRotator : MonoBehaviour
 
     private void HandleInput()
     {
-        if (Input.GetKeyDown(KeyCode.R))
+        // if (Input.GetKeyDown(KeyCode.R))
+        // {
+        //     isRotatingContinuously = !isRotatingContinuously;
+        // }
+
+        if (LayoutInput.GetKeyDown(KeyCode.F))
         {
-            isRotatingContinuously = !isRotatingContinuously;
+            ToggleRotationSpeedAcceleration();
         }
+    }
+
+    private void ToggleRotationSpeedAcceleration()
+    {
+        rotationSpeedAccerelated = !rotationSpeedAccerelated;
     }
 
     private void PositionDoors()
@@ -84,7 +97,8 @@ public class CarouselRotator : MonoBehaviour
 
     public void RotateToAngle(float angle)
     {
-        float newAngle = Mathf.MoveTowardsAngle(currentAngle, angle, rotationSmoothSpeed * Time.deltaTime);
+        float actualRotationSpeed = rotationSpeedAccerelated ? rotationSmoothSpeed * acceleratedRotationSpeedMultiplier : rotationSmoothSpeed;
+        float newAngle = Mathf.MoveTowardsAngle(currentAngle, angle, actualRotationSpeed * Time.deltaTime);
         currentAngle = newAngle;
         PositionDoors();
 

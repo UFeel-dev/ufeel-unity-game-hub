@@ -2,14 +2,15 @@
 
 > [<- Testing Room](README.md)
 
-## Global Controls
+## Keyboard shortcuts
 
-These shortcuts are available in all scenes:
+These keyboard shortcuts are available in all scenes:
 
-| Key                           | Action                                     |
-| ----------------------------- | ------------------------------------------ |
-| **P**                         | Permanently stop the Python camera process |
-| **,** (M on QWERTY keyboards) | Open the debug/menu interface              |
+| Key | Action |
+| --- | --- |
+| **ZQSD / Arrow keys** | Move around |
+| **M** | Toggle Pause Menu |
+| **V** | Start again sensors |
 
 ## Base Scene (TestingRoom)
 
@@ -21,8 +22,6 @@ Main hub used to access all available experiences.
 
 - First-person controller.
 - Mouse controls camera rotation.
-- **W**: Move forward.
-- **S**: Move backward.
 - Scene selection through interactive doors.
 - Lighting is intentionally disabled.
 
@@ -80,4 +79,4 @@ All other scenes can be accessed by entering the corresponding door.
 
 **Main Script:** `GameManager`
 
-**See also:** [RhythmGame README](../HeartRateSensor/RhythmGame/README.md)
+**See also:** [RhythmGame README](../HeartRate/RhythmGame/README.md)

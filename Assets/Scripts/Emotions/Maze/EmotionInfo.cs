@@ -3,10 +3,10 @@ using UnityEngine;
 
 public readonly struct EmotionInfo
 {
-    public EmotionData.EmotionType Emotion { get; }
+    public EmotionType Emotion { get; }
     public Color Color { get; }
 
-    public EmotionInfo(EmotionData.EmotionType emotion, Color color)
+    public EmotionInfo(EmotionType emotion, Color color)
     {
         Emotion = emotion;
         Color = color;
@@ -17,18 +17,27 @@ public readonly struct EmotionInfo
         return Emotions[Random.Range(0, Emotions.Length)];
     }
 
+    public static EmotionInfo GetRandomEmotionExcept(EmotionType excluded)
+    {
+        int excludedIndex = System.Array.FindIndex(Emotions, info => info.Emotion == excluded);
+        if (excludedIndex < 0)
+            return GetRandomEmotion();
+        int index = Random.Range(0, Emotions.Length - 1);
+        return Emotions[index >= excludedIndex ? index + 1 : index];
+    }
+
     public static readonly EmotionInfo[] Emotions =
     {
         new(
-            EmotionData.EmotionType.Happiness,
+            EmotionType.Happy,
             new Color(1f, 1f, 0f, 0.4f)
         ),
         new(
-            EmotionData.EmotionType.Surprise,
+            EmotionType.Surprised,
             new Color(1f, 0.5f, 0f, 0.4f)
         ),
         new(
-            EmotionData.EmotionType.Fear,
+            EmotionType.Fearful,
             new Color(0f, 0f, 1f, 0.4f)
         )
     };

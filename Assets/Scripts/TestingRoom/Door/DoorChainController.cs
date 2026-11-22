@@ -26,7 +26,7 @@ public class DoorChainController : MonoBehaviour
         ExtendChainAndMoveDoor();
     }
 
-    public void ToggleChainExtension()
+    public void ToggleChainExtension() // TODO: toggle the door light when the door is down
     {
         isExtending = !isExtending;
     }

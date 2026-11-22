@@ -19,6 +19,23 @@ public class FogTrigger : MonoBehaviour
         }
     }
 
+    private float timer;
+    [SerializeField] private float checkInterval = 0.5f;
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (!other.CompareTag("Adventurer"))
+            return;
+
+        timer += Time.deltaTime;
+
+        if (timer >= checkInterval)
+        {
+            timer = 0f;
+            MazeManager.Instance.TryMove(room, Direction);
+        }
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (!other.CompareTag("Adventurer"))

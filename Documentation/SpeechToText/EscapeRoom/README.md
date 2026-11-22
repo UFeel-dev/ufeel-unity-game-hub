@@ -21,3 +21,9 @@ Solve the room's challenges and escape using voice commands.
 ## Main Script
 
 `SpeechManager`
+
+## Keyboard shortcuts
+
+| Key | Action |
+|---|---|
+| **H** | Display a hint |
