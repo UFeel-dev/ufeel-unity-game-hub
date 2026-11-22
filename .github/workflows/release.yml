@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -67,6 +67,7 @@ jobs:
           version="$(sed -n 's/^  bundleVersion: //p' ProjectSettings/ProjectSettings.asset)"
           [[ -n "$version" ]] || { echo "::error::bundleVersion not found in ProjectSettings.asset"; exit 1; }
           echo "archive=GameHub-$version-linux-x86_64" >> "$GITHUB_OUTPUT"
+          echo "tag=v$version" >> "$GITHUB_OUTPUT"
 
       - name: Build with Unity
         uses: game-ci/unity-builder@v6
@@ -96,6 +97,23 @@ jobs:
       - name: Upload ZIP
         uses: actions/upload-artifact@v7
         with:
+          name: ${{ steps.version.outputs.archive }}
           path: dist/${{ steps.version.outputs.archive }}.zip
-          archive: false
           retention-days: 90
+
+      - name: Publish Release
+        if: github.ref == 'refs/heads/release' && !github.event.repository.fork
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.version.outputs.tag }}
+          ARCHIVE: ${{ steps.version.outputs.archive }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git tag "$TAG"
+          git push origin "refs/tags/$TAG"
+
+          gh release create "$TAG" "dist/$ARCHIVE.zip" \
+            --title "GameHub $TAG" \
+            --generate-notes
