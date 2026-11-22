@@ -24,7 +24,7 @@
             "doorName": "Emotions - Environment",
             "targetSceneName": "Environment",
             "doorColor": { "r": 1.0, "g": 0.47058815, "b": 0.0, "a": 1.0 },
-            "inProgress": false
+            "inProgress": true
         },
         {
             "doorIndex": 17,
@@ -59,7 +59,7 @@
             "doorName": "Speech To Text - Unlock World",
             "targetSceneName": "UnlockWorld",
             "doorColor": { "r": 0.5098039, "g": 0.0, "b": 1.0, "a": 1.0 },
-            "inProgress": false
+            "inProgress": true
         },
         {
             "doorIndex": 37,
