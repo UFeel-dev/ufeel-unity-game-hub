@@ -74,7 +74,6 @@ public class PauseMenu : MonoBehaviour
         }
 
         UFeelAPI.SpeechToText.StopDetection();
-        UFeelDebugHUD.Clear();
     }
 
     public void LoadLobby()

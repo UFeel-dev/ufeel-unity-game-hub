@@ -12,6 +12,7 @@ namespace UFeel
 
         private static UFeelAPI? instance;
         private static UFeelSession? session;
+        private static UFeelFrameOverlay? frameOverlay;
         private static CalibrationProfileStore? profiles;
         private static UFeelSnapshot frameSnapshot = UFeelSnapshot.Initial;
         private static int frameSnapshotFrame = -1;
@@ -73,6 +74,7 @@ namespace UFeel
             DontDestroyOnLoad(gameObject);
             calibrationOverlay = gameObject.AddComponent<UFeelCalibrationOverlay>();
             microphoneOverlay = gameObject.AddComponent<UFeelMicrophoneOverlay>();
+            frameOverlay = gameObject.AddComponent<UFeelFrameOverlay>();
 
             try
             {
@@ -96,7 +98,7 @@ namespace UFeel
                 processor.SetEyeTrackingHeadWeight(EyeTracking.HeadWeight);
                 Debug.Log($"UFeel started (eye-tracking profile: {profile}, {profiles.Path})");
 
-                session = new UFeelSession(processor);
+                session = new UFeelSession(processor, frameObserver: frameOverlay);
             }
             catch
             {

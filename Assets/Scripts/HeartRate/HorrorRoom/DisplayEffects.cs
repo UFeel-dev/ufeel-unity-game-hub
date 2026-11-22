@@ -31,8 +31,6 @@ public class DisplayEffects : MonoBehaviour
 
     private void Start()
     {
-        UFeelDebugHUD.Clear();
-
         bpm = GetBPM();
         RedFilter.color = new Color(1, 0, 0, 0);
 

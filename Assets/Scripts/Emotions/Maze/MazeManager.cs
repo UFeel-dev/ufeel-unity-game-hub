@@ -41,8 +41,6 @@ public class MazeManager : MonoBehaviour
 
     private void Start()
     {
-        UFeelDebugHUD.Clear();
-
         GenerateRooms();
 
         foreach (EmotionInfo emotionInfo in EmotionInfo.Emotions)
