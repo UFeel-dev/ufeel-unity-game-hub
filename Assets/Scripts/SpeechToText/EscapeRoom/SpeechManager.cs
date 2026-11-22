@@ -72,8 +72,6 @@ public class SpeechManager : MonoBehaviour
 
     private void Start()
     {
-        UFeelDebugHUD.Clear();
-
         StartSpeechDetection();
 
         radioLoopCoroutine = StartCoroutine(PlayRadioWithDelay());

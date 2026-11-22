@@ -56,8 +56,6 @@ public class AnimalsManager : MonoBehaviour
 
     private void Start()
     {
-        UFeelDebugHUD.Clear();
-
         if (EmotionProgressBar != null)
         {
             barFillImage = EmotionProgressBar.fillRect.GetComponent<Image>();

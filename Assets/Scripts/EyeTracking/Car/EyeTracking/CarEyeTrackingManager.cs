@@ -23,8 +23,6 @@ public sealed class CarEyeTrackingManager : MonoBehaviour
 
     private void Awake()
     {
-        UFeelDebugHUD.Clear();
-
         if (playerCamera == null)
         {
             playerCamera = FindFirstObjectByType<Camera>();

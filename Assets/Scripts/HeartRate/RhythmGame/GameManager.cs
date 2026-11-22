@@ -41,8 +41,6 @@ public class GameManager : MonoBehaviour
         _music.volume = 0.5f;
         _ECGBeep.volume = 0.25f;
 
-        UFeelDebugHUD.Clear();
-
         actionCoroutine = StartCoroutine(UpdateBPM());
         actionCoroutine2 = StartCoroutine(PlayECGBeep());
     }
