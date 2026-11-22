@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     private static WaitForSeconds _waitForSeconds1 = new(1f);
+    private static readonly WaitForSeconds _waitBeforeLobby = new(5f);
     public static GameManager Instance;
 
     public bool StartPlaying;
@@ -32,6 +33,8 @@ public class GameManager : MonoBehaviour
     public AudioSource _music;
     public AudioSource _ECGBeep;
 
+    public bool IsGameOver { get; private set; }
+
     private void Start()
     {
         Instance = this;
@@ -46,20 +49,54 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
+        if (IsGameOver)
+        {
+            return;
+        }
+
         if (!StartPlaying && Input.anyKeyDown)
         {
             StartPlaying = true;
             Bs.Started = true;
             _music.Play();
         }
-        if (_slider.value <= 0)
+
+        if (StartPlaying && _slider.value <= _slider.minValue)
         {
-            // DISPLAY GAME OVER SCREEN
+            GameOver();
         }
+    }
+
+    private void GameOver()
+    {
+        IsGameOver = true;
+        Bs.Started = false;
+        _music.Stop();
+
+        if (actionCoroutine2 != null)
+        {
+            StopCoroutine(actionCoroutine2);
+            actionCoroutine2 = null;
+        }
+
+        ScoreText.text = $"<color=red>Game Over</color>\nScore: {CurrentScore}";
+        StartCoroutine(ReturnToLobby());
+    }
+
+    private static IEnumerator ReturnToLobby()
+    {
+        yield return _waitBeforeLobby;
+
+        PauseMenu.GoToLobby();
     }
 
     public void NoteHit()
     {
+        if (IsGameOver)
+        {
+            return;
+        }
+
         MultiplierTracker++;
 
         if (MultiplierTracker >= MultiplierThreshold)
@@ -77,6 +114,11 @@ public class GameManager : MonoBehaviour
 
     public void NoteMissed()
     {
+        if (IsGameOver)
+        {
+            return;
+        }
+
         CurrentMultiplier = 1;
         MultiplierTracker = 0;
         MultiplierThreshold = 4;

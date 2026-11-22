@@ -60,9 +60,11 @@ public static class LayoutInput
         return key != null ? key.wasReleasedThisFrame : Input.GetKeyUp(code);
     }
 
-    public static float GetHorizontalAxis()
+    public static float GetHorizontalAxis(bool includeArrows = true)
     {
-        return GetAxis(Key.A, Key.D, Key.LeftArrow, Key.RightArrow);
+        return includeArrows
+            ? GetAxis(Key.A, Key.D, Key.LeftArrow, Key.RightArrow)
+            : GetAxis(Key.A, Key.D, Key.A, Key.D);
     }
 
     public static float GetVerticalAxis()
