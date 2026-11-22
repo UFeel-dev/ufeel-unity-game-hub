@@ -1,0 +1,11 @@
+{
+    "name": "GameHub.Maze",
+    "rootNamespace": "GameHub.Maze",
+    "references": [
+        "GameHub.Common",
+        "UFeel",
+        "UFeel.Core",
+        "Unity.TextMeshPro",
+        "UnityEngine.UI"
+    ]
+}

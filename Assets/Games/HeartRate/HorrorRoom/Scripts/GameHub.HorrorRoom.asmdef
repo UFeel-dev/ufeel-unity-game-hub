@@ -1,0 +1,10 @@
+{
+    "name": "GameHub.HorrorRoom",
+    "rootNamespace": "GameHub.HorrorRoom",
+    "references": [
+        "GameHub.Common",
+        "UFeel",
+        "UFeel.Core",
+        "UnityEngine.UI"
+    ]
+}

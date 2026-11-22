@@ -1,0 +1,9 @@
+{
+    "name": "GameHub.Car",
+    "rootNamespace": "GameHub.Car",
+    "references": [
+        "GameHub.Common",
+        "UFeel",
+        "UFeel.Core"
+    ]
+}

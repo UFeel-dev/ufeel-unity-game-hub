@@ -1,0 +1,10 @@
+{
+    "name": "GameHub.EscapeRoom",
+    "rootNamespace": "GameHub.EscapeRoom",
+    "references": [
+        "GameHub.Common",
+        "UFeel",
+        "UFeel.Core",
+        "Unity.TextMeshPro"
+    ]
+}

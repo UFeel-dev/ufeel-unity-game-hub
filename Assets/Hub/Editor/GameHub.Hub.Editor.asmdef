@@ -1,0 +1,10 @@
+{
+    "name": "GameHub.Hub.Editor",
+    "rootNamespace": "GameHub.Hub.Editor",
+    "references": [
+        "GameHub.Hub"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ]
+}

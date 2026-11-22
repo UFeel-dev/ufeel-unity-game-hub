@@ -1,4 +1,0 @@
-{
-    "name": "GameInput",
-    "references": ["Unity.InputSystem"]
-}
