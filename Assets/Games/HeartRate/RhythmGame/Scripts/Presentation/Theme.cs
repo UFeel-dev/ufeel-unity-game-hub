@@ -71,7 +71,7 @@ namespace GameHub.RhythmGame
 
         public static Color Lane(int lane)
         {
-            return lane is 0 or (LaneMask.LaneCount - 1) ? Accent : Cyan;
+            return lane is 0 or LaneMask.LaneCount - 1 ? Accent : Cyan;
         }
 
         public static Color Judgement(Judgement judgement)
