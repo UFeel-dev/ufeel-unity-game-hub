@@ -9,10 +9,10 @@ Scenes live in `Assets/Hub/Scenes` and `Assets/Games/<Category>/<Game>/Scenes`. 
 **Role:** Lobby used to reach every game.
 
 - First-person controller with mouse look.
-- Door carousel: select a door with the panel, the keyboard or the eyes, then press **E** in front of it.
-- Doors whose game is not ready show "In Progress" and stay closed.
+- Door carousel: pick a room in the room menu (one sub-menu per category, with the mouse, the arrow keys, the door number or the eyes), then press **E** in front of its door.
+- Doors whose game is not ready show "In progress" and stay closed.
 
-**Main scripts:** `CarouselRotator`, `DoorSelectionManager`, `DoorTrigger`, `SceneLoader`
+**Main scripts:** `CarouselRotator`, `DoorSelectionManager`, `DoorPicker`, `DoorTrigger`, `SceneLoader`
 
 ## Emotion-Based Games
 
@@ -46,7 +46,7 @@ Scenes live in `Assets/Hub/Scenes` and `Assets/Games/<Category>/<Game>/Scenes`. 
 
 **Role:** Eye-tracking survival game.
 
-**Status:** In progress, its door shows "In Progress".
+**Status:** In progress, its door shows "In progress".
 
 **Main script:** `SurvivorGameManager`
 
@@ -64,7 +64,7 @@ Scenes live in `Assets/Hub/Scenes` and `Assets/Games/<Category>/<Game>/Scenes`. 
 
 ### Rhythm Game
 
-**Role:** Rhythm game whose tempo follows the heart rate.
+**Role:** Four-lane rhythm game whose difficulty follows the heart rate.
 
 **Main script:** `RhythmGameManager`
 
@@ -74,6 +74,6 @@ Scenes live in `Assets/Hub/Scenes` and `Assets/Games/<Category>/<Game>/Scenes`. 
 
 **Role:** Proof of concept: a heartbeat sound and a red flash follow the heart rate.
 
-**Status:** In progress, its door shows "In Progress".
+**Status:** In progress, its door shows "In progress".
 
 **Main script:** `HeartbeatEffects`

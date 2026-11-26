@@ -1,3 +1,4 @@
+using GameHub.Common;
 using TMPro;
 using UnityEngine;
 
@@ -73,9 +74,9 @@ namespace GameHub.Hub
             mesh.enableAutoSizing = true;
             mesh.fontSizeMin = 0.1f;
             mesh.fontSizeMax = 2f;
-            mesh.color = Color.red;
+            WorldText.Style(mesh, true, Theme.Danger);
             mesh.outlineWidth = 0.2f;
-            mesh.outlineColor = Color.black;
+            mesh.outlineColor = Theme.Backdrop;
             mesh.rectTransform.sizeDelta = size;
         }
     }

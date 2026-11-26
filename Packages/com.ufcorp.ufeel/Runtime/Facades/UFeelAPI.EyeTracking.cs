@@ -1,6 +1,7 @@
 #nullable enable
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -10,7 +11,10 @@ namespace UFeel
     {
         public static class EyeTracking
         {
-            public static KeyCode CalibrationKey = KeyCode.F8;
+            private const float InUseSeconds = 1.0F;
+
+            private static Task<CalibrationResult>? calibration;
+            private static CancellationTokenSource? calibrationCancellation;
 
             public static EyeTrackingResult Current
             {
@@ -64,41 +68,47 @@ namespace UFeel
             /// <remarks>Also true when a saved profile was loaded at startup.</remarks>
             public static bool IsCalibrated => Calibrated;
 
-            public static bool IsCalibrating => Overlay != null && Overlay.IsRunning;
+            public static bool IsCalibrating => calibration != null && !calibration.IsCompleted;
+
+            /// <summary>Gets a value indicating whether the eye tracking was read during the last second.</summary>
+            public static bool IsInUse => Time.unscaledTime - LastReadTime < InUseSeconds;
 
             internal static bool Calibrated { get; set; }
 
             internal static float LastReadTime { get; private set; } = float.NegativeInfinity;
 
-            private static UFeelCalibrationOverlay? Overlay => instance != null ? instance.calibrationOverlay : null;
-
-            /// <summary>Saves the profile on success.</summary>
-            /// <returns>A task that completes with the calibration result.</returns>
+            /// <summary>Saves the profile on success. Returns the running calibration if one is in progress.</summary>
             /// <exception cref="InvalidOperationException">Thrown when UFeel is unavailable.</exception>
-            public static Task<CalibrationResult> CalibrateAsync()
+            public static Task<CalibrationResult> CalibrateAsync(ICalibrationPresenter presenter)
             {
-                UFeelCalibrationOverlay? overlay = Overlay;
-                if (overlay == null || session is null)
+                if (calibration != null && !calibration.IsCompleted)
+                    return calibration;
+
+                if (session is null)
                     throw new InvalidOperationException("UFeel is unavailable.");
 
-                return overlay.Run(session, profiles);
+                calibrationCancellation = new CancellationTokenSource();
+                calibration = RunCalibrationAsync(new EyeTrackingCalibration(session, presenter, profiles), calibrationCancellation.Token);
+                return calibration;
             }
 
-            /// <summary>Logs failures instead of throwing.</summary>
-            public static void Calibrate()
-            {
-                if (IsCalibrating)
-                    return;
+            public static void CancelCalibration() => calibrationCancellation?.Cancel();
 
+            private static async Task<CalibrationResult> RunCalibrationAsync(EyeTrackingCalibration run, CancellationToken token)
+            {
                 try
                 {
-                    CalibrateAsync().ContinueWith(
-                        task => Debug.LogException(task.Exception),
-                        TaskContinuationOptions.OnlyOnFaulted);
+                    CalibrationResult outcome = await run.RunAsync(token);
+                    if (outcome.Succeeded)
+                        Calibrated = true;
+
+                    Debug.Log(outcome.Message);
+                    return outcome;
                 }
-                catch (InvalidOperationException exception)
+                finally
                 {
-                    Debug.LogWarning(exception.Message);
+                    calibrationCancellation?.Dispose();
+                    calibrationCancellation = null;
                 }
             }
 

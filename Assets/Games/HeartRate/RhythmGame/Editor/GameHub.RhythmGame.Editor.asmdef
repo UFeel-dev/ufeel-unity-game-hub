@@ -1,0 +1,10 @@
+{
+    "name": "GameHub.RhythmGame.Editor",
+    "rootNamespace": "GameHub.RhythmGame.Editor",
+    "references": [
+        "GameHub.RhythmGame"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ]
+}

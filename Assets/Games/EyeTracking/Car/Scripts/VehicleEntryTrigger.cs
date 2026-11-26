@@ -20,7 +20,7 @@ namespace GameHub.Car
 
         private void Update()
         {
-            if (isInVehicle && LayoutInput.GetKeyDown(KeyCode.E))
+            if (isInVehicle && UiFocus.IsFree && LayoutInput.GetKeyDown(KeyCode.E))
                 ExitVehicle();
         }
 

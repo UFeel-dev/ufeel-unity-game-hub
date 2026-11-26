@@ -4,6 +4,8 @@
     "references": [
         "GameHub.Common",
         "UFeel",
-        "UFeel.Core"
+        "UFeel.Core",
+        "Unity.TextMeshPro",
+        "UnityEngine.UI"
     ]
 }

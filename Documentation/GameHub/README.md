@@ -9,7 +9,7 @@ Unity project showcasing the [UFeel](../../Packages/com.ufcorp.ufeel) biometric 
 ## Features
 
 - First-person hub with a door carousel leading to each game
-- Door selection with the keyboard, a dropdown or eye tracking
+- Room menu with one sub-menu per category: pick a room with the mouse, the arrow keys, its door number or the eyes
 - Games driven by emotion detection, eye tracking, speech to text and heart rate
 - Additive scene loading, one assembly per game
 
@@ -28,10 +28,12 @@ Movement uses the key positions (WASD on QWERTY, ZQSD on AZERTY). Letter shortcu
 | **WASD / ZQSD / Arrow keys** | Move around |
 | **Mouse** | Look around |
 | **E** | Enter the door in front of you |
-| **N** | Toggle door selection with the eyes (look left or right then back to the center, double blink to confirm) |
+| **N** | Toggle eye control of the room menu: look left or right to move (it repeats while you keep looking), close your eyes for a moment to select. The indicator under the menu shows both |
 | **F** | Toggle faster carousel rotation |
-| **Tab** | Toggle between looking around and using the door selection panel |
-| **M** | Toggle the pause menu |
+| **Tab** | Toggle between looking around and using the menus |
+| **0-9**, **Enter** | Go to the door with this number |
+| **Escape** | Back to the room categories |
+| **M** | Toggle the pause menu (with the microphone selection) |
 | **F1** | Camera feedback and debug data |
 | **F8** | Eye-tracking calibration |
 | **F9** | Microphone selector |

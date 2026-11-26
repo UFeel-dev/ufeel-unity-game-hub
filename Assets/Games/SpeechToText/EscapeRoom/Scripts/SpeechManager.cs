@@ -12,6 +12,10 @@ namespace GameHub.EscapeRoom
         private const float MinimumCommandScore = 0.75f;
         private const float DefaultFuzzyThreshold = 0.72f;
         private const float TextFadeDelay = 3f;
+        private const float HintOffset = 120f;
+        private const float EndOpacity = 0.92f;
+        private const string EndTitle = "Félicitations !";
+        private const string EndSubtitle = "Vous avez réussi à vous échapper !";
 
         private static readonly string[] LightWords = { "lumière", "lumiere", "lampe", "éclairage", "eclairage" };
 
@@ -44,12 +48,7 @@ namespace GameHub.EscapeRoom
         [SerializeField] private GameObject bookHintText;
 
         [Header("End Game")]
-        [SerializeField] private CanvasGroup endCanvasGroup;
         [SerializeField] private float fadeDuration = 5f;
-
-        [Header("Hints")]
-        [SerializeField] private CanvasGroup hintCanvasGroup;
-        [SerializeField] private TextMeshProUGUI hintText;
 
         private readonly SpeechCommandRecognizer commandRecognizer = new(RecognitionWindowSeconds, MinimumCommandScore);
 
@@ -57,6 +56,8 @@ namespace GameHub.EscapeRoom
         private Coroutine? hintTimerRoutine;
         private Coroutine radioLoopRoutine;
         private string lastProcessedSpeech = string.Empty;
+        private Toast hint;
+        private TitleCard endCard;
 
         private enum EscapeStep
         {
@@ -69,6 +70,20 @@ namespace GameHub.EscapeRoom
             Finished,
         }
 
+        private void Awake()
+        {
+            UiKit kit = UiKit.Shared;
+            RectTransform canvas = UiCanvas.Create("EscapeRoomHud", transform, UiCanvas.GameOrder);
+            hint = new Toast(kit, canvas, new Vector2(0.5f, 0f), HintOffset, Theme.Heading);
+            endCard = new TitleCard(kit, canvas, EndOpacity);
+
+            foreach (GameObject sceneHint in new[] { radioHintText, windowHintText, windowHintTextLeft, windowHintTextRight, tvHintText, bookHintText })
+            {
+                if (sceneHint != null && sceneHint.TryGetComponent(out TMP_Text text))
+                    WorldText.Style(text, false, text.color);
+            }
+        }
+
         private void Start()
         {
             UFeelAPI.SpeechToText.StartDetection();
@@ -78,6 +93,9 @@ namespace GameHub.EscapeRoom
 
         private void Update()
         {
+            hint.Tick(Time.deltaTime);
+            endCard.Tick(Time.deltaTime);
+
             if (LayoutInput.GetKeyUp(KeyCode.V))
                 UFeelAPI.SpeechToText.StartDetection();
 
@@ -277,12 +295,8 @@ namespace GameHub.EscapeRoom
 
         private void ShowHint(string text)
         {
-            if (string.IsNullOrEmpty(text) || hintText == null || hintCanvasGroup == null)
-                return;
-
-            hintText.text = text;
-            hintCanvasGroup.alpha = 1f;
-            hintCanvasGroup.gameObject.SetActive(true);
+            if (!string.IsNullOrEmpty(text))
+                hint.Show(text, float.PositiveInfinity);
         }
 
         private void HideHint()
@@ -293,14 +307,7 @@ namespace GameHub.EscapeRoom
                 hintTimerRoutine = null;
             }
 
-            if (hintCanvasGroup != null)
-            {
-                hintCanvasGroup.alpha = 0f;
-                hintCanvasGroup.gameObject.SetActive(false);
-            }
-
-            if (hintText != null)
-                hintText.text = string.Empty;
+            hint.Hide();
         }
 
         private IEnumerator ShowHintAfterDelay(string text)
@@ -351,18 +358,8 @@ namespace GameHub.EscapeRoom
         private IEnumerator ShowEndScreen()
         {
             yield return EndScreenDelay;
-
-            if (endCanvasGroup != null)
-            {
-                for (float time = 0f; time < fadeDuration; time += Time.deltaTime)
-                {
-                    endCanvasGroup.alpha = time / fadeDuration;
-                    yield return null;
-                }
-
-                endCanvasGroup.alpha = 1f;
-            }
-
+            endCard.Show(EndTitle, EndSubtitle, Theme.Accent, fadeDuration);
+            yield return new WaitForSeconds(fadeDuration);
             yield return ReturnToHubDelay;
             GameFlow.ReturnToHub();
         }

@@ -5,6 +5,8 @@
         "GameHub.Common",
         "UFeel",
         "UFeel.Core",
+        "Unity.InputSystem",
+        "Unity.TextMeshPro",
         "UnityEngine.UI"
     ]
 }

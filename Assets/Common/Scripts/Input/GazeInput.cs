@@ -7,13 +7,21 @@ namespace GameHub.Common
         public static int HorizontalDirection()
         {
             EyeTrackingDirection directions = UFeelAPI.EyeTracking.Directions;
-            bool left = directions.HasDirection(EyeTrackingDirection.Left);
-            bool right = directions.HasDirection(EyeTrackingDirection.Right);
+            return Axis(directions.HasDirection(EyeTrackingDirection.Left), directions.HasDirection(EyeTrackingDirection.Right));
+        }
 
-            if (left == right)
+        public static int VerticalDirection()
+        {
+            EyeTrackingDirection directions = UFeelAPI.EyeTracking.Directions;
+            return Axis(directions.HasDirection(EyeTrackingDirection.Down), directions.HasDirection(EyeTrackingDirection.Up));
+        }
+
+        private static int Axis(bool negative, bool positive)
+        {
+            if (negative == positive)
                 return 0;
 
-            return left ? -1 : 1;
+            return negative ? -1 : 1;
         }
     }
 }

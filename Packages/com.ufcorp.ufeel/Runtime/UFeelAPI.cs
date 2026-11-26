@@ -9,16 +9,13 @@ namespace UFeel
     public sealed partial class UFeelAPI : MonoBehaviour
     {
         private static readonly RuleSet Rules = new() { ErrorHandler = Debug.LogException };
+        private static readonly UFeelFrameCapture FrameCapture = new();
 
         private static UFeelAPI? instance;
         private static UFeelSession? session;
-        private static UFeelFrameOverlay? frameOverlay;
         private static CalibrationProfileStore? profiles;
         private static UFeelSnapshot frameSnapshot = UFeelSnapshot.Initial;
         private static int frameSnapshotFrame = -1;
-
-        private UFeelCalibrationOverlay? calibrationOverlay;
-        private UFeelMicrophoneOverlay? microphoneOverlay;
 
         /// <summary>Gets the time of the last read of any feature, or 0 if none was read yet.</summary>
         /// <remarks>Null when the native library failed to start.</remarks>
@@ -74,9 +71,6 @@ namespace UFeel
 
             instance = this;
             DontDestroyOnLoad(gameObject);
-            calibrationOverlay = gameObject.AddComponent<UFeelCalibrationOverlay>();
-            microphoneOverlay = gameObject.AddComponent<UFeelMicrophoneOverlay>();
-            frameOverlay = gameObject.AddComponent<UFeelFrameOverlay>();
 
             try
             {
@@ -100,7 +94,7 @@ namespace UFeel
                 processor.SetEyeTrackingHeadWeight(EyeTracking.HeadWeight);
                 Debug.Log($"UFeel started (eye-tracking profile: {profile}, {profiles.Path})");
 
-                session = new UFeelSession(processor, frameObserver: frameOverlay);
+                session = new UFeelSession(processor, frameObserver: FrameCapture);
             }
             catch
             {
@@ -116,6 +110,7 @@ namespace UFeel
         private void Update()
         {
             SpeechToText.RaiseMicrophonesChanged();
+            CameraFeed.Upload();
             Rules.Evaluate();
         }
 
@@ -132,10 +127,12 @@ namespace UFeel
 
         private static void Shutdown()
         {
+            EyeTracking.CancelCalibration();
             UFeelSession? running = session;
             session = null;
             frameSnapshotFrame = -1;
             Rules.Clear();
+            CameraFeed.Release();
 
             running?.Dispose();
         }

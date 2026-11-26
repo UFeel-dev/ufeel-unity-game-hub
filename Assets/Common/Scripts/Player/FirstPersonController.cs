@@ -32,13 +32,14 @@ namespace GameHub.Common
 
         private void Update()
         {
-            if (PauseMenu.IsPaused)
+            if (UiFocus.IsCaptured)
                 return;
 
-            Move();
-
             if (isMouseLookEnabled)
+            {
+                Move();
                 Look();
+            }
 
             if (LayoutInput.GetKeyDown(KeyCode.Tab))
             {
