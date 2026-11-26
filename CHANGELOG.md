@@ -13,6 +13,7 @@
 - Project reorganized by feature: `Assets/Hub`, `Assets/Common`, `Assets/Games/<Category>/<Game>` and `Assets/ThirdParty`, with one `GameHub.*` assembly and namespace per feature.
 - The Testing Room is now the Game Hub (`GameHub` scene, `Documentation/GameHub`).
 - Game scripts use private serialized fields, shared input, scene flow and heart rate helpers, and no longer compile into the UFeel package assembly.
+- Rhythm game rebuilt in the style of osu!mania. The heart rate sets the difficulty level instead of the tempo.
 
 ### Added
 
@@ -20,12 +21,17 @@
 - Linux player builds ship `dependencies/` and `models/`.
 - `tools/update-ufeel.sh` to sync a ufeel package.
 - `EyeTracking.Gaze`, `BlinkCount` and `HeadWeight`.
+- Rhythm game song select, Base and Scaling difficulty sliders, options and a results screen with a heart rate graph.
+- Rhythm game charts generated from the song audio, with hold notes.
+- Rhythm game options: arrow or circle notes, key labels, and song speed from 50% to 200% following the heart rate (100% by default).
+- **Tools > Rhythm Game > Add Song** to add rhythm game songs.
 
 ### Removed
 
 - Empty Environment, Runner and UnlockWorld scenes, the API testing scene, third-party demo scenes and unused assets.
 - Unused packages (HDRP, Visual Scripting, Timeline, AI Navigation, Collab, VS Code, Multiplayer Center, Test Framework).
 - The inactive mirror workflow and the `tools/refresh-package` script.
+- Rhythm game lane-changing notes, camera panning and the `Activator` and `PerturbatorDetector` tags.
 
 ### Fixed
 

@@ -64,7 +64,7 @@ Scenes live in `Assets/Hub/Scenes` and `Assets/Games/<Category>/<Game>/Scenes`. 
 
 ### Rhythm Game
 
-**Role:** Rhythm game whose tempo follows the heart rate.
+**Role:** Four-lane rhythm game whose difficulty follows the heart rate.
 
 **Main script:** `RhythmGameManager`
 
