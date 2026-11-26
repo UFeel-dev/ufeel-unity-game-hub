@@ -26,7 +26,14 @@ uint blinks = UFeelAPI.EyeTracking.BlinkCount;    // +1 per blink, compare with 
 Vector2 position = UFeelAPI.EyeTracking.Position; // 0..1, origin top-left
 ```
 
-Blinking and gaze direction work without calibration. Calibration refines the gaze range. The screen position needs a calibration. The saved profile (`~/.local/share/UFeel/eyeTracking-profile-v3.txt`, shared with the ufeel test harness) loads at startup. Otherwise press **F8** (`UFeelAPI.EyeTracking.CalibrationKey`) or call `UFeelAPI.EyeTracking.Calibrate()`. **Escape** cancels.
+Blinking and gaze direction work without calibration. Calibration refines the gaze range. The screen position needs a calibration. The saved profile (`~/.local/share/UFeel/eyeTracking-profile-v3.txt`, shared with the ufeel test harness) loads at startup. Otherwise run a calibration with a presenter that shows its targets and texts:
+
+```csharp
+CalibrationResult result = await UFeelAPI.EyeTracking.CalibrateAsync(presenter); // ICalibrationPresenter, saves the profile on success
+UFeelAPI.EyeTracking.CancelCalibration();
+bool running = UFeelAPI.EyeTracking.IsCalibrating;
+bool inUse = UFeelAPI.EyeTracking.IsInUse; // read during the last second
+```
 
 ## Speech to text (French model)
 
@@ -36,7 +43,7 @@ string? text = UFeelAPI.SpeechToText.Current; // null while stopped
 UFeelAPI.SpeechToText.StopDetection();
 ```
 
-The system default microphone is used until another one is selected. **F9** (`UFeelAPI.SpeechToText.MicrophoneSelectorKey`) opens the microphone selector, which is also shown in the pause menu. From code:
+The system default microphone is used until another one is selected:
 
 ```csharp
 IReadOnlyList<MicrophoneDevice> microphones = await UFeelAPI.SpeechToText.GetMicrophonesAsync();
@@ -44,7 +51,14 @@ await UFeelAPI.SpeechToText.SelectMicrophoneAsync(microphones[0].Id); // null: d
 string? selected = UFeelAPI.SpeechToText.SelectedMicrophoneId; // null: default microphone
 ```
 
-The choice is saved in `PlayerPrefs` and restored at startup. Listing restarts a running detection to rescan the devices. `UFeelAPI.SpeechToText.MicrophonesChanged` is raised when a microphone is plugged, unplugged or becomes the system default, and the selector refreshes itself. A selected microphone that disappears falls back to the default one until it comes back.
+The choice is saved in `PlayerPrefs` and restored at startup. Listing restarts a running detection to rescan the devices. `UFeelAPI.SpeechToText.MicrophonesChanged` is raised when a microphone is plugged, unplugged or becomes the system default. A selected microphone that disappears falls back to the default one until it comes back.
+
+## Camera feed
+
+```csharp
+UFeelAPI.CameraFeed.IsCapturing = true;
+Texture2D? frame = UFeelAPI.CameraFeed.Frame; // null until the first frame, top row first: flip it vertically to display it
+```
 
 ## Heart rate
 

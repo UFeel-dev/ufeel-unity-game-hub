@@ -12,8 +12,6 @@ namespace UFeel
     {
         public static class SpeechToText
         {
-            public static KeyCode MicrophoneSelectorKey = KeyCode.F9;
-
             private const string MicrophonePreferenceKey = "UFeel.Microphone";
 
             private static int microphonesChanged;
@@ -30,11 +28,6 @@ namespace UFeel
             /// <summary>Gets the ID of the currently selected microphone.</summary>
             /// <summary>Null while the default microphone is used.</summary>
             public static string? SelectedMicrophoneId => session?.SelectedMicrophoneId;
-
-            public static bool IsMicrophoneSelectorVisible => MicrophoneOverlay != null && MicrophoneOverlay.IsVisible;
-
-            private static UFeelMicrophoneOverlay? MicrophoneOverlay =>
-                instance != null ? instance.microphoneOverlay : null;
 
             public static void StartDetection() => SetEnabled(true);
 
@@ -68,11 +61,6 @@ namespace UFeel
                 Debug.Log($"Speech microphone: {id ?? "default"}");
                 return true;
             }
-
-            /// <summary>Unlocks the cursor while visible.</summary>
-            public static void ShowMicrophoneSelector() => MicrophoneOverlay?.Show();
-
-            public static void HideMicrophoneSelector() => MicrophoneOverlay?.Hide();
 
             /// <summary>Case-insensitive "contains" match.</summary>
             /// <param name="text">The text to match.</param>
