@@ -16,7 +16,7 @@ namespace GameHub.Animals
         private const float BottomShadeDepth = 220f;
         private const float ShadeOpacity = 0.6f;
         private const float CardOpacity = 0.55f;
-        private const float WarningSeconds = 10f;
+        private const int WarningSeconds = 10;
 
         private readonly int levelCount;
         private readonly StatView score;
@@ -24,6 +24,8 @@ namespace GameHub.Animals
         private readonly StatView level;
         private readonly MeterView meter;
         private readonly TitleCard card;
+
+        private int shownSeconds = -1;
 
         public AnimalsHud(UiKit kit, Transform owner, int levelCount)
         {
@@ -60,7 +62,11 @@ namespace GameHub.Animals
         public void SetTime(float seconds)
         {
             int whole = Mathf.CeilToInt(Mathf.Max(0f, seconds));
-            time.Set(FormattableString.Invariant($"{whole / 60}:{whole % 60:00}"), seconds <= WarningSeconds ? Theme.Danger : Theme.Text);
+            if (whole == shownSeconds)
+                return;
+
+            shownSeconds = whole;
+            time.Set(FormattableString.Invariant($"{whole / 60}:{whole % 60:00}"), whole <= WarningSeconds ? Theme.Danger : Theme.Text);
         }
 
         public void ShowAnimal(string animal)

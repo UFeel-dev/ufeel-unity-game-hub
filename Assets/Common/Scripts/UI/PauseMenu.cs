@@ -16,8 +16,6 @@ namespace GameHub.Common
             new("Resume", 0, "M"),
         };
 
-        [SerializeField] private FirstPersonController playerController;
-
         private readonly PointerInput mouse = new();
         private readonly List<MenuEntry> entries = new();
         private readonly List<PauseAction> actions = new();
@@ -26,7 +24,6 @@ namespace GameHub.Common
         private ListScreen screen;
         private KeyBar keys;
         private bool paused;
-        private bool disabledPlayer;
         private CursorLockMode previousLockState;
         private bool previousCursorVisible;
 
@@ -102,13 +99,6 @@ namespace GameHub.Common
             screen.Hide();
             keys.SetVisible(false);
             Time.timeScale = 1f;
-
-            if (disabledPlayer)
-            {
-                playerController.enabled = true;
-                disabledPlayer = false;
-            }
-
             Cursor.lockState = previousLockState;
             Cursor.visible = previousCursorVisible;
             UiFocus.Release(this);
@@ -124,13 +114,6 @@ namespace GameHub.Common
             screen.Show("Paused", entries, 0);
             keys.SetVisible(true);
             Time.timeScale = 0f;
-
-            if (playerController.enabled)
-            {
-                playerController.enabled = false;
-                disabledPlayer = true;
-            }
-
             PointerInput.ShowCursor(true);
             UiFocus.Capture(this);
             paused = true;

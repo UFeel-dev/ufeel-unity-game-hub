@@ -55,7 +55,8 @@ namespace GameHub.Hub
 
         private void Update()
         {
-            if (!playerInRange || SceneLoader.Instance.IsLoading || !UiFocus.IsFree || !LayoutInput.GetKeyDown(KeyCode.E))
+            SceneLoader? loader = SceneLoader.Instance;
+            if (!playerInRange || loader == null || loader.IsLoading || !UiFocus.IsFree || !LayoutInput.GetKeyDown(KeyCode.E))
                 return;
 
             if (IsInProgress)
@@ -70,7 +71,7 @@ namespace GameHub.Hub
             if (wallToDisable != null)
                 wallToDisable.SetActive(false);
 
-            SceneLoader.Instance.LoadAdditiveSceneAtPosition(targetSceneName, LoadedScenePosition, doorController.ToggleDoor);
+            loader.LoadAdditiveSceneAtPosition(targetSceneName, LoadedScenePosition, doorController.ToggleDoor);
         }
 
         private void OnTriggerEnter(Collider other)

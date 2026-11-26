@@ -79,11 +79,6 @@ namespace GameHub.Common
             return new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
         }
 
-        public static bool AnyKeyDown()
-        {
-            return Input.anyKeyDown;
-        }
-
         private static float GetAxis(Key negative, Key positive, Key alternativeNegative, Key alternativePositive)
         {
             Keyboard keyboard = Keyboard.current;

@@ -121,6 +121,9 @@ namespace GameHub.Common
 
         private void Render(bool resetSelection)
         {
+            if (!IsVisible)
+                return;
+
             string? selectedId = UFeelAPI.SpeechToText.SelectedMicrophoneId;
             entries.Clear();
             ids.Clear();
@@ -164,8 +167,7 @@ namespace GameHub.Common
                 loading = false;
             }
 
-            if (IsVisible)
-                Render(true);
+            Render(true);
         }
 
         private async void Select(string? id, string label)
@@ -194,7 +196,7 @@ namespace GameHub.Common
 
             if (!selected)
                 Refresh($"\"{label}\" is no longer available");
-            else if (IsVisible)
+            else
                 Render(false);
         }
     }
