@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using GameHub.Common;
 using TMPro;
 using UFeel;
 using UnityEngine;
@@ -33,6 +34,7 @@ namespace GameHub.Maze
                 Direction direction = (Direction)i;
                 doorEmotions[i] = emotions[i].Emotion;
                 FogOf(direction).GetComponent<Renderer>().material.color = emotions[i].Color;
+                WorldText.Style(LabelOf(direction), true, Theme.Backdrop);
                 LabelOf(direction).text = emotions[i].Emotion.ToString();
                 if (!MazeGrid.IsInside(coordinates + MazeGrid.OffsetOf(direction)))
                     FogOf(direction).SetActive(false);

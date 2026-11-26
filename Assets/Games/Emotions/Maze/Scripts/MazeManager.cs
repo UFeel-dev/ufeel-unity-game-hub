@@ -1,10 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using GameHub.Common;
 using UFeel;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace GameHub.Maze
 {
@@ -19,12 +17,12 @@ namespace GameHub.Maze
         [Header("References")]
         [SerializeField] private GameObject roomPrefab;
         [SerializeField] private GameObject playerObject;
-        [SerializeField] private Text emotionDebugText;
 
         [Header("Layout")]
         [SerializeField] private float roomSpacing = 25f;
 
         private readonly Dictionary<EmotionType, float> emotionLevels = new();
+        private MazeHud hud;
         private Vector2Int playerRoom;
         private bool playerWon;
 
@@ -32,6 +30,7 @@ namespace GameHub.Maze
 
         private void Awake()
         {
+            hud = new MazeHud(UiKit.Shared, transform, EmotionInfo.All);
             if (Instance != null && Instance != this)
             {
                 Destroy(gameObject);
@@ -44,13 +43,17 @@ namespace GameHub.Maze
         private void Start()
         {
             foreach (EmotionInfo info in EmotionInfo.All)
+            {
                 emotionLevels[info.Emotion] = 0f;
+                hud.SetLevel(info.Emotion, 0f, false);
+            }
 
             GenerateRooms();
         }
 
         private void Update()
         {
+            hud.Tick(Time.deltaTime);
             EmotionType? dominant = UFeelAPI.Emotion.Dominant;
             if (dominant == null)
                 return;
@@ -63,7 +66,7 @@ namespace GameHub.Maze
                     : Mathf.Max(0f, level - Time.deltaTime);
             }
 
-            UpdateEmotionText(dominant.Value);
+            UpdateHud(dominant.Value);
         }
 
         private void OnDestroy()
@@ -113,28 +116,20 @@ namespace GameHub.Maze
                 controller.Teleport(entry);
         }
 
-        private void UpdateEmotionText(EmotionType dominant)
+        private void UpdateHud(EmotionType dominant)
         {
-            if (emotionDebugText == null || playerWon)
+            if (playerWon)
                 return;
 
-            StringBuilder builder = new();
             foreach (EmotionInfo info in EmotionInfo.All)
-            {
-                float level = emotionLevels[info.Emotion];
-                string color = info.Emotion != dominant ? "white" : level >= PassEmotionLevel ? "green" : "orange";
-                builder.Append($"<color={color}>{info.Emotion} ({level:F1})</color>    ");
-            }
-
-            emotionDebugText.text = builder.ToString();
+                hud.SetLevel(info.Emotion, emotionLevels[info.Emotion] / PassEmotionLevel, info.Emotion == dominant);
         }
 
         private void Win()
         {
             playerWon = true;
 
-            if (emotionDebugText != null)
-                emotionDebugText.text = "<color=green>You won! Congratulations</color>";
+            hud.ShowWin();
 
             StartCoroutine(ReturnToHubAfterDelay());
         }

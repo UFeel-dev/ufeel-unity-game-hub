@@ -1,10 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using GameHub.Common;
-using TMPro;
 using UFeel;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace GameHub.Animals
 {
@@ -33,14 +32,8 @@ namespace GameHub.Animals
         [Tooltip("One prefab per AnimalType, in the enum order.")]
         [SerializeField] private GameObject[] animalPrefabs;
 
-        [Header("UI")]
-        [SerializeField] private TextMeshProUGUI instructionText;
-        [SerializeField] private TextMeshProUGUI timerText;
-        [SerializeField] private TextMeshProUGUI scoreText;
-        [SerializeField] private Slider emotionProgressBar;
-
         private readonly List<AnimalType> remainingAnimals = new();
-        private Image progressFill;
+        private AnimalsHud hud;
         private GameObject currentAnimal;
         private AnimalType currentAnimalType;
         private float timer;
@@ -48,6 +41,11 @@ namespace GameHub.Animals
         private int score;
         private bool isLevelActive;
         private bool isTrackingEmotion;
+
+        private void Awake()
+        {
+            hud = new AnimalsHud(UiKit.Shared, transform, Animals.Length);
+        }
 
         private void Start()
         {
@@ -58,14 +56,12 @@ namespace GameHub.Animals
                 return;
             }
 
-            if (emotionProgressBar != null)
-                progressFill = emotionProgressBar.fillRect.GetComponent<Image>();
-
             StartCoroutine(GameLoop());
         }
 
         private void Update()
         {
+            hud.Tick(Time.deltaTime);
             if (!isLevelActive || !isTrackingEmotion || currentAnimal == null)
                 return;
 
@@ -73,11 +69,7 @@ namespace GameHub.Animals
             float step = Time.deltaTime / EmotionHoldDuration;
             progress = Mathf.Clamp01(isExpectedEmotion ? progress + step : progress - (step * EmotionDecayRatio));
 
-            if (progressFill != null)
-                progressFill.color = isExpectedEmotion ? Color.green : Color.red;
-
-            if (emotionProgressBar != null)
-                emotionProgressBar.value = progress;
+            hud.SetProgress(progress, isExpectedEmotion);
 
             if (progress >= 1f)
                 OnAnimalMatched();
@@ -109,22 +101,25 @@ namespace GameHub.Animals
 
                 if (remainingAnimals.Count > 0)
                 {
-                    yield return EndGame("GAME OVER...");
+                    yield return EndGame("Game over", "Back to the hub", Theme.Danger);
                     yield break;
                 }
             }
 
-            yield return EndGame("CONGRATULATIONS! YOU ARE A MASTER OF EMOTIONS!");
+            yield return EndGame("Congratulations", "You are a master of emotions!", Theme.Accent);
         }
 
         private IEnumerator StartLevel(int level)
         {
             AnimalDefinition newAnimal = Animals[level - 1];
             isLevelActive = false;
-            instructionText.text = $"LEVEL {level}\n\n{newAnimal.Type} -> {newAnimal.EmotionLabel}";
+            hud.SetLevel(level);
+            hud.ShowCard("Level " + level.ToString(CultureInfo.InvariantCulture), $"{newAnimal.Type}  ·  {newAnimal.EmotionLabel}", Theme.Accent);
             yield return MessageDelay;
+            hud.HideCard();
 
             timer = LevelDurations[level - 1];
+            hud.SetTime(timer);
             remainingAnimals.Clear();
             remainingAnimals.AddRange(ShuffledAnimalsForLevel(level));
             isLevelActive = true;
@@ -132,29 +127,30 @@ namespace GameHub.Animals
 
         private IEnumerator PlayLevel()
         {
-            instructionText.text = string.Empty;
             SpawnNextAnimal();
 
             while (isLevelActive && timer > 0f)
             {
                 timer -= Time.deltaTime;
-                int seconds = Mathf.CeilToInt(timer);
-                timerText.SetText($"Time: {seconds / 60}:{seconds % 60:00}");
+                hud.SetTime(timer);
 
                 if (remainingAnimals.Count == 0 && currentAnimal == null)
                 {
                     isLevelActive = false;
-                    instructionText.text = "LEVEL COMPLETED!";
+                    hud.ShowCard("Level completed", string.Empty, Theme.Accent);
                     yield return LevelCompletedDelay;
+                    hud.HideCard();
                 }
 
                 yield return null;
             }
         }
 
-        private IEnumerator EndGame(string message)
+        private IEnumerator EndGame(string title, string subtitle, Color accent)
         {
-            instructionText.text = message;
+            isLevelActive = false;
+            hud.HideAnimal();
+            hud.ShowCard(title, subtitle, accent);
             yield return MessageDelay;
             GameFlow.ReturnToHub();
         }
@@ -168,18 +164,15 @@ namespace GameHub.Animals
             currentAnimal = Instantiate(animalPrefabs[(int)currentAnimalType], spawnPoint.position, Quaternion.Euler(0f, 180f, 0f));
             isTrackingEmotion = true;
             progress = 0f;
-
-            if (emotionProgressBar != null)
-                emotionProgressBar.value = 0f;
+            hud.ShowAnimal(currentAnimalType.ToString());
         }
 
         private void OnAnimalMatched()
         {
             isTrackingEmotion = false;
             score++;
-
-            if (scoreText != null)
-                scoreText.SetText($"Score: {score}");
+            hud.SetScore(score);
+            hud.HideAnimal();
 
             Destroy(currentAnimal);
             remainingAnimals.RemoveAt(0);
