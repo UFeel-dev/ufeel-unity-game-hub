@@ -6,8 +6,6 @@ TagManager:
   tags:
   - DoorHolder
   - Vehicle
-  - Activator
-  - PerturbatorDetector
   - Environment
   - Adventurer
   layers:

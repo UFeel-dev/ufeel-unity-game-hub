@@ -7,7 +7,5 @@ namespace GameHub.Common
         public const string DoorHolder = "DoorHolder";
         public const string Adventurer = "Adventurer";
         public const string Vehicle = "Vehicle";
-        public const string Activator = "Activator";
-        public const string PerturbatorDetector = "PerturbatorDetector";
     }
 }
