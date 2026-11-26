@@ -24,6 +24,7 @@ namespace GameHub.Hub
         private readonly List<DoorCategory> categories = new();
         private readonly List<MenuEntry> entries = new();
         private readonly PointerInput mouse = new();
+        private readonly GazeMenuInput gaze = new();
 
         private DoorPicker picker;
         private DoorCategory? openCategory;
@@ -32,46 +33,8 @@ namespace GameHub.Hub
         private string typed = string.Empty;
         private string? notice;
         private bool eyeControl;
-
-        public void SetEyeControl(bool enabled)
-        {
-            eyeControl = enabled;
-        }
-
-        private static bool AcceptsInput => UiFocus.IsFree && IsHubActive();
-
-        public void SelectNext()
-        {
-            if (AcceptsInput)
-                picker.List.Step(1);
-        }
-
-        public void SelectPrevious()
-        {
-            if (AcceptsInput)
-                picker.List.Step(-1);
-        }
-
-        public void ConfirmSelection()
-        {
-            if (!AcceptsInput)
-                return;
-
-            int index = picker.List.Selected;
-            if (openCategory == null)
-            {
-                if (index < categories.Count)
-                    ShowCategory(categories[index], 0);
-            }
-            else if (index < openCategory.Doors.Count)
-            {
-                GoTo(openCategory.Doors[index]);
-            }
-            else
-            {
-                CloseCategory();
-            }
-        }
+        private DoorTrigger? labelledTrigger;
+        private string? enterLabel;
 
         private static (string Category, string Room) SplitName(string doorName)
         {
@@ -83,8 +46,7 @@ namespace GameHub.Hub
 
         private static bool IsInProgress(DoorIdentifier door)
         {
-            DoorTrigger? trigger = door.GetComponentInChildren<DoorTrigger>();
-            return trigger != null && trigger.IsInProgress;
+            return door.TryGetComponent(out DoorReferences references) && references.Trigger != null && references.Trigger.IsInProgress;
         }
 
         private static string? EnterLabel(DoorTrigger? trigger)
@@ -124,18 +86,58 @@ namespace GameHub.Hub
             bool usingMenu = Cursor.lockState != CursorLockMode.Locked;
             picker.List.UseVerticalKeys = usingMenu;
             picker.Tick(deltaTime, usingMenu || eyeControl);
-            picker.SetHints(usingMenu, openCategory != null, eyeControl, EnterLabel(DoorTrigger.InRange));
+            picker.SetHints(usingMenu, openCategory != null, eyeControl, CurrentEnterLabel());
+            picker.SetGaze(eyeControl ? gaze : null);
 
             if (!UiFocus.IsFree)
                 return;
 
+            if (LayoutInput.GetKeyDown(KeyCode.N))
+                ToggleEyeControl();
+
             HandleDigits();
+            if (eyeControl)
+                HandleGaze(deltaTime);
+
             if (usingMenu)
                 HandleMenu(deltaTime);
             else if (typed.Length > 0 && MenuKeys.Confirm())
                 GoToTyped();
             else if (typed.Length > 0 && MenuKeys.Back())
                 SetTyped(string.Empty);
+        }
+
+        private string? CurrentEnterLabel()
+        {
+            if (DoorTrigger.InRange != labelledTrigger)
+            {
+                labelledTrigger = DoorTrigger.InRange;
+                enterLabel = EnterLabel(labelledTrigger);
+            }
+
+            return enterLabel;
+        }
+
+        private void ToggleEyeControl()
+        {
+            eyeControl = !eyeControl;
+            gaze.Reset();
+        }
+
+        private void HandleGaze(float deltaTime)
+        {
+            switch (gaze.Tick(deltaTime))
+            {
+                case GazeAction.Previous:
+                    picker.List.Step(-1);
+                    break;
+                case GazeAction.Next:
+                    picker.List.Step(1);
+                    break;
+                case GazeAction.Confirm:
+                    ConfirmSelection();
+                    break;
+            }
         }
 
         private void HandleMenu(float deltaTime)
@@ -154,10 +156,23 @@ namespace GameHub.Hub
                     break;
                 case MenuAction.Back:
                 case MenuAction.Decrease:
-                    if (openCategory != null)
-                        CloseCategory();
+                    CloseCategory();
                     break;
             }
+        }
+
+        private void ConfirmSelection()
+        {
+            if (entries.Count == 0)
+                return;
+
+            int index = picker.List.Selected;
+            if (openCategory == null)
+                ShowCategory(categories[index], 0);
+            else if (index < openCategory.Doors.Count)
+                GoTo(openCategory.Doors[index]);
+            else
+                CloseCategory();
         }
 
         private void BuildCategories()

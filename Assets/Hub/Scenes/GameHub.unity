@@ -2665,8 +2665,7 @@ Transform:
   m_LocalPosition: {x: 0, y: -14, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 703195915}
+  m_Children: []
   m_Father: {fileID: 1697519061}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &647547516
@@ -3036,52 +3035,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 772608269}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &703195914
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 703195915}
-  - component: {fileID: 703195916}
-  m_Layer: 0
-  m_Name: DoorEyeController
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &703195915
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 703195914}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 634826910}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &703195916
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 703195914}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c4fefd431e89f5ef8cc4db0181ade62, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  doorSelectionManager: {fileID: 634826909}
-  doubleBlinkWindow: 1
 --- !u!1 &712432491
 GameObject:
   m_ObjectHideFlags: 0
@@ -5726,7 +5679,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8e16c3a6f9c920a6b85f25d8f67c63d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerController: {fileID: 943825818}
 --- !u!1001 &1590949230
 PrefabInstance:
   m_ObjectHideFlags: 0

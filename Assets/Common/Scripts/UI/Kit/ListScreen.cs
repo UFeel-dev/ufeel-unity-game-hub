@@ -29,19 +29,19 @@ namespace GameHub.Common
             root = UiKit.NewRect(name, parent);
             UiLayout.Stretch(root);
 
-            RectTransform column = UiKit.NewRect("Column", root);
+            Column = UiKit.NewRect("Column", root);
             float listHeight = rows * rowHeight;
-            UiLayout.Place(column, anchor, anchor, position, new Vector2(width, TitleHeight + listHeight));
+            UiLayout.Place(Column, anchor, anchor, position, new Vector2(width, TitleHeight + listHeight));
 
-            title = kit.NewText("Title", column, Theme.Title, true, TextAlignmentOptions.BottomLeft, Theme.Text);
+            title = kit.NewText("Title", Column, Theme.Title, true, TextAlignmentOptions.BottomLeft, Theme.Text);
             UiLayout.Row(title.rectTransform, 0f, TitleHeight - 20f);
             title.margin = new Vector4(TextInset, 0f, 0f, 0f);
 
-            RectTransform list = UiKit.NewRect("List", column);
+            RectTransform list = UiKit.NewRect("List", Column);
             UiLayout.Row(list, TitleHeight, listHeight);
             List = new MenuList(kit, list, rows, rowHeight, Theme.Heading);
 
-            footer = kit.NewText("Footer", column, Theme.Small, false, TextAlignmentOptions.TopLeft, Theme.TextDim);
+            footer = kit.NewText("Footer", Column, Theme.Small, false, TextAlignmentOptions.TopLeft, Theme.TextDim);
             UiLayout.Row(footer.rectTransform, TitleHeight + listHeight + FooterGap, FooterHeight);
             footer.margin = new Vector4(TextInset, 0f, 0f, 0f);
 
@@ -49,6 +49,8 @@ namespace GameHub.Common
         }
 
         public MenuList List { get; }
+
+        public RectTransform Column { get; }
 
         public void Show(string heading, IReadOnlyList<MenuEntry> entries, int selected)
         {
@@ -70,7 +72,7 @@ namespace GameHub.Common
 
         public void Hide()
         {
-            root.gameObject.SetActive(false);
+            SetVisible(false);
         }
 
         public void Tick(float deltaTime)

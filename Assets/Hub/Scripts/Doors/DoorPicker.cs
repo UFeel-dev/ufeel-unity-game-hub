@@ -15,14 +15,16 @@ namespace GameHub.Hub
         private const float KeyShadeOpacity = 0.6f;
         private const float IdleAlpha = 0.55f;
         private const float FadeSpeed = 6f;
+        private const float GazeOffset = 60f;
 
         private readonly RectTransform canvas;
         private readonly CanvasGroup menu;
         private readonly ListScreen screen;
         private readonly KeyBar keys;
+        private readonly GazeIndicator gaze;
         private readonly List<KeyHint> hints = new();
 
-        private string shownHints = string.Empty;
+        private (bool UsingMenu, bool InCategory, bool EyeControl, string? EnterLabel)? shownHints;
 
         public DoorPicker(UiKit kit, Transform owner, int rows)
         {
@@ -38,6 +40,10 @@ namespace GameHub.Hub
 
             screen = new ListScreen(kit, menuRoot, "Doors", Mathf.Clamp(rows, 1, MaxRows), new Vector2(0f, 0.5f), new Vector2(Theme.Margin - 22f, 0f), Width, RowHeight);
             keys = new KeyBar(kit, canvas);
+
+            gaze = new GazeIndicator(kit, screen.Column);
+            UiLayout.Place(gaze.Root, Vector2.zero, new Vector2(0f, 1f), new Vector2(22f, -GazeOffset), gaze.Root.sizeDelta);
+            gaze.Root.gameObject.SetActive(false);
         }
 
         public MenuList List => screen.List;
@@ -60,11 +66,11 @@ namespace GameHub.Hub
 
         public void SetHints(bool usingMenu, bool inCategory, bool eyeControl, string? enterLabel)
         {
-            string key = $"{usingMenu}|{inCategory}|{eyeControl}|{enterLabel}";
-            if (key == shownHints)
+            (bool, bool, bool, string?) wanted = (usingMenu, inCategory, eyeControl, enterLabel);
+            if (shownHints == wanted)
                 return;
 
-            shownHints = key;
+            shownHints = wanted;
             hints.Clear();
             if (enterLabel != null)
                 hints.Add(new KeyHint(enterLabel, 0, "E"));
@@ -87,6 +93,13 @@ namespace GameHub.Hub
             hints.Add(new KeyHint($"Eye control {state}", 0, "N"));
             hints.Add(new KeyHint("Menu", 0, "M"));
             keys.Set(hints);
+        }
+
+        public void SetGaze(GazeMenuInput? input)
+        {
+            gaze.Root.gameObject.SetActive(input != null);
+            if (input != null)
+                gaze.Set(input.Direction, input.StepProgress, input.ConfirmProgress);
         }
 
         public void Tick(float deltaTime, bool active)
