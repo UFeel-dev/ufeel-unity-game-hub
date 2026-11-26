@@ -53,6 +53,7 @@ Each feature compiles into its own assembly, named after its root namespace. Gam
 | `GameHub.Common` | `Common/Scripts` | `UFeel`, `UFeel.Core`, Input System |
 | `GameHub.Hub` | `Hub/Scripts` | `GameHub.Common`, `UFeel`, `UFeel.Core`, TextMesh Pro, UI |
 | `GameHub.Hub.Editor` | `Hub/Editor` | `GameHub.Hub` |
+| `GameHub.RhythmGame.Editor` | `Games/HeartRate/RhythmGame/Editor` | `GameHub.RhythmGame` |
 | `GameHub.Maze`, `GameHub.Animals`, `GameHub.Car`, `GameHub.Survivor`, `GameHub.HorrorRoom`, `GameHub.RhythmGame`, `GameHub.EscapeRoom` | `Games/<Category>/<Game>/Scripts` | `GameHub.Common`, `UFeel`, `UFeel.Core`, and UI or TextMesh Pro when used |
 
 ## Scene flow
