@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace GameHub.RhythmGame
+namespace GameHub.Common
 {
     public sealed class KeyBar
     {

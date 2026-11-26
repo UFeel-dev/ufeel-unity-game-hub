@@ -1,3 +1,4 @@
+using GameHub.Common;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -28,7 +29,7 @@ namespace GameHub.RhythmGame
 
         public ReceptorView(Transform beamLayer, Transform receptorLayer, SpriteLibrary sprites, int lane, float x, float y)
         {
-            color = Theme.Lane(lane);
+            color = RhythmTheme.Lane(lane);
             this.lane = lane;
 
             beam = UiKit.NewImage("Beam", beamLayer, sprites.Fade, Color.clear);

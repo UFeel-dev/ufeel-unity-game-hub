@@ -1,3 +1,4 @@
+using GameHub.Common;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -34,7 +35,7 @@ namespace GameHub.RhythmGame
             for (int lane = 0; lane < LaneMask.LaneCount; lane++)
             {
                 float x = (lane + 0.5f) * ColumnWidth;
-                Image dot = UiKit.NewImage("Lane", column, kit.Sprites.Ring, Theme.Fade(Theme.Lane(lane), 0.8f));
+                Image dot = UiKit.NewImage("Lane", column, kit.Sprites.Ring, Theme.Fade(RhythmTheme.Lane(lane), 0.8f));
                 UiLayout.Place(dot.rectTransform, new Vector2(0f, 1f), new Vector2(0.5f, 0.5f), new Vector2(x, -120f), Vector2.one * DotSize);
                 for (int slot = 0; slot < KeyBindings.SlotCount; slot++)
                 {

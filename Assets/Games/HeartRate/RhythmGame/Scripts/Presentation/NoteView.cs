@@ -1,3 +1,4 @@
+using GameHub.Common;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -85,7 +86,7 @@ namespace GameHub.RhythmGame
                 tail.rectTransform.anchoredPosition = new Vector2(0f, length);
             }
 
-            Color color = Theme.Lane(lane);
+            Color color = RhythmTheme.Lane(lane);
             if (color != tint || holding != isHolding || dimmed != isDimmed)
                 Recolor(color, holding, dimmed);
         }
@@ -117,11 +118,11 @@ namespace GameHub.RhythmGame
             isHolding = holding;
             isDimmed = dimmed;
 
-            head.color = dimmed ? Theme.Missed : color;
-            ring.color = dimmed ? Theme.Missed : Theme.Fade(Color.white, RingAlpha);
+            head.color = dimmed ? RhythmTheme.Missed : color;
+            ring.color = dimmed ? RhythmTheme.Missed : Theme.Fade(Color.white, RingAlpha);
             glow.color = dimmed ? Color.clear : Theme.Fade(color, holding ? GlowAlpha * 1.6f : GlowAlpha);
-            body.color = dimmed ? Theme.Missed : Theme.Fade(color, holding ? HeldBodyAlpha : BodyAlpha);
-            tail.color = dimmed ? Theme.Missed : Theme.Fade(color, 0.9f);
+            body.color = dimmed ? RhythmTheme.Missed : Theme.Fade(color, holding ? HeldBodyAlpha : BodyAlpha);
+            tail.color = dimmed ? RhythmTheme.Missed : Theme.Fade(color, 0.9f);
         }
     }
 }

@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace GameHub.RhythmGame
+namespace GameHub.Common
 {
     public sealed class PointerInput
     {

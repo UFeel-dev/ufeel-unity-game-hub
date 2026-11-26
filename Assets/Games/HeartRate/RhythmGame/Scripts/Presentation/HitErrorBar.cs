@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using GameHub.Common;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -66,7 +67,7 @@ namespace GameHub.RhythmGame
 
             Image tick = ticks[nextTick];
             tick.rectTransform.anchoredPosition = new Vector2(Mathf.Clamp(Position(offset), -Width / 2f, Width / 2f), 0f);
-            tick.color = Theme.Judgement(judgement);
+            tick.color = RhythmTheme.Judgement(judgement);
             ages[nextTick] = 0f;
             nextTick = (nextTick + 1) % TickCount;
 
@@ -108,7 +109,7 @@ namespace GameHub.RhythmGame
 
         private void Band(UiKit kit, double window, Judgement judgement)
         {
-            Image band = kit.NewSolid("Band", Root, Theme.Fade(Theme.Judgement(judgement), 0.35f));
+            Image band = kit.NewSolid("Band", Root, Theme.Fade(RhythmTheme.Judgement(judgement), 0.35f));
             UiLayout.Place(band.rectTransform, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(Position(window) * 2f, BandHeight));
         }
     }

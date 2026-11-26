@@ -1,10 +1,9 @@
 using System.Collections.Generic;
-using GameHub.Common;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace GameHub.RhythmGame
+namespace GameHub.Common
 {
     public sealed class MenuList
     {
@@ -14,6 +13,7 @@ namespace GameHub.RhythmGame
         private const float BarWidth = 3f;
         private const float TextInset = 22f;
         private const float SelectedShift = 6f;
+        private const float LineHeight = 1.25f;
 
         private readonly RectTransform area;
         private readonly List<Row> rows = new();
@@ -81,6 +81,15 @@ namespace GameHub.RhythmGame
 
             repeatTimer = RepeatInterval;
             return Apply(direction);
+        }
+
+        public void Select(int index)
+        {
+            if (items.Count == 0)
+                return;
+
+            Selected = Mathf.Clamp(index, 0, items.Count - 1);
+            Refresh(false);
         }
 
         public MenuAction Step(int step)
@@ -192,6 +201,7 @@ namespace GameHub.RhythmGame
                 label = kit.NewText("Label", content, labelSize, true, TextAlignmentOptions.MidlineLeft, Theme.Text);
                 label.overflowMode = TextOverflowModes.Ellipsis;
                 caption = kit.NewText("Caption", content, Theme.Small, false, TextAlignmentOptions.TopLeft, Theme.TextFaint);
+                caption.overflowMode = TextOverflowModes.Ellipsis;
                 detail = kit.NewText("Detail", content, Theme.Body, true, TextAlignmentOptions.MidlineRight, Theme.TextDim);
                 UiLayout.Stretch(detail.rectTransform);
             }
@@ -213,7 +223,8 @@ namespace GameHub.RhythmGame
                 UiLayout.Stretch(caption.rectTransform);
                 if (hasCaption)
                 {
-                    label.rectTransform.offsetMin = new Vector2(0f, Rect.rect.height * 0.48f);
+                    float height = Rect.rect.height;
+                    label.rectTransform.offsetMin = new Vector2(0f, Mathf.Min(height * 0.48f, height - (label.fontSize * LineHeight)));
                     caption.rectTransform.offsetMax = new Vector2(0f, -Rect.rect.height * 0.56f);
                 }
                 label.margin = new Vector4(0f, 0f, string.IsNullOrEmpty(item.Value.Detail) ? 0f : 140f, 0f);

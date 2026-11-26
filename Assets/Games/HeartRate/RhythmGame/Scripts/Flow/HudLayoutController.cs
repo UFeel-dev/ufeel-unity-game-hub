@@ -198,13 +198,13 @@ namespace GameHub.RhythmGame
                 JudgementEvent judgementEvent = new(notes[0].Lane, judgement, DemoOffsets[index % DemoOffsets.Length], false, false, DemoLevel);
                 keeper.Apply(judgementEvent);
                 Stage.Hud.ShowJudgement(judgementEvent);
-                Stage.Playfield.Burst(notes[0].Lane, Theme.Judgement(judgement));
+                Stage.Playfield.Burst(notes[0].Lane, RhythmTheme.Judgement(judgement));
                 notes.RemoveAt(0);
             }
 
             float pulse = context.Monitor.Pulse;
             Stage.Playfield.Render(time, notes, scrollTime, null);
-            Stage.Playfield.Tick(deltaTime, idle, pulse, Theme.Level(DemoLevel));
+            Stage.Playfield.Tick(deltaTime, idle, pulse, RhythmTheme.Level(DemoLevel));
             Stage.Playfield.SetHealth(keeper.Health, pulse);
             Stage.Hud.Tick(deltaTime, keeper);
             Stage.Hud.TickHeart(deltaTime, context.Monitor.SmoothedBpm, context.Monitor.HasReading, pulse, DemoLevel, 0f, false);

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using GameHub.Common;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -56,11 +57,11 @@ namespace GameHub.RhythmGame
             {
                 RectTransform column = UiKit.NewRect("Count", left);
                 UiLayout.Place(column, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(i * ColumnWidth, -548f), new Vector2(ColumnWidth, 76f));
-                counts[i] = kit.NewText("Value", column, Theme.Heading, true, TextAlignmentOptions.TopLeft, Theme.Judgement((Judgement)i));
+                counts[i] = kit.NewText("Value", column, Theme.Heading, true, TextAlignmentOptions.TopLeft, RhythmTheme.Judgement((Judgement)i));
                 UiLayout.Row(counts[i].rectTransform, 0f, 40f);
                 TextMeshProUGUI name = kit.NewText("Name", column, Theme.Tiny, false, TextAlignmentOptions.TopLeft, Theme.TextDim);
                 UiLayout.Row(name.rectTransform, 42f, 26f);
-                name.text = Theme.JudgementLabel((Judgement)i);
+                name.text = RhythmTheme.JudgementLabel((Judgement)i);
             }
 
             graph = UiKit.NewRect("Graph", root);
@@ -98,7 +99,7 @@ namespace GameHub.RhythmGame
             songTitle.text = result.Song.Title;
             songInfo.text = FormattableString.Invariant($"Base {result.BaseLevel:0.0}      Scaling {result.Scaling:0.0}");
             grade.text = GradeCalculator.Label(result.Grade);
-            grade.color = Theme.Grade(result.Grade);
+            grade.color = RhythmTheme.Grade(result.Grade);
             tag.text = TagText(result.Failed, isNewBest);
             tag.color = result.Failed ? Theme.Danger : Theme.Accent;
             accuracy.text = (result.Accuracy * 100d).ToString("0.00", CultureInfo.InvariantCulture) + "%";
@@ -160,8 +161,8 @@ namespace GameHub.RhythmGame
             points.Clear();
             for (int i = 0; i < levels.Count; i++)
                 points.Add(new Vector2(i / (float)(count - 1), (levels[i] - DifficultySettings.MinLevel) / (DifficultySettings.MaxLevel - DifficultySettings.MinLevel)));
-            levelLine.SetPoints(points, Theme.Fade(Theme.Level(peakLevel), 0.9f));
-            levelLegend.text = $"<color=#{Theme.Hex(Theme.Level(peakLevel))}>Level</color>";
+            levelLine.SetPoints(points, Theme.Fade(RhythmTheme.Level(peakLevel), 0.9f));
+            levelLegend.text = $"<color=#{Theme.Hex(RhythmTheme.Level(peakLevel))}>Level</color>";
 
             float low = result.RestingBpm;
             int peakIndex = -1;
@@ -180,7 +181,7 @@ namespace GameHub.RhythmGame
                 points.Add(new Vector2(i / (float)(count - 1), float.IsNaN(bpms[i]) ? float.NaN : Mathf.Clamp01((bpms[i] - low) / (high - low))));
             bpmLine.SetPoints(points, Theme.Text);
             DrawScale(result.HasHeartRate, low, high);
-            DrawPeak(peakIndex >= 0 && result.HasHeartRate ? points[peakIndex] : (Vector2?)null, peakIndex >= 0 ? bpms[peakIndex] : 0f);
+            DrawPeak(peakIndex >= 0 && result.HasHeartRate ? points[peakIndex] : null, peakIndex >= 0 ? bpms[peakIndex] : 0f);
 
             bpmLegend.text = result.HasHeartRate ? "Heart rate" : "Heart rate  <color=#5C6B6B>no reading</color>";
             summary.text = result.HasHeartRate

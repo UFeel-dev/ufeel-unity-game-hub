@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using GameHub.Common;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -120,7 +121,7 @@ namespace GameHub.RhythmGame
                 return;
             }
 
-            string grade = $"<color=#{Theme.Hex(Theme.Grade(record.Grade))}><b>{GradeCalculator.Label(record.Grade)}</b></color>";
+            string grade = $"<color=#{Theme.Hex(RhythmTheme.Grade(record.Grade))}><b>{GradeCalculator.Label(record.Grade)}</b></color>";
             best.text = FormattableString.Invariant($"Best   {grade}   {record.Accuracy * 100f:0.00}%   <color=#{Theme.Hex(Theme.TextDim)}>{record.Score:N0}   at {record.Base:0.0} / {record.Scaling:0.0}</color>");
         }
 
@@ -128,15 +129,15 @@ namespace GameHub.RhythmGame
         {
             const float span = DifficultySettings.MaxLevel - DifficultySettings.MinLevel;
             float top = DifficultySettings.Level(baseLevel, scaling, 1f);
-            BaseSlider.Set((baseLevel - DifficultySettings.BaseMin) / (DifficultySettings.BaseMax - DifficultySettings.BaseMin), FormattableString.Invariant($"{baseLevel:0.0}"), Theme.Level(baseLevel));
-            ScalingSlider.Set((scaling - DifficultySettings.ScalingMin) / (DifficultySettings.ScalingMax - DifficultySettings.ScalingMin), FormattableString.Invariant($"{scaling:0.0}"), Theme.Level(top));
+            BaseSlider.Set((baseLevel - DifficultySettings.BaseMin) / (DifficultySettings.BaseMax - DifficultySettings.BaseMin), FormattableString.Invariant($"{baseLevel:0.0}"), RhythmTheme.Level(baseLevel));
+            ScalingSlider.Set((scaling - DifficultySettings.ScalingMin) / (DifficultySettings.ScalingMax - DifficultySettings.ScalingMin), FormattableString.Invariant($"{scaling:0.0}"), RhythmTheme.Level(top));
 
             points.Clear();
             points.Add(new Vector2(0f, (baseLevel - DifficultySettings.MinLevel) / span));
             if (scaling > 0f && baseLevel + scaling > DifficultySettings.MaxLevel)
                 points.Add(new Vector2((DifficultySettings.MaxLevel - baseLevel) / scaling, 1f));
             points.Add(new Vector2(1f, (top - DifficultySettings.MinLevel) / span));
-            curve.SetPoints(points, Theme.Level(top));
+            curve.SetPoints(points, RhythmTheme.Level(top));
 
             restingLabel.text = FormattableString.Invariant($"{restingBpm:0}");
             peakLabel.text = FormattableString.Invariant($"{restingBpm + DifficultySettings.HeartRateSpan:0} BPM");
@@ -147,7 +148,7 @@ namespace GameHub.RhythmGame
             UiLayout.Place(markerLine, Vector2.zero, new Vector2(0.5f, 0f), new Vector2(position.x, 0f), new Vector2(1f, GraphHeight));
             UiLayout.Place(markerLabel.rectTransform, Vector2.zero, new Vector2(0.5f, 0f), position + new Vector2(0f, 12f), markerLabel.rectTransform.sizeDelta);
             markerLabel.text = FormattableString.Invariant($"{level:0.0}");
-            markerLabel.color = hasLiveRate ? Theme.Level(level) : Theme.TextDim;
+            markerLabel.color = hasLiveRate ? RhythmTheme.Level(level) : Theme.TextDim;
             marker.GetComponent<Image>().color = hasLiveRate ? Theme.Text : Theme.TextDim;
         }
 
@@ -160,7 +161,7 @@ namespace GameHub.RhythmGame
             }
 
             float top = DifficultySettings.Level(baseLevel, scaling, 1f);
-            density.Set(set, baseLevel, top, Theme.Level(top));
+            density.Set(set, baseLevel, top, RhythmTheme.Level(top));
         }
 
         public void TickHeart(float deltaTime, HeartRateMonitor monitor, float restingBpm)

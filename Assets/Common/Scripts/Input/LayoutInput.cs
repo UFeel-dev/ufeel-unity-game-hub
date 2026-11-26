@@ -129,6 +129,8 @@ namespace GameHub.Common
                 return keyboard[Key.Digit1 + (code - KeyCode.Alpha1)];
             if (code == KeyCode.Alpha0)
                 return keyboard[Key.Digit0];
+            if (code is >= KeyCode.Keypad0 and <= KeyCode.Keypad9)
+                return keyboard[Key.Numpad0 + (code - KeyCode.Keypad0)];
             return FixedKeys.TryGetValue(code, out Key fixedKey) ? keyboard[fixedKey] : null;
         }
     }

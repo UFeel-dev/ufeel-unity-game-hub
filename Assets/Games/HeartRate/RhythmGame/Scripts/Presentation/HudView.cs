@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using GameHub.Common;
 using TMPro;
 using UnityEngine;
 
@@ -91,8 +92,8 @@ namespace GameHub.RhythmGame
 
         public void ShowJudgement(in JudgementEvent judgementEvent)
         {
-            judgement.text = Theme.JudgementLabel(judgementEvent.Judgement);
-            judgement.color = Theme.Judgement(judgementEvent.Judgement);
+            judgement.text = RhythmTheme.JudgementLabel(judgementEvent.Judgement);
+            judgement.color = RhythmTheme.Judgement(judgementEvent.Judgement);
             judgementAge = 0f;
             if (!judgementEvent.IsTail)
                 timingBar.Add(judgementEvent.Offset, judgementEvent.Judgement);
@@ -113,7 +114,7 @@ namespace GameHub.RhythmGame
 
         public void TickHeart(float deltaTime, float bpm, bool hasReading, float pulse, float level, float rate, bool flat)
         {
-            Color color = Theme.Level(level);
+            Color color = RhythmTheme.Level(level);
             string caption = FormattableString.Invariant($"Level <color=#{Theme.Hex(color)}>{level:0.0}</color>");
             if (rate > 0f)
                 caption += FormattableString.Invariant($"   Speed x{rate:0.00}");

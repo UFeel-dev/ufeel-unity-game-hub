@@ -115,7 +115,7 @@ namespace GameHub.RhythmGame
         private static MenuEntry EntryFor(RhythmSong song)
         {
             SongRecord record = SongRecords.Load(song);
-            string grade = record.HasRecord ? $"<color=#{Theme.Hex(Theme.Grade(record.Grade))}>{GradeCalculator.Label(record.Grade)}</color>" : string.Empty;
+            string grade = record.HasRecord ? $"<color=#{Theme.Hex(RhythmTheme.Grade(record.Grade))}>{GradeCalculator.Label(record.Grade)}</color>" : string.Empty;
             return new MenuEntry(song.Title, grade, song.Artist);
         }
 

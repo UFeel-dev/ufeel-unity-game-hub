@@ -1,4 +1,4 @@
-namespace GameHub.RhythmGame
+namespace GameHub.Common
 {
     public readonly struct MenuEntry
     {

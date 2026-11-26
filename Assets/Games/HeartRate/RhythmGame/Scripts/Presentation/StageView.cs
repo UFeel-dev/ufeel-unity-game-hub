@@ -1,5 +1,5 @@
+using GameHub.Common;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace GameHub.RhythmGame
 {
@@ -7,36 +7,18 @@ namespace GameHub.RhythmGame
     {
         public const int CalibrationTaps = 16;
 
-        private const int SortingOrder = 100;
         private const float ScrimAlpha = 0.82f;
-        private static readonly Vector2 ReferenceResolution = new(1920f, 1080f);
 
         private readonly BackdropView backdrop;
-        private readonly Image scrim;
+        private readonly Scrim scrim;
 
         public StageView(Transform owner, UiKit kit)
         {
-            GameObject root = new("RhythmStage", typeof(RectTransform)) { layer = 5 };
-            root.transform.SetParent(owner, false);
-
-            Canvas canvas = root.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvas.sortingOrder = SortingOrder;
-            canvas.additionalShaderChannels = AdditionalCanvasShaderChannels.TexCoord1 | AdditionalCanvasShaderChannels.Normal | AdditionalCanvasShaderChannels.Tangent;
-
-            CanvasScaler scaler = root.AddComponent<CanvasScaler>();
-            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = ReferenceResolution;
-            scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
-            scaler.matchWidthOrHeight = 1f;
-
-            Transform parent = root.transform;
+            Transform parent = UiCanvas.Create("RhythmStage", owner, UiCanvas.FullScreenGameOrder);
             backdrop = new BackdropView(parent, kit.Sprites);
             Playfield = new PlayfieldView(kit, parent);
             Hud = new HudView(kit, parent);
-            scrim = kit.NewSolid("Scrim", parent, Theme.Fade(Theme.Backdrop, ScrimAlpha));
-            UiLayout.Stretch(scrim.rectTransform);
-            scrim.enabled = false;
+            scrim = new Scrim(kit, parent, ScrimAlpha);
             SongSelect = new SongSelectView(kit, parent);
             Results = new ResultsView(kit, parent);
             Options = new ListScreen(kit, parent, "Options", OptionsController.RowCount);
@@ -81,7 +63,7 @@ namespace GameHub.RhythmGame
 
         public void ShowScrim(bool visible)
         {
-            scrim.enabled = visible;
+            scrim.Show(visible);
         }
 
         public void HideScreens()

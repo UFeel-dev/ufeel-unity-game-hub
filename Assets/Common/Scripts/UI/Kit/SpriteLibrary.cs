@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace GameHub.RhythmGame
+namespace GameHub.Common
 {
     public sealed class SpriteLibrary
     {
@@ -53,7 +53,7 @@ namespace GameHub.RhythmGame
 
             atlas = new Texture2D(AtlasSize, AtlasSize, TextureFormat.RGBA32, false)
             {
-                name = "RhythmGameAtlas",
+                name = "UiAtlas",
                 wrapMode = TextureWrapMode.Clamp,
                 filterMode = FilterMode.Bilinear,
             };

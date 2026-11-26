@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace GameHub.RhythmGame
+namespace GameHub.Common
 {
     public readonly struct KeyHint
     {

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using GameHub.Common;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -127,10 +128,9 @@ namespace GameHub.RhythmGame
         {
             healthFill.rectTransform.anchorMax = new Vector2(1f, Mathf.Clamp01(health));
             healthFill.rectTransform.offsetMax = Vector2.zero;
-            if (health < LowHealth)
-                healthFill.color = Theme.Fade(Theme.Danger, 0.6f + (0.4f * pulse));
-            else
-                healthFill.color = health < MidHealth ? Color.Lerp(Theme.Danger, HealthMid, (health - LowHealth) / (MidHealth - LowHealth)) : Color.Lerp(HealthMid, Theme.Accent, (health - MidHealth) / (1f - MidHealth));
+            healthFill.color = health < LowHealth
+                ? Theme.Fade(Theme.Danger, 0.6f + (0.4f * pulse))
+                : health < MidHealth ? Color.Lerp(Theme.Danger, HealthMid, (health - LowHealth) / (MidHealth - LowHealth)) : Color.Lerp(HealthMid, Theme.Accent, (health - MidHealth) / (1f - MidHealth));
         }
 
         public void SetProgress(float value)

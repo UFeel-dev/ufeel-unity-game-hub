@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace GameHub.RhythmGame
+namespace GameHub.Common
 {
     public sealed class LineGraph
     {

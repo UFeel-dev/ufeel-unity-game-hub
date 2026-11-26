@@ -486,8 +486,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   library: {fileID: 11400000, guid: a4bb6cfb00954ef08612c7d30a77cc86, type: 2}
   ecgBeepClip: {fileID: 8300000, guid: ebf247831e89d4476874206eb898db6d, type: 3}
-  regularFont: {fileID: 11400000, guid: 935b32cadba2a611aa25c5d9ecfabc1d, type: 2}
-  boldFont: {fileID: 11400000, guid: d3132d22bea6ef02ba0cfd32b6da4667, type: 2}
 --- !u!4 &1677302365
 Transform:
   m_ObjectHideFlags: 0

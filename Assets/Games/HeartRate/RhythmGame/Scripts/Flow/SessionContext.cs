@@ -1,3 +1,4 @@
+using GameHub.Common;
 using UnityEngine;
 
 namespace GameHub.RhythmGame

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace GameHub.RhythmGame
+namespace GameHub.Common
 {
     public static class UiLayout
     {

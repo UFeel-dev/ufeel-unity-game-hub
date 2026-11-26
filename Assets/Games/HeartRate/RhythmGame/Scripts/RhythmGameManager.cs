@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using GameHub.Common;
-using TMPro;
 using UnityEngine;
 
 namespace GameHub.RhythmGame
@@ -41,13 +40,8 @@ namespace GameHub.RhythmGame
         [Header("Audio")]
         [SerializeField] private AudioClip ecgBeepClip;
 
-        [Header("Fonts")]
-        [SerializeField] private TMP_FontAsset regularFont;
-        [SerializeField] private TMP_FontAsset boldFont;
-
         private readonly Dictionary<RhythmSong, ChartSet> sets = new();
 
-        private SpriteLibrary sprites;
         private AudioClip flatlineClip;
         private AudioClip clickClip;
         private PreviewPlayer preview;
@@ -63,15 +57,15 @@ namespace GameHub.RhythmGame
         private float countdown;
         private int shownCountdown;
         private float flash;
+        private bool focusLost;
 
         private StageView Stage => context.Stage;
 
         private void Awake()
         {
-            sprites = new SpriteLibrary();
             flatlineClip = ToneFactory.CreateFlatline();
             clickClip = ToneFactory.CreateClick();
-            StageView stage = new(transform, new UiKit(sprites, regularFont, boldFont));
+            StageView stage = new(transform, UiKit.Shared);
             AudioSource music = CreateSource("Music");
             preview = new PreviewPlayer(CreateSource("Preview"));
             UiSounds sounds = new(CreateSource("Effects"), ecgBeepClip, flatlineClip);
@@ -96,6 +90,18 @@ namespace GameHub.RhythmGame
             context.Mouse.Tick();
             preview.Tick(deltaTime);
             Stage.Tick(deltaTime, Tint(), context.Monitor.Pulse, FlashIntensity());
+
+            if (!UiFocus.IsFree)
+            {
+                LoseFocus();
+                return;
+            }
+
+            if (focusLost)
+            {
+                focusLost = false;
+                PointerInput.ShowCursor(state is not (RhythmState.Playing or RhythmState.Resuming));
+            }
 
             switch (state)
             {
@@ -128,17 +134,23 @@ namespace GameHub.RhythmGame
 
         private void OnDestroy()
         {
-            sprites.Release();
             Destroy(flatlineClip);
             Destroy(clickClip);
+        }
+
+        private void LoseFocus()
+        {
+            focusLost = true;
+            if (state is RhythmState.Playing or RhythmState.Resuming)
+                Pause();
         }
 
         private Color Tint()
         {
             if (state == RhythmState.HudLayout)
-                return Theme.Level(HudLayoutController.DemoLevel);
+                return RhythmTheme.Level(HudLayoutController.DemoLevel);
             if (session != null && state is RhythmState.Playing or RhythmState.Paused or RhythmState.Resuming or RhythmState.Flatline)
-                return Theme.Level(session.Level);
+                return RhythmTheme.Level(session.Level);
             return Theme.Accent;
         }
 
@@ -286,7 +298,7 @@ namespace GameHub.RhythmGame
         {
             if (session == null)
                 return;
-            if (MenuKeys.Back() || PauseMenu.IsPaused)
+            if (MenuKeys.Back())
             {
                 Pause();
                 return;

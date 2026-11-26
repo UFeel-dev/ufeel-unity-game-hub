@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using GameHub.Common;
 using UnityEngine;
 
 namespace GameHub.RhythmGame
@@ -133,7 +134,7 @@ namespace GameHub.RhythmGame
             score.Apply(judgementEvent);
             context.Stage.Hud.ShowJudgement(judgementEvent);
             if (judgementEvent.Judgement != Judgement.Miss)
-                context.Stage.Playfield.Burst(judgementEvent.Lane, Theme.Judgement(judgementEvent.Judgement));
+                context.Stage.Playfield.Burst(judgementEvent.Lane, RhythmTheme.Judgement(judgementEvent.Judgement));
         }
 
         private void Present(float deltaTime, double songTime, float playRate)
@@ -141,7 +142,7 @@ namespace GameHub.RhythmGame
             StageView stage = context.Stage;
             HeartRateMonitor monitor = context.Monitor;
             stage.Playfield.Render(songTime, judge.Notes, scrollTime * playRate, Set.Analysis);
-            stage.Playfield.Tick(deltaTime, input, monitor.Pulse, Theme.Level(Level));
+            stage.Playfield.Tick(deltaTime, input, monitor.Pulse, RhythmTheme.Level(Level));
             stage.Playfield.SetHealth(score.Health, monitor.Pulse);
             stage.Playfield.SetProgress((float)(songTime / Set.Analysis.Length));
             stage.Hud.Tick(deltaTime, score);

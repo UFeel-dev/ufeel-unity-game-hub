@@ -4,6 +4,8 @@
     "references": [
         "UFeel",
         "UFeel.Core",
-        "Unity.InputSystem"
+        "Unity.InputSystem",
+        "Unity.TextMeshPro",
+        "UnityEngine.UI"
     ]
 }
