@@ -54,7 +54,7 @@ Instructions for testing and debugging the UFeel package across the Game Hub sce
 
 ### Troubleshooting the Game Hub
 
-- **A door shows "In Progress"**
+- **A door shows "In progress"**
   - Its game is flagged as in progress, or its scene is missing from the build settings.
 
 ## Tips

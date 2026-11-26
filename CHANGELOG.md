@@ -14,6 +14,11 @@
 - The Testing Room is now the Game Hub (`GameHub` scene, `Documentation/GameHub`).
 - Game scripts use private serialized fields, shared input, scene flow and heart rate helpers, and no longer compile into the UFeel package assembly.
 - Rhythm game rebuilt in the style of osu!mania. The heart rate sets the difficulty level instead of the tempo.
+- The rhythm game's UI kit moved to `GameHub.Common` (`Common/Scripts/UI/Kit`). The hub, the pause menu, the Animals, Maze and Escape Room HUDs and the door labels use it, with the Barlow Semi Condensed font.
+- Door selection is a room menu with one sub-menu per category: mouse, arrow keys, typed door number or eyes. The hub shows its key shortcuts.
+- While the mouse is free (Tab), the player stands still and the arrow keys drive the menus.
+- The pause menu offers Lobby only outside the hub.
+- The microphone selector opens from the pause menu instead of next to it.
 
 ### Added
 
@@ -21,6 +26,7 @@
 - Linux player builds ship `dependencies/` and `models/`.
 - `tools/update-ufeel.sh` to sync a ufeel package.
 - `EyeTracking.Gaze`, `BlinkCount` and `HeadWeight`.
+- `EyeTracking.IsInUse`, `EyeTracking.CancelCalibration()` and `UFeelAPI.CameraFeed`.
 - Rhythm game song select, Base and Scaling difficulty sliders, options and a results screen with a heart rate graph.
 - Rhythm game charts generated from the song audio, with hold notes.
 - Rhythm game options: arrow or circle notes, key labels, and song speed from 50% to 200% following the heart rate (100% by default).
@@ -32,12 +38,14 @@
 - Unused packages (HDRP, Visual Scripting, Timeline, AI Navigation, Collab, VS Code, Multiplayer Center, Test Framework).
 - The inactive mirror workflow and the `tools/refresh-package` script.
 - Rhythm game lane-changing notes, camera panning and the `Activator` and `PerturbatorDetector` tags.
+- UFeel IMGUI overlays, `EyeTracking.CalibrationKey`, `EyeTracking.Calibrate()`, `SpeechToText.MicrophoneSelectorKey`, `IsMicrophoneSelectorVisible` and `Show/HideMicrophoneSelector`.
 
 ### Fixed
 
 - Speech rules matched in the wrong direction and fired on empty speech.
 - Calibration profile paths were passed as UTF-16.
 - The Heart Rate - Horror door targeted a missing scene.
+- Picking another door before the carousel stopped left a door lowered, and picking a door twice kept it raised.
 - The pause menu Quit and hub door selection buttons targeted wrong assemblies.
 - The Escape Room camera and Horror Room red filter references were lost.
 - The rhythm game stalled and the Horror Room effects stopped without a heart rate reading.

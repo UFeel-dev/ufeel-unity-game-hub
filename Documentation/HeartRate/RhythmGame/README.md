@@ -198,7 +198,7 @@ flowchart LR
 | `Scripts/Gameplay` | Input, judging, scoring |
 | `Scripts/HeartRate` | Heart rate smoothing, resting rate, run statistics |
 | `Scripts/Playback` | Song clock, preview, generated sounds |
-| `Scripts/Presentation` | Screens and widgets, built at runtime |
+| `Scripts/Presentation` | Rhythm game screens and widgets, built at runtime from the shared UI kit (`Common/Scripts/UI/Kit`) |
 | `Scripts/Flow` | Screen controllers and the game session |
 | `Scripts/Settings` | Saved settings and records |
 | `Scripts/Songs` | `RhythmSong` and `RhythmSongLibrary` |
