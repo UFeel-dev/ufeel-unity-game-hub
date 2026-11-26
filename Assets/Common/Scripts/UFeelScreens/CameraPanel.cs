@@ -10,7 +10,7 @@ namespace GameHub.Common
         private const float Padding = 18f;
         private const float Gap = 14f;
         private const float Offset = 24f;
-        private const float PanelOpacity = 0.85f;
+        private const float PanelOpacity = 0.96f;
         private const float Inner = Width - (2f * Padding);
         private const float Column = (Inner - Gap) / 2f;
 
@@ -104,7 +104,7 @@ namespace GameHub.Common
             }
 
             float height = top + (2f * emotion.Height) + Gap + Padding;
-            UiLayout.Place(root, topLeft, topLeft, new Vector2(Offset, -Offset), new Vector2(Width, height));
+            UiLayout.Place(root, Vector2.one, Vector2.one, new Vector2(-Offset, -Offset), new Vector2(Width, height));
         }
     }
 }
