@@ -28,7 +28,7 @@ Movement uses the key positions (WASD on QWERTY, ZQSD on AZERTY). Letter shortcu
 | **WASD / ZQSD / Arrow keys** | Move around |
 | **Mouse** | Look around |
 | **E** | Enter the door in front of you |
-| **N** | Toggle the room menu with the eyes (look left or right then back to the center to move, double blink to open, go or go back) |
+| **N** | Toggle eye control of the room menu: look left or right to move (it repeats while you keep looking), close your eyes for a moment to select. The indicator under the menu shows both |
 | **F** | Toggle faster carousel rotation |
 | **Tab** | Toggle between looking around and using the menus |
 | **0-9**, **Enter** | Go to the door with this number |

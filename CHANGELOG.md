@@ -17,6 +17,8 @@
 - The rhythm game's UI kit moved to `GameHub.Common` (`Common/Scripts/UI/Kit`). The hub, the pause menu, the Animals, Maze and Escape Room HUDs and the door labels use it, with the Barlow Semi Condensed font.
 - Door selection is a room menu with one sub-menu per category: mouse, arrow keys, typed door number or eyes. The hub shows its key shortcuts.
 - While the mouse is free (Tab), the player stands still and the arrow keys drive the menus.
+- Eye control of the room menu: looking left or right moves after a short dwell and repeats while held, closing the eyes for 0.7 s selects, with an indicator under the menu. It replaces the double blink.
+- The car is now fully driven with the eyes: looking up or down shifts between Drive, Stop and Reverse, looking left or right steers, and a gear indicator shows both. The keyboard stays as a fallback.
 - The pause menu offers Lobby only outside the hub.
 - The microphone selector opens from the pause menu instead of next to it.
 

@@ -70,6 +70,7 @@ The hub loads a game additively when the player enters a door. A game whose root
 | `UiFocus`, `MenuCover` | The open menu that receives the input. Screens below it ignore the keys, and canvases below the pause menu fade out |
 | `MenuList`, `ListScreen` | Animated list with keyboard, mouse and wheel input, and a titled list screen |
 | `KeyBar`, `KeyHint` | Key hints at the bottom of the screen, clickable |
+| `GazeDwell`, `GazeMenuInput`, `GazeIndicator` | Gaze held to one side for a moment as a step, eye control of a menu (look left or right to move, close the eyes to select) and its feedback (`GazeDwell` and `GazeMenuInput` are in `Common/Scripts/Input`) |
 | `SliderView`, `MeterView`, `StatView`, `LineGraph` | Slider, read-only bar, value with a caption, line chart |
 | `Scrim`, `Toast`, `TitleCard`, `Fader` | Dimmed background, short message, large centred title, fade |
 | `WorldText` | Applies the font and a theme colour to 3D TextMesh Pro texts |
@@ -79,6 +80,6 @@ The hub loads a game additively when the player enters a door. A game whose root
 | Room menu (categories, then rooms) and hub key hints | `DoorSelectionManager`, `DoorPicker` (`Hub`) |
 | Pause menu (M) | `PauseMenu` |
 | Camera feedback and readings (F1), eye-tracking calibration (F8), microphone (F9) | `UFeelScreens`, created at startup |
-| Game HUDs | `AnimalsHud`, `MazeHud`, `SpeechManager`, `StageView` (rhythm game) |
+| Game HUDs | `AnimalsHud`, `MazeHud`, `CarHud`, `SpeechManager`, `StageView` (rhythm game) |
 
 **See also:** [API Reference](Packages/com.ufcorp.ufeel/Runtime/API.md) - [Setup Instructions](Documentation/GameHub/SetupInstructions.md)
