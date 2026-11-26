@@ -10,8 +10,7 @@ namespace GameHub.Hub
         [SerializeField] private float maxChainLength = 5.9f;
 
         private float originalChainLength;
-
-        public bool IsExtending { get; private set; }
+        private bool extended;
 
         private void Start()
         {
@@ -22,7 +21,7 @@ namespace GameHub.Hub
         {
             float scaleDelta = chainExtensionSpeed * Time.deltaTime * 0.5f;
             Vector3 scale = chain.localScale;
-            float targetScaleY = IsExtending
+            float targetScaleY = extended
                 ? Mathf.Min(scale.y + scaleDelta, maxChainLength)
                 : Mathf.Max(scale.y - scaleDelta, originalChainLength);
 
@@ -35,9 +34,14 @@ namespace GameHub.Hub
             door.position += Vector3.down * (appliedDelta * 2f);
         }
 
-        public void ToggleExtension()
+        public void Extend()
         {
-            IsExtending = !IsExtending;
+            extended = true;
+        }
+
+        public void Retract()
+        {
+            extended = false;
         }
     }
 }

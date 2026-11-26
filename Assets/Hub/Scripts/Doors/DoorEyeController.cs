@@ -25,22 +25,25 @@ namespace GameHub.Hub
 
         private void Update()
         {
-            if (LayoutInput.GetKeyDown(KeyCode.N))
+            if (UiFocus.IsFree && LayoutInput.GetKeyDown(KeyCode.N))
+            {
                 commandsEnabled = !commandsEnabled;
+                doorSelectionManager.SetEyeControl(commandsEnabled);
+            }
 
             if (!commandsEnabled)
                 return;
 
             int direction = GazeInput.HorizontalDirection();
             if (direction == 0 && previousDirection < 0)
-                doorSelectionManager.SelectPreviousDoor();
+                doorSelectionManager.SelectPrevious();
             else if (direction == 0 && previousDirection > 0)
-                doorSelectionManager.SelectNextDoor();
+                doorSelectionManager.SelectNext();
 
             previousDirection = direction;
 
             if (DetectDoubleBlink())
-                doorSelectionManager.ConfirmCurrentSelection();
+                doorSelectionManager.ConfirmSelection();
         }
 
         private bool DetectDoubleBlink()
