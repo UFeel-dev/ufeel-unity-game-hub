@@ -66,14 +66,14 @@ namespace GameHub.RhythmGame
             flatlineClip = ToneFactory.CreateFlatline();
             clickClip = ToneFactory.CreateClick();
             StageView stage = new(transform, UiKit.Shared);
-            AudioSource music = CreateSource("Music");
-            preview = new PreviewPlayer(CreateSource("Preview"));
-            UiSounds sounds = new(CreateSource("Effects"), ecgBeepClip, flatlineClip);
+            AudioSource music = CreateSource("Music", AudioChannel.Music);
+            preview = new PreviewPlayer(CreateSource("Preview", AudioChannel.Music));
+            UiSounds sounds = new(CreateSource("Effects", AudioChannel.Effects), ecgBeepClip, flatlineClip);
             context = new SessionContext(stage, music, new HeartRateMonitor(), sounds);
             songSelect = new SongSelectController(library != null ? library.Songs : Array.Empty<RhythmSong>(), context, preview, sets);
             options = new OptionsController(context);
             keys = new KeyBindingController(context);
-            calibration = new CalibrationController(context, new[] { CreateSource("Click A"), CreateSource("Click B") }, clickClip);
+            calibration = new CalibrationController(context, new[] { CreateSource("Click A", AudioChannel.Effects), CreateSource("Click B", AudioChannel.Effects) }, clickClip);
             hudLayout = new HudLayoutController(context);
             flatline = new FlatlineSequence(context);
         }
@@ -160,7 +160,7 @@ namespace GameHub.RhythmGame
             return flashing ? flash : 0f;
         }
 
-        private AudioSource CreateSource(string sourceName)
+        private AudioSource CreateSource(string sourceName, AudioChannel channel)
         {
             GameObject holder = new(sourceName);
             holder.transform.SetParent(transform, false);
@@ -168,6 +168,7 @@ namespace GameHub.RhythmGame
             source.playOnAwake = false;
             source.loop = false;
             source.spatialBlend = 0f;
+            GameAudio.Route(source, channel);
             return source;
         }
 
