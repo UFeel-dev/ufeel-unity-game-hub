@@ -10,6 +10,10 @@ namespace GameHub.Common
         private const int MinSensitivity = 25;
         private const int MaxSensitivity = 300;
         private const int SensitivityStep = 5;
+        private const int DefaultFlashlight = 100;
+        private const int MinFlashlight = 10;
+        private const int MaxFlashlight = 100;
+        private const int FlashlightStep = 10;
 
         private const string MasterKey = "GameHub.Settings.MasterVolume";
         private const string MusicKey = "GameHub.Settings.MusicVolume";
@@ -17,6 +21,7 @@ namespace GameHub.Common
         private const string SensitivityKey = "GameHub.Settings.LookSensitivity";
         private const string FullscreenKey = "GameHub.Settings.Fullscreen";
         private const string VSyncKey = "GameHub.Settings.VSync";
+        private const string FlashlightKey = "GameHub.Settings.FlashlightIntensity";
 
         public static int MasterVolume => Read(MasterKey, MaxVolume, 0, MaxVolume);
 
@@ -27,6 +32,10 @@ namespace GameHub.Common
         public static int LookSensitivity => Read(SensitivityKey, DefaultSensitivity, MinSensitivity, MaxSensitivity);
 
         public static float LookMultiplier => LookSensitivity / 100f;
+
+        public static int FlashlightIntensity => Read(FlashlightKey, DefaultFlashlight, MinFlashlight, MaxFlashlight);
+
+        public static float FlashlightMultiplier => FlashlightIntensity / 100f;
 
         public static bool Fullscreen => PlayerPrefs.GetInt(FullscreenKey, Screen.fullScreen ? 1 : 0) != 0;
 
@@ -53,6 +62,11 @@ namespace GameHub.Common
         public static void AdjustLookSensitivity(int steps, bool fine)
         {
             Adjust(SensitivityKey, LookSensitivity, steps * (fine ? 1 : SensitivityStep), MinSensitivity, MaxSensitivity);
+        }
+
+        public static void AdjustFlashlightIntensity(int steps, bool fine)
+        {
+            Adjust(FlashlightKey, FlashlightIntensity, steps * (fine ? 1 : FlashlightStep), MinFlashlight, MaxFlashlight);
         }
 
         public static void ToggleFullscreen()
