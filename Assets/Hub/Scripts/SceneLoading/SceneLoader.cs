@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using GameHub.Common;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -10,9 +11,21 @@ namespace GameHub.Hub
     {
         private const string SceneRootName = "Root";
 
+        private readonly List<GameObject> deferredCameras = new();
+        private RenderSettingsSnapshot? loadedSceneSettings;
+        private RoomPortal? portal;
+        private string? pendingScene;
+        private Action? onPendingUnloaded;
+        private Scene hubScene;
+
         public static SceneLoader? Instance { get; private set; }
 
+        public static bool IsHubActive =>
+            SceneManager.GetActiveScene().name == SceneNames.Hub || (Instance != null && Instance.HasPendingRoom);
+
         public bool IsLoading { get; private set; }
+
+        public bool HasPendingRoom => pendingScene != null;
 
         private void Awake()
         {
@@ -32,12 +45,34 @@ namespace GameHub.Hub
                 Instance = null;
         }
 
-        public void LoadAdditiveSceneAtPosition(string sceneName, Vector3 position, Action? onLoaded = null)
+        public void LoadAdditiveSceneAtPosition(string sceneName, Vector3 position, Action? onLoaded = null, Action? onUnloaded = null)
         {
-            onLoaded ??= () => { };
+            if (!IsLoading && !HasPendingRoom)
+                StartCoroutine(LoadAdditiveScene(sceneName, position, onLoaded, onUnloaded));
+        }
 
-            if (!IsLoading)
-                StartCoroutine(LoadAdditiveScene(sceneName, position, onLoaded));
+        public void EnterLoadedScene()
+        {
+            if (!HasPendingRoom)
+                return;
+
+            loadedSceneSettings?.Apply();
+            if (portal != null)
+                portal.Enter();
+
+            foreach (GameObject deferredCamera in deferredCameras)
+            {
+                if (deferredCamera != null)
+                    deferredCamera.SetActive(true);
+            }
+
+            ClearPendingRoom();
+        }
+
+        public void UnloadPendingRoom()
+        {
+            if (IsLoading || HasPendingRoom)
+                StartCoroutine(UnloadWhenLoaded());
         }
 
         private static void HideHub()
@@ -51,23 +86,89 @@ namespace GameHub.Hub
                 environment.SetActive(false);
         }
 
-        private IEnumerator LoadAdditiveScene(string sceneName, Vector3 position, Action onLoaded)
+        private IEnumerator LoadAdditiveScene(string sceneName, Vector3 position, Action? onLoaded, Action? onUnloaded)
         {
             IsLoading = true;
+            hubScene = SceneManager.GetActiveScene();
 
             yield return SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
 
             Scene loadedScene = SceneManager.GetSceneByName(sceneName);
-            GameObject root = Array.Find(loadedScene.GetRootGameObjects(), rootObject => rootObject.name == SceneRootName);
-            if (root != null)
-                root.transform.position = position;
-            else
+            GameObject[] rootObjects = loadedScene.GetRootGameObjects();
+            GameObject root = Array.Find(rootObjects, rootObject => rootObject.name == SceneRootName);
+            if (root == null)
+            {
                 HideHub();
+                SceneManager.SetActiveScene(loadedScene);
+            }
+            else
+            {
+                root.transform.position = position;
+                pendingScene = sceneName;
+                onPendingUnloaded = onUnloaded;
+                DeferUntilEntered(rootObjects);
 
-            SceneManager.SetActiveScene(loadedScene);
+                RenderSettingsSnapshot hubSettings = RenderSettingsSnapshot.Capture();
+                SceneManager.SetActiveScene(loadedScene);
+                loadedSceneSettings = RenderSettingsSnapshot.Capture();
+                hubSettings.Apply();
+
+                portal = FindAnyObjectByType<RoomPortal>();
+                if (portal != null)
+                    portal.Open(position, rootObjects);
+            }
+
             onLoaded?.Invoke();
 
             IsLoading = false;
+        }
+
+        private IEnumerator UnloadWhenLoaded()
+        {
+            yield return new WaitWhile(() => IsLoading);
+            if (pendingScene == null)
+                yield break;
+
+            string sceneName = pendingScene;
+            Action? unloaded = onPendingUnloaded;
+            if (portal != null)
+                portal.Close();
+
+            ClearPendingRoom();
+            SceneManager.SetActiveScene(hubScene);
+            unloaded?.Invoke();
+
+            yield return SceneManager.UnloadSceneAsync(sceneName);
+        }
+
+        private void ClearPendingRoom()
+        {
+            deferredCameras.Clear();
+            loadedSceneSettings = null;
+            portal = null;
+            pendingScene = null;
+            onPendingUnloaded = null;
+        }
+
+        private void DeferUntilEntered(GameObject[] rootObjects)
+        {
+            List<GameObject> roomPlayers = new();
+            foreach (GameObject rootObject in rootObjects)
+            {
+                foreach (Transform child in rootObject.GetComponentsInChildren<Transform>())
+                {
+                    if (child.CompareTag(Tags.Player))
+                        roomPlayers.Add(child.gameObject);
+                    else if (child.TryGetComponent(out Camera _))
+                        deferredCameras.Add(child.gameObject);
+                }
+            }
+
+            foreach (GameObject roomPlayer in roomPlayers)
+                roomPlayer.SetActive(false);
+
+            foreach (GameObject deferredCamera in deferredCameras)
+                deferredCamera.SetActive(false);
         }
     }
 }
