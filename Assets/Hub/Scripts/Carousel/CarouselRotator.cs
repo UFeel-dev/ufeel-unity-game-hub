@@ -77,9 +77,11 @@ namespace GameHub.Hub
         {
             for (int i = 0; i < doorHolders.Length; i++)
             {
-                float angle = Mathf.Deg2Rad * ((i * AngleStep) + currentAngle);
+                float degrees = (i * AngleStep) + currentAngle;
+                float angle = Mathf.Deg2Rad * degrees;
                 Vector3 position = doorHolders[i].localPosition;
                 doorHolders[i].localPosition = new Vector3(Mathf.Sin(angle) * radius, position.y, Mathf.Cos(angle) * radius);
+                doorHolders[i].localRotation = Quaternion.Euler(0f, degrees, 0f);
             }
         }
     }

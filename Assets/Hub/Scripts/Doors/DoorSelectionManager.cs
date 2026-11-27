@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using GameHub.Common;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace GameHub.Hub
 {
@@ -20,6 +19,7 @@ namespace GameHub.Hub
 
         [SerializeField] private CarouselRotator carouselRotator;
         [SerializeField] private Transform doorHoldersParent;
+        [SerializeField] private Transform? stairsRoot;
 
         private readonly List<DoorCategory> categories = new();
         private readonly List<MenuEntry> entries = new();
@@ -27,7 +27,10 @@ namespace GameHub.Hub
         private readonly GazeMenuInput gaze = new();
 
         private DoorPicker picker;
+        private HubStairs? stairs;
+        private CharacterController? rider;
         private DoorCategory? openCategory;
+        private HubAtmosphere? atmosphere;
         private DoorChainController? loweredChain;
         private Coroutine? lowering;
         private string typed = string.Empty;
@@ -58,11 +61,6 @@ namespace GameHub.Hub
             return door != null && !string.IsNullOrEmpty(door.DoorName) ? $"Enter {SplitName(door.DoorName).Room}" : "Enter";
         }
 
-        private static bool IsHubActive()
-        {
-            return SceneManager.GetActiveScene().name == SceneNames.Hub;
-        }
-
         private void Awake()
         {
             BuildCategories();
@@ -72,11 +70,15 @@ namespace GameHub.Hub
 
             picker = new DoorPicker(UiKit.Shared, transform, rows);
             ShowRoot(0);
+            TryGetComponent(out atmosphere);
+            if (stairsRoot != null)
+                stairs = new HubStairs(stairsRoot);
         }
 
         private void Update()
         {
-            bool visible = IsHubActive();
+            stairs?.Tick(Time.deltaTime, Rider());
+            bool visible = SceneLoader.IsHubActive;
             picker.SetVisible(visible);
             if (!visible)
                 return;
@@ -105,6 +107,18 @@ namespace GameHub.Hub
                 GoToTyped();
             else if (typed.Length > 0 && MenuKeys.Back())
                 SetTyped(string.Empty);
+        }
+
+        private CharacterController? Rider()
+        {
+            if (rider == null)
+            {
+                GameObject player = GameObject.FindGameObjectWithTag(Tags.Player);
+                if (player != null)
+                    player.TryGetComponent(out rider);
+            }
+
+            return rider;
         }
 
         private string? CurrentEnterLabel()
@@ -144,18 +158,25 @@ namespace GameHub.Hub
         {
             switch (picker.List.HandleInput(deltaTime, mouse))
             {
+                case MenuAction.Moved:
+                    atmosphere?.Audio.MenuMove();
+                    break;
                 case MenuAction.Confirmed when typed.Length > 0:
+                    atmosphere?.Audio.MenuConfirm();
                     GoToTyped();
                     break;
                 case MenuAction.Confirmed:
                 case MenuAction.Increase when openCategory == null:
+                    atmosphere?.Audio.MenuConfirm();
                     ConfirmSelection();
                     break;
                 case MenuAction.Back when typed.Length > 0:
+                    atmosphere?.Audio.MenuBack();
                     SetTyped(string.Empty);
                     break;
                 case MenuAction.Back:
                 case MenuAction.Decrease:
+                    atmosphere?.Audio.MenuBack();
                     CloseCategory();
                     break;
             }
@@ -302,22 +323,29 @@ namespace GameHub.Hub
 
         private void GoTo(DoorIdentifier door)
         {
-            DoorChainController? chain = door.GetComponentInChildren<DoorChainController>();
             if (lowering != null)
                 StopCoroutine(lowering);
 
+            lowering = StartCoroutine(Select(door, door.GetComponentInChildren<DoorChainController>()));
+        }
+
+        private IEnumerator Select(DoorIdentifier door, DoorChainController? chain)
+        {
             if (loweredChain != null && loweredChain != chain)
             {
                 loweredChain.Retract();
                 loweredChain = null;
+                if (SceneLoader.Instance != null)
+                    SceneLoader.Instance.UnloadPendingRoom();
+
+                if (stairs != null)
+                {
+                    stairs.Sink();
+                    yield return new WaitUntil(() => stairs.IsHidden);
+                }
             }
 
             carouselRotator.RotateToDoor(door.DoorId);
-            lowering = StartCoroutine(LowerWhenAligned(chain));
-        }
-
-        private IEnumerator LowerWhenAligned(DoorChainController? chain)
-        {
             yield return new WaitUntil(() => !carouselRotator.IsRotatingToTarget);
             lowering = null;
             if (chain == null)
@@ -325,6 +353,8 @@ namespace GameHub.Hub
 
             chain.Extend();
             loweredChain = chain;
+            if (stairs != null)
+                stairs.Rise();
         }
     }
 }
