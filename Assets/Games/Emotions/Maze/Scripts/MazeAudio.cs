@@ -5,7 +5,7 @@ namespace GameHub.Maze
 {
     public sealed class MazeAudio
     {
-        private const float AmbientVolume = 0.25f;
+        private const float AmbientVolume = 0.35f;
         private const float ChargeVolume = 0.45f;
         private const float ChargeMinPitch = 0.8f;
         private const float ChargePitchRange = 0.6f;
