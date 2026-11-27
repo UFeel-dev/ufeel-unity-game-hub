@@ -9,7 +9,7 @@ Scenes live in `Assets/Hub/Scenes` and `Assets/Games/<Category>/<Game>/Scenes`. 
 **Role:** Lobby used to reach every game.
 
 - First-person controller with mouse look.
-- Door carousel: pick a room in the room menu (one sub-menu per category, with the mouse, the arrow keys, the door number or the eyes), then press **E** in front of its door.
+- Door carousel: pick a room in the room menu (one sub-menu per category, with the mouse, the arrow keys, the door number or the eyes). The door comes down halfway and a staircase rises to it. Climb it and press **E**. Picking another door lowers the staircase first.
 - Doors whose game is not ready show "In progress" and stay closed.
 
 **Main scripts:** `CarouselRotator`, `DoorSelectionManager`, `DoorPicker`, `DoorTrigger`, `SceneLoader`

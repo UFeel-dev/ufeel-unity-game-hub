@@ -22,12 +22,12 @@
 - The pause menu offers Lobby only outside the hub.
 - The microphone selector opens from the pause menu instead of next to it.
 - The Maze is now a generated labyrinth with seven levels, walkable fog doors instead of teleports, and new room visuals.
-- The player's flashlight follows the view, up and down, in the hub and the Maze.
-- The player's capsule is no longer visible when looking down; it still casts a shadow.
+- The flashlight now follows where the player looks, in the hub and the Maze.
+- The player's capsule is hidden from the camera but still casts a shadow.
 
 ### Added
 
-- Settings screen in the pause menu: master, music and effects volume, mouse sensitivity, fullscreen and VSync, saved between sessions. Every audio source goes through the `GameMixer` Music or Effects group.
+- Settings screen in the pause menu: master, music and effects volume, mouse sensitivity, flashlight intensity, fullscreen and VSync, saved between sessions. Every audio source goes through the `GameMixer` Music or Effects group.
 - Eye-tracking calibration overlay (F8) and automatic loading of the shared calibration profile.
 - Linux player builds ship `dependencies/` and `models/`.
 - `tools/update-ufeel.sh` to sync a ufeel package.
@@ -41,6 +41,11 @@
 - Maze levels defined as assets (`MazeLevelDefinition`, `MazeCatalog`).
 - Maze special rooms (hint, bonus, trap), one-way and closing doors, room shapes and a minimap.
 - Maze sound design: ambient drone, footsteps, door charge, open and close sounds, and special room cues.
+- New round hub room with textures, dust, fog and a coloured light above each room door.
+- The selected door stops halfway down and a staircase rises up to it.
+- Hub sounds (ambient music, menu, carousel, footsteps) and a welcome screen on first launch.
+- Rooms with a `Root` are shown through the doorway. Walking through teleports the player inside, and picking another door unloads the room.
+- **T** toggles the flashlight.
 - `MenuEntry` icon and disabled state, `UiCanvas.Create` option to stay visible under menus.
 
 ### Removed
@@ -53,8 +58,8 @@
 
 ### Fixed
 
-- A script reload in Play mode left the UFeel camera open until Unity was closed; UFeel now shuts down before the reload and starts again after it.
-- Script changes in Play mode broke the running game; they now stop Play mode before recompiling.
+- UFeel kept the camera open after a script reload in Play mode until Unity was closed. It now stops before the reload and starts again after.
+- Changing a script in Play mode broke the running game. Play mode now stops before recompiling.
 - Speech rules matched in the wrong direction and fired on empty speech.
 - Calibration profile paths were passed as UTF-16.
 - The Heart Rate - Horror door targeted a missing scene.
