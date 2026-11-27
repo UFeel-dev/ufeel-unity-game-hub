@@ -54,6 +54,10 @@ namespace GameHub.Maze
         private MazeLook look;
         private Renderer? emblem;
 
+        private float FloorTop => floor.transform.localPosition.y + (floor.transform.localScale.y / 2f);
+
+        private float CeilingBottom => roof.transform.localPosition.y - (roof.transform.localScale.y / 2f);
+
         public MazeLook CreateLook()
         {
             return new MazeLook(floor.sharedMaterial, northWall.GetComponent<Renderer>().sharedMaterial, roof.sharedMaterial);
@@ -133,10 +137,6 @@ namespace GameHub.Maze
             if (emblem != null)
                 Destroy(emblem.material);
         }
-
-        private float FloorTop => floor.transform.localPosition.y + (floor.transform.localScale.y / 2f);
-
-        private float CeilingBottom => roof.transform.localPosition.y - (roof.transform.localScale.y / 2f);
 
         private Renderer CreateEmblem()
         {

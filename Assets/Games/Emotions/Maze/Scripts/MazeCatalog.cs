@@ -21,9 +21,9 @@ namespace GameHub.Maze
         };
 
         [Header("Unlimited mode")]
-        [Tooltip("Rules of every Unlimited maze. Its size is replaced by the sizes below.")]
+        [Tooltip("Rules used by the Unlimited mode. Its size is ignored.")]
         [SerializeField] private MazeLevelDefinition unlimited;
-        [Tooltip("Size of the first Unlimited maze. Each cleared maze adds one room per side.")]
+        [Tooltip("Size of the first Unlimited maze. It grows by one room per side after each cleared maze.")]
         [SerializeField, Range(MazeLevelDefinition.MinSize, MazeLevelDefinition.MaxSize)] private int unlimitedStartSize = 5;
         [SerializeField, Range(MazeLevelDefinition.MinSize, MazeLevelDefinition.MaxSize)] private int unlimitedMaxSize = 10;
 

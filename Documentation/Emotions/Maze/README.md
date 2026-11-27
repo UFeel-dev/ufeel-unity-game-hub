@@ -11,7 +11,7 @@ Emotion-driven labyrinth experience.
 ## Gameplay
 
 - The Maze opens on a level select. Only Level 1 is unlocked at first; clearing a level unlocks and starts the next one. Clearing the last level unlocks **Unlimited**, an endless series of growing mazes.
-- Each maze is generated: random start, exit in the farthest room.
+- Each maze is randomly generated.
 - Each door asks for an emotion. The closest door is outlined; hold its emotion for about two seconds and the fog clears so you can walk through.
 - Some doors close behind you or only open from one side.
 - Special rooms: **Hint** (shows the way out), **Bonus** (reveals the map around), **Trap** (back to the start).

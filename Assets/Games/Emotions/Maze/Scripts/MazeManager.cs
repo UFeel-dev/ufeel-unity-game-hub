@@ -9,7 +9,6 @@ namespace GameHub.Maze
     public class MazeManager : MonoBehaviour
     {
         private const float MaxEmotionLevel = 3f;
-
         private const float DecayRate = 0.35f;
         private const float PassEmotionLevel = 2f;
         private const float PlayerHeight = 1f;
@@ -21,7 +20,6 @@ namespace GameHub.Maze
         [Header("References")]
         [SerializeField] private GameObject roomPrefab;
         [SerializeField] private GameObject playerObject;
-        [Tooltip("Levels in play order and Unlimited mode rules.")]
         [SerializeField] private MazeCatalog catalog;
 
         [Header("Layout")]
@@ -34,7 +32,6 @@ namespace GameHub.Maze
         private FirstPersonController player;
         private MazeLevelMenu? menu;
         private MazeRun run;
-        private MazeLevelDefinition? level;
         private MazeGrid? grid;
         private RoomController[,] rooms;
         private GameObject? roomsRoot;
@@ -71,7 +68,7 @@ namespace GameHub.Maze
                 return;
             }
 
-            if (grid == null || level == null)
+            if (grid == null)
                 return;
 
             hud.Tick(Time.deltaTime);
@@ -126,7 +123,7 @@ namespace GameHub.Maze
             menu = null;
             EndRun();
             run = chosen;
-            level = chosen.IsUnlimited ? catalog.Unlimited : catalog.Levels[chosen.LevelIndex];
+            MazeLevelDefinition level = chosen.IsUnlimited ? catalog.Unlimited : catalog.Levels[chosen.LevelIndex];
             int size = chosen.IsUnlimited ? catalog.UnlimitedSize(chosen.Round) : level.Size;
 
             player.enabled = true;
@@ -166,7 +163,6 @@ namespace GameHub.Maze
             highlight?.Release();
             highlight = null;
             grid = null;
-            level = null;
             emotionLevels.Clear();
             emotions.Clear();
             usedBonuses.Clear();
@@ -347,7 +343,7 @@ namespace GameHub.Maze
                     GameObject roomObject = Instantiate(roomPrefab, new Vector3(x * roomSpacing, 0f, z * roomSpacing), Quaternion.identity, parent);
                     roomObject.name = $"Room_{x}_{z}";
                     RoomController room = roomObject.GetComponent<RoomController>();
-                    room.Setup(grid, new Vector2Int(x, z), icons!, look!);
+                    room.Setup(grid, new Vector2Int(x, z), icons, look);
                     rooms[x, z] = room;
                 }
             }

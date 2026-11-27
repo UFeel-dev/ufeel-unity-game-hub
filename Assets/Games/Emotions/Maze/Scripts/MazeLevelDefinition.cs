@@ -19,11 +19,11 @@ namespace GameHub.Maze
         [SerializeField] private List<EmotionType> emotions = new() { EmotionType.Happy, EmotionType.Surprised };
 
         [Header("Passages")]
-        [Tooltip("Share of the walls left by the maze that become extra passages, creating loops.")]
+        [Tooltip("Share of the remaining walls turned into extra passages (loops).")]
         [SerializeField, Range(0f, 1f)] private float loopRatio;
-        [Tooltip("Chance for a passage of the maze to close again behind the player.")]
+        [Tooltip("Chance for a passage to close behind the player.")]
         [SerializeField, Range(0f, 1f)] private float closingChance;
-        [Tooltip("Chance for a loop passage to be one-way. Main passages stay two-way so the exit is always reachable.")]
+        [Tooltip("Chance for a loop passage to be one-way.")]
         [SerializeField, Range(0f, 1f)] private float oneWayChance;
 
         [Header("Special rooms")]
