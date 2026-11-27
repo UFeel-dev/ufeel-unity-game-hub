@@ -53,6 +53,8 @@
 
 ### Fixed
 
+- A script reload in Play mode left the UFeel camera open until Unity was closed; UFeel now shuts down before the reload and starts again after it.
+- Script changes in Play mode broke the running game; they now stop Play mode before recompiling.
 - Speech rules matched in the wrong direction and fired on empty speech.
 - Calibration profile paths were passed as UTF-16.
 - The Heart Rate - Horror door targeted a missing scene.

@@ -1,0 +1,8 @@
+{
+    "name": "GameHub.Common.Editor",
+    "rootNamespace": "GameHub.Common.Editor",
+    "references": [],
+    "includePlatforms": [
+        "Editor"
+    ]
+}
