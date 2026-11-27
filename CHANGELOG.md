@@ -21,6 +21,7 @@
 - The car is now fully driven with the eyes: looking up or down shifts between Drive, Stop and Reverse, looking left or right steers, and a gear indicator shows both. The keyboard stays as a fallback.
 - The pause menu offers Lobby only outside the hub.
 - The microphone selector opens from the pause menu instead of next to it.
+- The Maze is now a generated labyrinth with seven levels, walkable fog doors instead of teleports, and new room visuals.
 
 ### Added
 
@@ -33,6 +34,10 @@
 - Rhythm game charts generated from the song audio, with hold notes.
 - Rhythm game options: arrow or circle notes, key labels, and song speed from 50% to 200% following the heart rate (100% by default).
 - **Tools > Rhythm Game > Add Song** to add rhythm game songs.
+- Maze level select with saved progress and an Unlimited mode.
+- Maze levels defined as assets (`MazeLevelDefinition`, `MazeCatalog`).
+- Maze special rooms (hint, bonus, trap), one-way and closing doors, room shapes and a minimap.
+- `MenuEntry` icon and disabled state, `UiCanvas.Create` option to stay visible under menus.
 
 ### Removed
 

@@ -15,10 +15,10 @@ Instructions for testing and debugging the UFeel package across the Game Hub sce
 
 ### Testing Steps for Emotion Detection
 
-- From the hub, enter the **Maze** door.
+- From the hub, enter the **Maze** door and pick **Level 1**.
 - The camera feed should activate automatically.
-- Display the emotion written on a fog door (**happiness**, **surprise** or **fear**) and walk into it.
-- The path opens once the emotion is held for about two seconds.
+- Walk towards a fog door: the closest one is outlined. Show the emotion written on it (**Happy** or **Surprised** in Level 1).
+- After about two seconds the fog clears and you can walk through.
 
 ### Troubleshooting Emotion Detection
 
