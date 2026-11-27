@@ -72,7 +72,7 @@ namespace GameHub.Common
 
         private void Look()
         {
-            Vector2 delta = LayoutInput.GetMouseDelta() * mouseSensitivity;
+            Vector2 delta = LayoutInput.GetMouseDelta() * (mouseSensitivity * GameSettings.LookMultiplier);
 
             pitch = Mathf.Clamp(pitch - delta.y, -MaxPitch, MaxPitch);
             cameraRoot.localRotation = Quaternion.Euler(pitch, 0f, 0f);

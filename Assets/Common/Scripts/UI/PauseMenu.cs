@@ -7,7 +7,7 @@ namespace GameHub.Common
     public class PauseMenu : MonoBehaviour
     {
         private const float ScrimOpacity = 0.82f;
-        private const int MaxRows = 4;
+        private const int MaxRows = 5;
 
         private static readonly KeyHint[] Hints =
         {
@@ -22,6 +22,7 @@ namespace GameHub.Common
 
         private Scrim scrim;
         private ListScreen screen;
+        private SettingsPanel settings;
         private KeyBar keys;
         private bool paused;
         private CursorLockMode previousLockState;
@@ -30,6 +31,7 @@ namespace GameHub.Common
         private enum PauseAction
         {
             Resume,
+            Settings,
             Microphone,
             Lobby,
             Quit,
@@ -44,6 +46,7 @@ namespace GameHub.Common
             keys = new KeyBar(kit, canvas);
             keys.Set(Hints);
             keys.SetVisible(false);
+            settings = new SettingsPanel(kit, canvas);
         }
 
         private void OnDestroy()
@@ -51,6 +54,7 @@ namespace GameHub.Common
             if (!paused)
                 return;
 
+            settings.Hide();
             Time.timeScale = 1f;
             UiFocus.Release(this);
             paused = false;
@@ -62,6 +66,7 @@ namespace GameHub.Common
             mouse.Tick();
             scrim.Tick(deltaTime);
             screen.Tick(deltaTime);
+            settings.Tick(deltaTime, mouse);
 
             if (!paused)
             {
@@ -124,6 +129,7 @@ namespace GameHub.Common
             entries.Clear();
             actions.Clear();
             Add("Resume", PauseAction.Resume);
+            Add("Settings", PauseAction.Settings);
             Add("Microphone", PauseAction.Microphone);
             if (SceneManager.GetActiveScene().name != SceneNames.Hub)
                 Add("Lobby", PauseAction.Lobby);
@@ -142,6 +148,9 @@ namespace GameHub.Common
             {
                 case PauseAction.Resume:
                     Resume();
+                    break;
+                case PauseAction.Settings:
+                    settings.Show();
                     break;
                 case PauseAction.Microphone:
                     UFeelScreens.ShowMicrophone();
