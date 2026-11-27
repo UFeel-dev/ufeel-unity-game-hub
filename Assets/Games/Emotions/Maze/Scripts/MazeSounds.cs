@@ -8,9 +8,26 @@ namespace GameHub.Maze
     public sealed class MazeSounds
     {
         private const int Rate = 44100;
-        private const float AmbientSeconds = 16f;
+        private const float AmbientSeconds = 32f;
         private const float ChargeSeconds = 2f;
         private const int StepVariants = 4;
+        private const float PadLevel = 0.2f;
+        private const float PadHarmonic = 0.12f;
+        private const float BellLevel = 0.18f;
+        private const float BellDecay = 1.6f;
+        private const float AirLevel = 0.06f;
+
+        private static readonly float[][] PadChords =
+        {
+            new[] { 110f, 164.81f, 220f, 261.63f, 329.63f },
+            new[] { 87.31f, 130.81f, 220f, 261.63f, 329.63f },
+            new[] { 130.81f, 196f, 261.63f, 329.63f, 392f },
+            new[] { 98f, 146.83f, 196f, 246.94f, 293.66f },
+        };
+
+        private static readonly float[] PadDetune = { 0.998f, 1.002f };
+        private static readonly float[] BellNotes = { 440f, 523.25f, 587.33f, 659.25f, 783.99f, 880f };
+        private static readonly (float Delay, float Gain)[] BellEchoes = { (0f, 1f), (0.36f, 0.4f), (0.72f, 0.16f) };
 
         private readonly List<AudioClip> clips = new();
 
@@ -82,46 +99,97 @@ namespace GameHub.Maze
 
         private static float[] Ambience(int count)
         {
-            float[] partials = { 55f, 82.5f, 110f, 130.8125f, 165f };
-            float[] levels = { 0.32f, 0.2f, 0.16f, 0.08f, 0.07f };
             float[] samples = new float[count];
-            for (int i = 0; i < count; i++)
-            {
-                float t = (float)i / Rate;
-                float sum = 0f;
-                for (int p = 0; p < partials.Length; p++)
-                {
-                    float tremolo = 0.65f + (0.35f * Sine((p + 1) / AmbientSeconds, t + p));
-                    sum += levels[p] * tremolo * Sine(partials[p], t);
-                }
-
-                samples[i] = sum;
-            }
-
-            AddLoopingAir(samples, 0.12f);
+            AddPad(samples);
+            AddBells(samples);
+            AddAir(samples);
             return Normalize(samples, 0.5f);
         }
 
-        private static void AddLoopingAir(float[] samples, float level)
+        private static void AddPad(float[] samples)
         {
-            const float Smoothing = 0.02f;
-            int fade = Rate;
-            Random random = new(7);
-            float[] air = new float[samples.Length + fade];
-            float state = 0f;
-            for (int i = 0; i < air.Length; i++)
+            int slot = samples.Length / PadChords.Length;
+            int ramp = slot / 2;
+            int length = slot + ramp;
+            for (int c = 0; c < PadChords.Length; c++)
             {
-                state += Smoothing * (((float)random.NextDouble() * 2f) - 1f - state);
-                air[i] = state;
-            }
-
-            Normalize(air, level);
-            for (int i = 0; i < samples.Length; i++)
-            {
-                float mix = Mathf.Clamp01((float)i / fade);
-                samples[i] += i < fade ? (air[i] * mix) + (air[samples.Length + i] * (1f - mix)) : air[i];
+                int start = (c * slot) - (ramp / 2);
+                foreach (float note in PadChords[c])
+                {
+                    foreach (float detune in PadDetune)
+                        AddTone(samples, start, length, ramp, note * detune, PadLevel);
+                    AddTone(samples, start, length, ramp, note * 2f, PadLevel * PadHarmonic);
+                }
             }
         }
+
+        private static void AddTone(float[] samples, int start, int length, int ramp, float frequency, float level)
+        {
+            double step = 2.0 * Math.PI * frequency / Rate;
+            double cos = Math.Cos(step);
+            double sin = Math.Sin(step);
+            double x = 1.0;
+            double y = 0.0;
+            for (int i = 0; i < length; i++)
+            {
+                float window = 1f;
+                if (i < ramp)
+                    window = Mathf.Pow(Mathf.Sin(0.5f * Mathf.PI * i / ramp), 2f);
+                else if (i > length - ramp)
+                    window = Mathf.Pow(Mathf.Sin(0.5f * Mathf.PI * (length - i) / ramp), 2f);
+
+                int index = Wrap(start + i, samples.Length);
+                samples[index] += (float)y * level * window;
+                double next = (x * cos) - (y * sin);
+                y = (x * sin) + (y * cos);
+                x = next;
+            }
+        }
+
+        private static void AddBells(float[] samples)
+        {
+            Random random = new(3);
+            int length = Mathf.RoundToInt(3f * Rate);
+            float time = 1.5f;
+            while (time < AmbientSeconds)
+            {
+                float note = BellNotes[random.Next(BellNotes.Length)];
+                foreach ((float delay, float gain) in BellEchoes)
+                {
+                    int start = Mathf.RoundToInt((time + delay) * Rate);
+                    for (int i = 0; i < length; i++)
+                        samples[Wrap(start + i, samples.Length)] += Bell(note, (float)i / Rate, BellDecay) * BellLevel * gain;
+                }
+
+                time += 2.5f + ((float)random.NextDouble() * 3.5f);
+            }
+        }
+
+        private static void AddAir(float[] samples)
+        {
+            const float Smoothing = 0.02f;
+            Random random = new(7);
+            float[] noise = new float[samples.Length];
+            for (int i = 0; i < noise.Length; i++)
+                noise[i] = ((float)random.NextDouble() * 2f) - 1f;
+
+            float[] air = new float[samples.Length];
+            float state = 0f;
+            for (int pass = 0; pass < 2; pass++)
+            {
+                for (int i = 0; i < noise.Length; i++)
+                {
+                    state += Smoothing * (noise[i] - state);
+                    air[i] = state;
+                }
+            }
+
+            Normalize(air, AirLevel);
+            for (int i = 0; i < samples.Length; i++)
+                samples[i] += air[i];
+        }
+
+        private static int Wrap(int index, int length) => ((index % length) + length) % length;
 
         private static float[] ChargeHum(int count)
         {
