@@ -29,6 +29,7 @@ namespace GameHub.Maze
         [SerializeField] private float roomSpacing = 20f;
 
         private readonly Dictionary<EmotionType, float> emotionLevels = new();
+        private readonly List<EmotionInfo> emotions = new();
         private readonly HashSet<Vector2Int> usedBonuses = new();
         private FirstPersonController player;
         private MazeLevelMenu? menu;
@@ -102,7 +103,7 @@ namespace GameHub.Maze
         private void OpenMenu()
         {
             player.enabled = false;
-            menu = new MazeLevelMenu(UiKit.Shared, transform, catalog.Levels.Count, icons!);
+            menu = new MazeLevelMenu(UiKit.Shared, transform, catalog, icons);
         }
 
         private void UpdateMenu()
@@ -132,10 +133,11 @@ namespace GameHub.Maze
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
 
-            grid = MazeGrid.Generate(level, size);
+            emotions.AddRange(catalog.EmotionsOf(level));
+            grid = MazeGrid.Generate(level, size, emotions);
             highlight = new DoorHighlight(transform);
-            hud = new MazeHud(UiKit.Shared, transform, level.Emotions, grid, icons!);
-            foreach (EmotionInfo info in level.Emotions)
+            hud = new MazeHud(UiKit.Shared, transform, emotions, grid, icons);
+            foreach (EmotionInfo info in emotions)
                 emotionLevels[info.Emotion] = 0f;
 
             GenerateRooms();
@@ -166,6 +168,7 @@ namespace GameHub.Maze
             grid = null;
             level = null;
             emotionLevels.Clear();
+            emotions.Clear();
             usedBonuses.Clear();
             entrySide = null;
             hintRevealed = false;
@@ -180,7 +183,7 @@ namespace GameHub.Maze
 
         private void ResetLevels()
         {
-            foreach (EmotionInfo info in level!.Emotions)
+            foreach (EmotionInfo info in emotions)
                 SetEmotionLevel(info.Emotion, 0f);
         }
 
@@ -190,7 +193,7 @@ namespace GameHub.Maze
             if (dominant == null)
                 return;
 
-            foreach (EmotionInfo info in level!.Emotions)
+            foreach (EmotionInfo info in emotions)
             {
                 float value = emotionLevels[info.Emotion];
                 emotionLevels[info.Emotion] = info.Emotion == dominant

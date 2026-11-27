@@ -33,13 +33,13 @@ namespace GameHub.Maze
         private readonly List<MenuEntry> entries = new();
         private bool resetArmed;
 
-        public MazeLevelMenu(UiKit kit, Transform owner, int levelCount, MazeIcons icons)
+        public MazeLevelMenu(UiKit kit, Transform owner, MazeCatalog catalog, MazeIcons icons)
         {
-            this.levelCount = levelCount;
+            levelCount = catalog.Levels.Count;
             this.icons = icons;
 
             backdropCanvas = UiCanvas.Create("MazeLevelsBackdrop", owner, UiCanvas.FullScreenGameOrder, false);
-            backdrop = new MazeMenuBackdrop(kit, backdropCanvas);
+            backdrop = new MazeMenuBackdrop(kit, backdropCanvas, catalog.Emotions);
             canvas = UiCanvas.Create("MazeLevels", owner, UiCanvas.FullScreenGameOrder + 1);
 
             int rows = levelCount + 3;

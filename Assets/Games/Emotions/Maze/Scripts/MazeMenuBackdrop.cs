@@ -24,9 +24,9 @@ namespace GameHub.Maze
         private readonly Texture2D texture;
         private Vector2 offset;
 
-        public MazeMenuBackdrop(UiKit kit, RectTransform parent)
+        public MazeMenuBackdrop(UiKit kit, RectTransform parent, IReadOnlyList<EmotionInfo> doorColors)
         {
-            texture = Paint();
+            texture = Paint(doorColors);
             image = UiKit.NewRect("Backdrop", parent).gameObject.AddComponent<RawImage>();
             image.texture = texture;
             image.raycastTarget = false;
@@ -51,7 +51,7 @@ namespace GameHub.Maze
             Object.Destroy(texture);
         }
 
-        private static Texture2D Paint()
+        private static Texture2D Paint(IReadOnlyList<EmotionInfo> doorColors)
         {
             bool[,] east = new bool[Columns, Rows];
             bool[,] north = new bool[Columns, Rows];
@@ -71,8 +71,8 @@ namespace GameHub.Maze
                 {
                     int left = x * CellPixels;
                     int bottom = y * CellPixels;
-                    DrawEdge(pixels, width, height, left + CellPixels, bottom, false, east[x, y], wall);
-                    DrawEdge(pixels, width, height, left, bottom + CellPixels, true, north[x, y], wall);
+                    DrawEdge(pixels, width, height, left + CellPixels, bottom, false, east[x, y], wall, doorColors);
+                    DrawEdge(pixels, width, height, left, bottom + CellPixels, true, north[x, y], wall, doorColors);
                 }
             }
 
@@ -87,17 +87,17 @@ namespace GameHub.Maze
             return result;
         }
 
-        private static void DrawEdge(Color32[] pixels, int width, int height, int x, int y, bool horizontal, bool open, Color32 wall)
+        private static void DrawEdge(Color32[] pixels, int width, int height, int x, int y, bool horizontal, bool open, Color32 wall, IReadOnlyList<EmotionInfo> doorColors)
         {
             int start = 0;
             int length = CellPixels + WallPixels;
             Color32 color = wall;
             if (open)
             {
-                if (Random.value >= DoorChance)
+                if (doorColors.Count == 0 || Random.value >= DoorChance)
                     return;
 
-                Color emotion = EmotionInfo.All[Random.Range(0, EmotionInfo.All.Length)].Color;
+                Color emotion = doorColors[Random.Range(0, doorColors.Count)].Color;
                 color = Color.Lerp(Ground, emotion, DoorStrength);
                 length = Mathf.RoundToInt(CellPixels * DoorLength);
                 start = (CellPixels - length) / 2;

@@ -20,6 +20,19 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 9374e4dfd55aa0426c8dfe09df231884, type: 2}
   - {fileID: 11400000, guid: 6a896d9fdcd049569da9f9edded13a57, type: 2}
   - {fileID: 11400000, guid: 115dc991df6653ea0894d58fec000221, type: 2}
+  emotions:
+  - emotion: 5
+    color: {r: 1, g: 0.84, b: 0.25, a: 1}
+  - emotion: 8
+    color: {r: 1, g: 0.45, b: 0.75, a: 1}
+  - emotion: 7
+    color: {r: 0.25, g: 0.55, b: 1, a: 1}
+  - emotion: 1
+    color: {r: 0.95, g: 0.25, b: 0.2, a: 1}
+  - emotion: 4
+    color: {r: 0.6, g: 0.4, b: 1, a: 1}
+  - emotion: 3
+    color: {r: 0.55, g: 0.78, b: 0.2, a: 1}
   unlimited: {fileID: 11400000, guid: 4f93b7944043b485428a9d72405fe246, type: 2}
   unlimitedStartSize: 5
   unlimitedMaxSize: 10

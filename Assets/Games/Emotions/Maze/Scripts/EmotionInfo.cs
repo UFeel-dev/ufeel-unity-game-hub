@@ -1,46 +1,25 @@
+using System;
 using System.Collections.Generic;
 using UFeel;
 using UnityEngine;
 
 namespace GameHub.Maze
 {
-    public readonly struct EmotionInfo
+    [Serializable]
+    public struct EmotionInfo
     {
-        public static readonly EmotionInfo[] All =
-        {
-            new(EmotionType.Happy, new Color(1f, 0.84f, 0.25f, 1f)),
-            new(EmotionType.Surprised, new Color(1f, 0.45f, 0.75f, 1f)),
-            new(EmotionType.Sad, new Color(0.25f, 0.55f, 1f, 1f)),
-            new(EmotionType.Angry, new Color(0.95f, 0.25f, 0.2f, 1f)),
-            new(EmotionType.Fearful, new Color(0.6f, 0.4f, 1f, 1f)),
-            new(EmotionType.Disgusted, new Color(0.55f, 0.78f, 0.2f, 1f)),
-            new(EmotionType.Contemptuous, new Color(0.9f, 0.55f, 0.3f, 1f)),
-        };
+        [SerializeField] private EmotionType emotion;
+        [SerializeField] private Color color;
 
         public EmotionInfo(EmotionType emotion, Color color)
         {
-            Emotion = emotion;
-            Color = color;
+            this.emotion = emotion;
+            this.color = color;
         }
 
-        public EmotionType Emotion { get; }
+        public readonly EmotionType Emotion => emotion;
 
-        public Color Color { get; }
-
-        public static bool TryGet(EmotionType emotion, out EmotionInfo info)
-        {
-            foreach (EmotionInfo candidate in All)
-            {
-                if (candidate.Emotion == emotion)
-                {
-                    info = candidate;
-                    return true;
-                }
-            }
-
-            info = default;
-            return false;
-        }
+        public readonly Color Color => color;
 
         public static EmotionInfo Random(IReadOnlyList<EmotionInfo> emotions)
         {

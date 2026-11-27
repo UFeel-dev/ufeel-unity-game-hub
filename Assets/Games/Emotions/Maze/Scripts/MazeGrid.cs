@@ -10,6 +10,7 @@ namespace GameHub.Maze
         private static readonly RoomShape[] Shapes = { RoomShape.Square, RoomShape.Rectangle, RoomShape.Circle, RoomShape.Triangle };
 
         private readonly MazeLevelDefinition level;
+        private readonly IReadOnlyList<EmotionInfo> emotions;
         private readonly Passage?[,,] passages;
         private readonly RoomKind[,] kinds;
         private readonly RoomLayout[,] layouts;
@@ -17,9 +18,10 @@ namespace GameHub.Maze
         private readonly Dictionary<Vector2Int, EmotionInfo> hints = new();
         private int[,] distancesToExit = new int[0, 0];
 
-        private MazeGrid(MazeLevelDefinition level, int size)
+        private MazeGrid(MazeLevelDefinition level, int size, IReadOnlyList<EmotionInfo> emotions)
         {
             this.level = level;
+            this.emotions = emotions;
             Size = size;
             passages = new Passage?[Size, Size, Directions.Length];
             kinds = new RoomKind[Size, Size];
@@ -34,9 +36,9 @@ namespace GameHub.Maze
 
         public IReadOnlyList<Passage> Passages => all;
 
-        public static MazeGrid Generate(MazeLevelDefinition level, int size)
+        public static MazeGrid Generate(MazeLevelDefinition level, int size, IReadOnlyList<EmotionInfo> emotions)
         {
-            MazeGrid grid = new(level, size);
+            MazeGrid grid = new(level, size, emotions);
             grid.CarveTree();
             grid.Start = grid.RandomRoom();
             grid.Exit = grid.Farthest(grid.Start);
@@ -149,7 +151,7 @@ namespace GameHub.Maze
 
         private void Connect(Vector2Int from, Direction side, PassageKind kind)
         {
-            Passage passage = new(from, side, EmotionInfo.Random(level.Emotions), kind);
+            Passage passage = new(from, side, EmotionInfo.Random(emotions), kind);
             passages[from.x, from.y, (int)side] = passage;
             passages[passage.To.x, passage.To.y, (int)Opposite(side)] = passage;
             all.Add(passage);
@@ -295,7 +297,7 @@ namespace GameHub.Maze
 
                 UFeel.EmotionType first = roomPassages[0].Emotion.Emotion;
                 if (roomPassages.TrueForAll(passage => passage.Emotion.Emotion == first))
-                    roomPassages[Random.Range(0, roomPassages.Count)].Emotion = EmotionInfo.RandomExcept(level.Emotions, first);
+                    roomPassages[Random.Range(0, roomPassages.Count)].Emotion = EmotionInfo.RandomExcept(emotions, first);
             }
         }
 
@@ -329,7 +331,7 @@ namespace GameHub.Maze
             for (int i = 0; i < hintCount; i++)
             {
                 kinds[free[i].x, free[i].y] = RoomKind.Hint;
-                hints[free[i]] = EmotionInfo.Random(level.Emotions);
+                hints[free[i]] = EmotionInfo.Random(emotions);
             }
 
             for (int i = hintCount; i < hintCount + bonusCount; i++)

@@ -15,7 +15,7 @@ namespace GameHub.Maze
         [SerializeField, Range(MinSize, MaxSize)] private int size = 3;
 
         [Header("Emotions")]
-        [Tooltip("Emotions the doors can ask for. Neutral and None have no door colour and are ignored.")]
+        [Tooltip("Emotions the doors can ask for, among those of the catalog.")]
         [SerializeField] private List<EmotionType> emotions = new() { EmotionType.Happy, EmotionType.Surprised };
 
         [Header("Passages")]
@@ -39,11 +39,7 @@ namespace GameHub.Maze
         [Tooltip("A room with four doors cannot be triangular and stays square.")]
         [SerializeField, Min(0f)] private float triangleWeight;
 
-        private EmotionInfo[]? palette;
-
         public int Size => size;
-
-        public IReadOnlyList<EmotionInfo> Emotions => palette ??= BuildPalette();
 
         public float LoopRatio => loopRatio;
 
@@ -57,6 +53,8 @@ namespace GameHub.Maze
 
         public int BonusRooms => bonusRooms;
 
+        public bool Uses(EmotionType emotion) => emotions.Contains(emotion);
+
         public float WeightOf(RoomShape shape)
         {
             return shape switch
@@ -66,29 +64,6 @@ namespace GameHub.Maze
                 RoomShape.Triangle => triangleWeight,
                 _ => squareWeight,
             };
-        }
-
-        private void OnValidate()
-        {
-            palette = null;
-        }
-
-        private EmotionInfo[] BuildPalette()
-        {
-            List<EmotionInfo> result = new();
-            foreach (EmotionType emotion in emotions)
-            {
-                if (EmotionInfo.TryGet(emotion, out EmotionInfo info) && !result.Exists(item => item.Emotion == emotion))
-                    result.Add(info);
-            }
-
-            if (result.Count == 0)
-            {
-                Debug.LogError($"Maze level {name} has no usable emotion; using {EmotionInfo.All[0].Emotion}.", this);
-                result.Add(EmotionInfo.All[0]);
-            }
-
-            return result.ToArray();
         }
     }
 }

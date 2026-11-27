@@ -30,8 +30,8 @@ Reach the exit of each level.
 
 Levels are assets in `Assets/Games/Emotions/Maze/Levels`:
 
-- `MazeCatalog`: the levels in play order and the Unlimited settings. It is assigned to `MazeManager` in the Maze scene.
-- `MazeLevelDefinition` (**Create > GameHub > Maze > Level**): grid size, door emotions, loop / closing / one-way door ratios, number of hint, trap and bonus rooms, and room shape weights.
+- `MazeCatalog`: the levels in play order, the available emotions with their door colour (Happy, Surprised, Sad, Angry, Fearful, Disgusted by default) and the Unlimited settings. It is assigned to `MazeManager` in the Maze scene.
+- `MazeLevelDefinition` (**Create > GameHub > Maze > Level**): grid size, door emotions (among the catalog's), loop / closing / one-way door ratios, number of hint, trap and bonus rooms, and room shape weights.
 
 Progress is stored in `PlayerPrefs`. It can be reset from the level select or with **Reset saved progress** in the `MazeCatalog` context menu.
 
