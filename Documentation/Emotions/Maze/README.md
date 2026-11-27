@@ -20,7 +20,7 @@ Emotion-driven labyrinth experience.
 
 | Key | Action |
 |---|---|
-| L | Back to the level select |
+| L (twice) | Back to the level select |
 | M | Pause |
 
 ## Objective

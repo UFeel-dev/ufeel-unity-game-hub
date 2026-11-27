@@ -14,6 +14,7 @@ namespace GameHub.Maze
         private const float PlayerHeight = 1f;
         private const float RelockDistance = 3f;
         private const float ResultDelay = 4f;
+        private const float LeaveConfirmSeconds = 3f;
         private const int BonusRevealRadius = 2;
         private const int HintRouteLength = 3;
 
@@ -45,6 +46,7 @@ namespace GameHub.Maze
         private Direction? entrySide;
         private bool hintRevealed;
         private bool playerWon;
+        private float leaveConfirmUntil;
 
         private void Start()
         {
@@ -80,9 +82,17 @@ namespace GameHub.Maze
             hud.Tick(Time.deltaTime);
             if (UiFocus.IsFree && LayoutInput.GetKeyDown(KeyCode.L))
             {
-                EndRun();
-                OpenMenu();
-                return;
+                if (Time.time > leaveConfirmUntil)
+                {
+                    leaveConfirmUntil = Time.time + LeaveConfirmSeconds;
+                    hud.Notify("Press L again to leave the level");
+                }
+                else
+                {
+                    EndRun();
+                    OpenMenu();
+                    return;
+                }
             }
 
             if (playerWon)
@@ -177,6 +187,7 @@ namespace GameHub.Maze
             entrySide = null;
             hintRevealed = false;
             playerWon = false;
+            leaveConfirmUntil = 0f;
         }
 
         private void SetEmotionLevel(EmotionType emotion, float value)
