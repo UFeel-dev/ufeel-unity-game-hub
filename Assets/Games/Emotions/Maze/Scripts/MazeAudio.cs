@@ -20,7 +20,7 @@ namespace GameHub.Maze
         private const float MaxDistance = 25f;
         private const int SpatialVoices = 3;
 
-        private readonly MazeSounds sounds;
+        private readonly MazeSoundSet sounds;
         private readonly GameObject root;
         private readonly AudioSource ambient;
         private readonly AudioSource cues;
@@ -32,7 +32,7 @@ namespace GameHub.Maze
         private Vector3 lastStep;
         private float walked;
 
-        public MazeAudio(Transform owner, MazeSounds sounds)
+        public MazeAudio(Transform owner, MazeSoundSet sounds)
         {
             this.sounds = sounds;
             root = new GameObject("MazeAudio");

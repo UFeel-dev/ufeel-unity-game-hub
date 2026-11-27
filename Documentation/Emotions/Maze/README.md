@@ -16,7 +16,7 @@ Emotion-driven labyrinth experience.
 - Some doors close behind you or only open from one side.
 - Special rooms: **Hint** (shows the way out), **Bonus** (reveals the map around), **Trap** (back to the start).
 - The minimap (top left) fills in as you explore.
-- Sound: an ambient drone (Music volume), footsteps, door and special room sounds (Effects volume), all generated at runtime.
+- Sound: an ambient pad (Music volume), footsteps, door and special room sounds (Effects volume).
 
 | Key | Action |
 |---|---|
@@ -35,6 +35,8 @@ Levels are assets in `Assets/Games/Emotions/Maze/Levels`:
 - `MazeLevelDefinition` (**Create > GameHub > Maze > Level**): grid size, door emotions (among the catalog's), loop / closing / one-way door ratios, number of hint, trap and bonus rooms, and room shape weights.
 
 Progress is stored in `PlayerPrefs`. It can be reset from the level select or with **Reset saved progress** in the `MazeCatalog` context menu.
+
+The sounds are procedural and baked into `Assets/Games/Emotions/Maze/Audio`, referenced by the `MazeSounds` asset. After changing `MazeSynth`, regenerate them with **Tools > Maze > Bake Sounds**.
 
 ## Main Script
 

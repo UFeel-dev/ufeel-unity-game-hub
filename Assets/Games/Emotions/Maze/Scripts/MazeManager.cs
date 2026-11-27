@@ -22,6 +22,7 @@ namespace GameHub.Maze
         [SerializeField] private GameObject roomPrefab;
         [SerializeField] private GameObject playerObject;
         [SerializeField] private MazeCatalog catalog;
+        [SerializeField] private MazeSoundSet sounds;
 
         [Header("Layout")]
         [Tooltip("Must match the room prefab's floor size so neighbouring rooms touch.")]
@@ -39,7 +40,6 @@ namespace GameHub.Maze
         private MazeHud hud;
         private MazeIcons icons;
         private MazeLook look;
-        private MazeSounds soundBank;
         private MazeAudio soundPlayer;
         private DoorHighlight? highlight;
         private Vector2Int playerRoom;
@@ -53,8 +53,7 @@ namespace GameHub.Maze
             player = playerObject.GetComponent<FirstPersonController>();
             icons = new MazeIcons();
             look = roomPrefab.GetComponent<RoomController>().CreateLook();
-            soundBank = new MazeSounds();
-            soundPlayer = new MazeAudio(transform, soundBank);
+            soundPlayer = new MazeAudio(transform, sounds);
             OpenMenu();
         }
 
@@ -64,7 +63,6 @@ namespace GameHub.Maze
             EndRun();
             icons?.Release();
             look?.Release();
-            soundBank?.Release();
         }
 
         private void Update()
