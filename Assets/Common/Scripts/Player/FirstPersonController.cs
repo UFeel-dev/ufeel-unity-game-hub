@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace GameHub.Common
 {
@@ -23,6 +24,8 @@ namespace GameHub.Common
         {
             if (!TryGetComponent(out controller))
                 controller = gameObject.AddComponent<CharacterController>();
+            if (TryGetComponent(out MeshRenderer body))
+                body.shadowCastingMode = ShadowCastingMode.ShadowsOnly;
         }
 
         private void Start()

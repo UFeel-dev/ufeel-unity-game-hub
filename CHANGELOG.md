@@ -22,6 +22,8 @@
 - The pause menu offers Lobby only outside the hub.
 - The microphone selector opens from the pause menu instead of next to it.
 - The Maze is now a generated labyrinth with seven levels, walkable fog doors instead of teleports, and new room visuals.
+- The player's flashlight follows the view, up and down, in the hub and the Maze.
+- The player's capsule is no longer visible when looking down; it still casts a shadow.
 
 ### Added
 
