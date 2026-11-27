@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using GameHub.Common.Editor;
 using UnityEditor;
 using UnityEngine;
 
@@ -54,7 +55,7 @@ namespace GameHub.Maze.Editor
         private static AudioClip Write(string file, float[] samples)
         {
             string path = $"{AudioFolder}/{file}.wav";
-            MazeSynth.WriteWav(path, samples);
+            ProceduralAudio.WriteWav(path, samples);
             AssetDatabase.ImportAsset(path);
 
             AudioImporter importer = (AudioImporter)AssetImporter.GetAtPath(path);
