@@ -25,6 +25,7 @@
 
 ### Added
 
+- Settings screen in the pause menu: master, music and effects volume, mouse sensitivity, fullscreen and VSync, saved between sessions. Every audio source goes through the `GameMixer` Music or Effects group.
 - Eye-tracking calibration overlay (F8) and automatic loading of the shared calibration profile.
 - Linux player builds ship `dependencies/` and `models/`.
 - `tools/update-ufeel.sh` to sync a ufeel package.

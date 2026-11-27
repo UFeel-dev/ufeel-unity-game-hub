@@ -33,7 +33,7 @@ Movement uses the key positions (WASD on QWERTY, ZQSD on AZERTY). Letter shortcu
 | **Tab** | Toggle between looking around and using the menus |
 | **0-9**, **Enter** | Go to the door with this number |
 | **Escape** | Back to the room categories |
-| **M** | Toggle the pause menu (with the microphone selection) |
+| **M** | Toggle the pause menu (with the settings and the microphone selection) |
 | **F1** | Camera feedback and debug data |
 | **F8** | Eye-tracking calibration |
 | **F9** | Microphone selector |
