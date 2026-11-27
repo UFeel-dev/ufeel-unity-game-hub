@@ -2,6 +2,8 @@
     "name": "GameHub.Hub.Editor",
     "rootNamespace": "GameHub.Hub.Editor",
     "references": [
+        "GameHub.Common",
+        "GameHub.Common.Editor",
         "GameHub.Hub"
     ],
     "includePlatforms": [
