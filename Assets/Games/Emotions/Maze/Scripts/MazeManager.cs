@@ -36,8 +36,10 @@ namespace GameHub.Maze
         private RoomController[,] rooms;
         private GameObject? roomsRoot;
         private MazeHud hud;
-        private MazeIcons? icons;
-        private MazeLook? look;
+        private MazeIcons icons;
+        private MazeLook look;
+        private MazeSounds soundBank;
+        private MazeAudio soundPlayer;
         private DoorHighlight? highlight;
         private Vector2Int playerRoom;
         private Direction? entrySide;
@@ -49,6 +51,8 @@ namespace GameHub.Maze
             player = playerObject.GetComponent<FirstPersonController>();
             icons = new MazeIcons();
             look = roomPrefab.GetComponent<RoomController>().CreateLook();
+            soundBank = new MazeSounds();
+            soundPlayer = new MazeAudio(transform, soundBank);
             OpenMenu();
         }
 
@@ -58,10 +62,12 @@ namespace GameHub.Maze
             EndRun();
             icons?.Release();
             look?.Release();
+            soundBank?.Release();
         }
 
         private void Update()
         {
+            soundPlayer.Tick(Time.deltaTime);
             if (menu != null)
             {
                 UpdateMenu();
@@ -86,6 +92,7 @@ namespace GameHub.Maze
 
             Vector3 position = player.transform.position;
             hud.Map.Track(new Vector2(position.x / roomSpacing, position.z / roomSpacing), player.transform.eulerAngles.y);
+            soundPlayer.Walk(position);
             Vector2Int room = RoomAt(position);
             if (room != playerRoom)
                 EnterRoom(room);
@@ -153,6 +160,7 @@ namespace GameHub.Maze
                 return;
 
             StopAllCoroutines();
+            soundPlayer.StopCharge();
             if (roomsRoot != null)
             {
                 roomsRoot.SetActive(false);
@@ -227,6 +235,7 @@ namespace GameHub.Maze
             if (target == null)
             {
                 highlight!.Hide();
+                soundPlayer.StopCharge();
             }
             else
             {
@@ -234,11 +243,13 @@ namespace GameHub.Maze
                 float progress = Mathf.Clamp01(emotionLevels[target.Emotion.Emotion] / PassEmotionLevel);
                 door.SetProgress(progress);
                 highlight!.Show(door.transform, room.transform.position, target.Emotion.Color, progress);
+                soundPlayer.Charge(door.transform.position, progress);
                 if (progress >= 1f)
                 {
                     target.Open(playerRoom);
                     ShowPassage(target);
                     SetEmotionLevel(target.Emotion.Emotion, 0f);
+                    soundPlayer.DoorOpened(door.transform.position);
                 }
             }
 
@@ -251,6 +262,7 @@ namespace GameHub.Maze
             hintRevealed = true;
             Direction direction = grid!.DirectionToExit(playerRoom);
             RoomOf(playerRoom).DoorOf(direction).SetHint(true);
+            soundPlayer.Hint();
 
             List<Vector2Int> path = grid.PathToExit(playerRoom);
             List<Vector2Int> route = path.GetRange(0, Mathf.Min(HintRouteLength, path.Count));
@@ -277,6 +289,7 @@ namespace GameHub.Maze
 
                 passage.Close();
                 ShowPassage(passage);
+                soundPlayer.DoorClosed(doorway);
             }
         }
 
@@ -310,12 +323,14 @@ namespace GameHub.Maze
                 case RoomKind.Trap:
                     RoomOf(room).ShowKind(RoomKind.Trap);
                     hud.Notify("A trap! Back to the start");
+                    soundPlayer.Trap();
                     player.Teleport(RoomCenter(grid.Start));
                     EnterRoom(grid.Start);
                     break;
                 case RoomKind.Bonus when usedBonuses.Add(room):
                     hud.Map.Reveal(room, BonusRevealRadius);
                     hud.Notify("Bonus room: the map around you is revealed");
+                    soundPlayer.Bonus();
                     break;
                 case RoomKind.Hint:
                     grid.TryGetHint(room, out EmotionInfo hint);
@@ -370,6 +385,8 @@ namespace GameHub.Maze
         {
             playerWon = true;
             highlight!.Hide();
+            soundPlayer.StopCharge();
+            soundPlayer.Win();
             MazeRun? next;
             if (run.IsUnlimited)
             {

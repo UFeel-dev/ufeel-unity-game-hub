@@ -38,6 +38,7 @@
 - Maze level select with saved progress and an Unlimited mode.
 - Maze levels defined as assets (`MazeLevelDefinition`, `MazeCatalog`).
 - Maze special rooms (hint, bonus, trap), one-way and closing doors, room shapes and a minimap.
+- Maze sound design: ambient drone, footsteps, door charge, open and close sounds, and special room cues.
 - `MenuEntry` icon and disabled state, `UiCanvas.Create` option to stay visible under menus.
 
 ### Removed

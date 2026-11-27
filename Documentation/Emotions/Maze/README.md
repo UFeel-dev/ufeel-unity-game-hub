@@ -16,6 +16,7 @@ Emotion-driven labyrinth experience.
 - Some doors close behind you or only open from one side.
 - Special rooms: **Hint** (shows the way out), **Bonus** (reveals the map around), **Trap** (back to the start).
 - The minimap (top left) fills in as you explore.
+- Sound: an ambient drone (Music volume), footsteps, door and special room sounds (Effects volume), all generated at runtime.
 
 | Key | Action |
 |---|---|
