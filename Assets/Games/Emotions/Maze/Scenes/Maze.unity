@@ -569,7 +569,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   roomPrefab: {fileID: 6843624912501542543, guid: 63afb187dda6b6e71a784e1b202c6709, type: 3}
   playerObject: {fileID: 1489305189}
-  roomSpacing: 25
+  catalog: {fileID: 11400000, guid: 0bd22451a546814b4371a4b242552f2b, type: 2}
+  sounds: {fileID: 11400000, guid: 0c9fed14ce734fb79f500cf7b5f16032, type: 2}
+  roomSpacing: 20
 --- !u!4 &2128694441
 Transform:
   m_ObjectHideFlags: 0

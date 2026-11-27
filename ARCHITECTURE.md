@@ -85,5 +85,6 @@ The hub loads a game additively when the player enters a door. A game whose root
 | Pause menu (M) and its settings | `PauseMenu`, `SettingsPanel` |
 | Camera feedback and readings (F1), eye-tracking calibration (F8), microphone (F9) | `UFeelScreens`, created at startup |
 | Game HUDs | `AnimalsHud`, `MazeHud`, `CarHud`, `SpeechManager`, `StageView` (rhythm game) |
+| Maze level select | `MazeLevelMenu` |
 
 **See also:** [API Reference](Packages/com.ufcorp.ufeel/Runtime/API.md) - [Setup Instructions](Documentation/GameHub/SetupInstructions.md)

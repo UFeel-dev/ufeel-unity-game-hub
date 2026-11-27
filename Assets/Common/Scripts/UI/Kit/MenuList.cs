@@ -14,6 +14,8 @@ namespace GameHub.Common
         private const float TextInset = 22f;
         private const float SelectedShift = 6f;
         private const float LineHeight = 1.25f;
+        private const float IconSize = 26f;
+        private const float IconGap = 12f;
 
         private readonly RectTransform area;
         private readonly List<Row> rows = new();
@@ -180,8 +182,10 @@ namespace GameHub.Common
             private readonly TextMeshProUGUI label;
             private readonly TextMeshProUGUI caption;
             private readonly TextMeshProUGUI detail;
+            private readonly Image icon;
 
             private float selection;
+            private bool isEnabled = true;
 
             public Row(UiKit kit, RectTransform parent, int index, float height, float labelSize)
             {
@@ -204,6 +208,9 @@ namespace GameHub.Common
                 caption.overflowMode = TextOverflowModes.Ellipsis;
                 detail = kit.NewText("Detail", content, Theme.Body, true, TextAlignmentOptions.MidlineRight, Theme.TextDim);
                 UiLayout.Stretch(detail.rectTransform);
+                icon = UiKit.NewImage("Icon", content, kit.Sprites.Solid, Theme.TextDim);
+                UiLayout.Place(icon.rectTransform, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), Vector2.zero, new Vector2(IconSize, IconSize));
+                icon.preserveAspect = true;
             }
 
             public RectTransform Rect { get; }
@@ -215,9 +222,14 @@ namespace GameHub.Common
                     return;
 
                 bool hasCaption = !string.IsNullOrEmpty(item.Value.Caption);
+                isEnabled = item.Value.IsEnabled;
                 label.text = item.Value.Label;
                 caption.text = item.Value.Caption;
                 detail.text = item.Value.Detail;
+                icon.gameObject.SetActive(item.Value.Icon != null);
+                if (item.Value.Icon != null)
+                    icon.sprite = item.Value.Icon;
+                detail.margin = new Vector4(0f, 0f, item.Value.Icon != null ? IconSize + IconGap : 0f, 0f);
                 label.alignment = hasCaption ? TextAlignmentOptions.BottomLeft : TextAlignmentOptions.MidlineLeft;
                 UiLayout.Stretch(label.rectTransform);
                 UiLayout.Stretch(caption.rectTransform);
@@ -227,16 +239,19 @@ namespace GameHub.Common
                     label.rectTransform.offsetMin = new Vector2(0f, Mathf.Min(height * 0.48f, height - (label.fontSize * LineHeight)));
                     caption.rectTransform.offsetMax = new Vector2(0f, -Rect.rect.height * 0.56f);
                 }
-                label.margin = new Vector4(0f, 0f, string.IsNullOrEmpty(item.Value.Detail) ? 0f : 140f, 0f);
+                bool hasRight = !string.IsNullOrEmpty(item.Value.Detail) || item.Value.Icon != null;
+                label.margin = new Vector4(0f, 0f, hasRight ? 140f : 0f, 0f);
             }
 
             public void Animate(bool isSelected, float blend)
             {
                 selection = Mathf.Lerp(selection, isSelected ? 1f : 0f, blend);
-                highlight.color = Theme.Fade(Theme.Accent, 0.06f * selection);
-                bar.color = Theme.Fade(Theme.Accent, selection);
-                label.color = Color.Lerp(Theme.TextDim, Theme.Text, selection);
+                Color accent = isEnabled ? Theme.Accent : Theme.TextFaint;
+                highlight.color = Theme.Fade(accent, 0.06f * selection);
+                bar.color = Theme.Fade(accent, selection);
+                label.color = isEnabled ? Color.Lerp(Theme.TextDim, Theme.Text, selection) : Color.Lerp(Theme.TextFaint, Theme.TextDim, selection * 0.5f);
                 caption.color = Color.Lerp(Theme.TextFaint, Theme.TextDim, selection);
+                icon.color = isEnabled ? Theme.TextDim : Theme.TextFaint;
                 content.anchoredPosition = new Vector2(SelectedShift * selection, 0f);
             }
         }

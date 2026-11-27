@@ -1,0 +1,10 @@
+{
+    "name": "GameHub.Maze.Editor",
+    "rootNamespace": "GameHub.Maze.Editor",
+    "references": [
+        "GameHub.Maze"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ]
+}

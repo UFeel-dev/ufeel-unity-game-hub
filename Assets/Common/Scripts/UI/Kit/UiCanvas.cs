@@ -13,7 +13,7 @@ namespace GameHub.Common
 
         private static readonly Vector2 ReferenceResolution = new(1920f, 1080f);
 
-        public static RectTransform Create(string name, Transform? parent, int sortingOrder)
+        public static RectTransform Create(string name, Transform? parent, int sortingOrder, bool hideUnderMenus = true)
         {
             GameObject root = new(name, typeof(RectTransform)) { layer = UiKit.UiLayer };
             root.transform.SetParent(parent, false);
@@ -29,7 +29,7 @@ namespace GameHub.Common
             scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
             scaler.matchWidthOrHeight = 1f;
 
-            if (sortingOrder < PauseOrder)
+            if (hideUnderMenus && sortingOrder < PauseOrder)
                 root.AddComponent<MenuCover>();
 
             return (RectTransform)root.transform;

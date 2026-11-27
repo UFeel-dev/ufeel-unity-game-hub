@@ -1,40 +1,45 @@
+using System;
+using System.Collections.Generic;
 using UFeel;
 using UnityEngine;
 
 namespace GameHub.Maze
 {
-    public readonly struct EmotionInfo
+    [Serializable]
+    public struct EmotionInfo
     {
-        public static readonly EmotionInfo[] All =
-        {
-            new(EmotionType.Happy, new Color(1f, 1f, 0f, 0.4f)),
-            new(EmotionType.Surprised, new Color(1f, 0.5f, 0f, 0.4f)),
-            new(EmotionType.Fearful, new Color(0f, 0f, 1f, 0.4f)),
-        };
+        [SerializeField] private EmotionType emotion;
+        [SerializeField] private Color color;
 
         public EmotionInfo(EmotionType emotion, Color color)
         {
-            Emotion = emotion;
-            Color = color;
+            this.emotion = emotion;
+            this.color = color;
         }
 
-        public EmotionType Emotion { get; }
+        public readonly EmotionType Emotion => emotion;
 
-        public Color Color { get; }
+        public readonly Color Color => color;
 
-        public static EmotionInfo Random()
+        public static EmotionInfo Random(IReadOnlyList<EmotionInfo> emotions)
         {
-            return All[UnityEngine.Random.Range(0, All.Length)];
+            return emotions[UnityEngine.Random.Range(0, emotions.Count)];
         }
 
-        public static EmotionInfo RandomExcept(EmotionType excluded)
+        public static EmotionInfo RandomExcept(IReadOnlyList<EmotionInfo> emotions, EmotionType excluded)
         {
-            int excludedIndex = System.Array.FindIndex(All, info => info.Emotion == excluded);
-            if (excludedIndex < 0)
-                return Random();
+            int excludedIndex = -1;
+            for (int i = 0; i < emotions.Count; i++)
+            {
+                if (emotions[i].Emotion == excluded)
+                    excludedIndex = i;
+            }
 
-            int index = UnityEngine.Random.Range(0, All.Length - 1);
-            return All[index >= excludedIndex ? index + 1 : index];
+            if (excludedIndex < 0 || emotions.Count < 2)
+                return Random(emotions);
+
+            int index = UnityEngine.Random.Range(0, emotions.Count - 1);
+            return emotions[index >= excludedIndex ? index + 1 : index];
         }
     }
 }
