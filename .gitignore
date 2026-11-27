@@ -76,12 +76,6 @@ crashlytics-build.properties
 # Editors
 .vscode
 
-# Large Asset Store packs used by the Car terrain, imported locally from their Unity packages
-Assets/TerrainSampleAssets
-Assets/TerrainSampleAssets.meta
-Assets/GrassFlowers
-Assets/GrassFlowers.meta
-
 # Native libraries, except the UFeel plugin
 *.so
 *.so*

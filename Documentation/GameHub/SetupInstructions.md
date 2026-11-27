@@ -18,7 +18,6 @@
 ## Notes
 
 - The UFeel package is embedded in `Packages/com.ufcorp.ufeel`, no import is needed. `tools/update-ufeel.sh` updates it from a ufeel build.
-- The Car terrain uses the `TerrainSampleAssets` and `GrassFlowers` Asset Store packs, which are not versioned: import them into `Assets/` to see the terrain textures and vegetation.
 - Webcam access is required. Permissions may be requested on first launch.
 
 **See also:** [Scene Reference](Scenes.md) - [Testing & Debugging](TestingTips.md)
