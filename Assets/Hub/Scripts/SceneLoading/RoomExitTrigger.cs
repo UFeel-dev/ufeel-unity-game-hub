@@ -9,10 +9,11 @@ namespace GameHub.Hub
 
         private void OnTriggerEnter(Collider other)
         {
-            if (!other.CompareTag(Tags.Player))
+            SceneLoader? loader = SceneLoader.Instance;
+            if (!other.CompareTag(Tags.Player) || loader == null || !loader.HasPendingRoom)
                 return;
 
-            SceneLoader.Instance?.EnterLoadedScene();
+            loader.EnterLoadedScene();
             if (environmentToDisable != null)
                 environmentToDisable.SetActive(false);
         }
