@@ -41,8 +41,11 @@ namespace GameHub.Hub
 
         private void OnDestroy()
         {
-            if (Instance == this)
-                Instance = null;
+            if (Instance != this)
+                return;
+
+            Instance = null;
+            PlayerScene.Pinned = null;
         }
 
         public void LoadAdditiveSceneAtPosition(string sceneName, Vector3 position, Action? onLoaded = null, Action? onUnloaded = null)
@@ -105,6 +108,7 @@ namespace GameHub.Hub
             {
                 root.transform.position = position;
                 pendingScene = sceneName;
+                PlayerScene.Pinned = hubScene.name;
                 onPendingUnloaded = onUnloaded;
                 DeferUntilEntered(rootObjects);
 
@@ -148,6 +152,7 @@ namespace GameHub.Hub
             portal = null;
             pendingScene = null;
             onPendingUnloaded = null;
+            PlayerScene.Pinned = null;
         }
 
         private void DeferUntilEntered(GameObject[] rootObjects)

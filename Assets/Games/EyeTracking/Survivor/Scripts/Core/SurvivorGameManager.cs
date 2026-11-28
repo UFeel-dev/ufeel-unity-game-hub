@@ -1,4 +1,5 @@
 using System;
+using GameHub.Common;
 using UnityEngine;
 
 namespace GameHub.Survivor
@@ -40,6 +41,7 @@ namespace GameHub.Survivor
 
         public void StartGame()
         {
+            GameSounds.Play(SoundCue.Start);
             ChangeState(GameState.Playing);
         }
 

@@ -1,9 +1,12 @@
+using GameHub.Common;
 using UnityEngine;
 
 namespace GameHub.Survivor
 {
     public class WeaponController : MonoBehaviour
     {
+        private const float ShotVolume = 0.4f;
+
         private static readonly Vector3 MuzzleOffset = Vector3.up * 1.2f;
 
         [SerializeField] private Projectile projectilePrefab;
@@ -33,6 +36,7 @@ namespace GameHub.Survivor
 
             Projectile projectile = Instantiate(projectilePrefab, transform.position + MuzzleOffset, Quaternion.identity);
             projectile.Initialize(target.transform, projectileSpeed);
+            GameSounds.Play(SoundCue.Shot, ShotVolume);
         }
 
         private EnemyController? FindClosestEnemy()

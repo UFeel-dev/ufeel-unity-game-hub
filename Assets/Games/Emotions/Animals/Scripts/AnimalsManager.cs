@@ -34,6 +34,7 @@ namespace GameHub.Animals
 
         private readonly List<AnimalType> remainingAnimals = new();
         private AnimalsHud hud;
+        private ChargeSound charge;
         private GameObject currentAnimal;
         private AnimalType currentAnimalType;
         private float timer;
@@ -45,6 +46,11 @@ namespace GameHub.Animals
         private void Awake()
         {
             hud = new AnimalsHud(UiKit.Shared, transform, Animals.Length);
+            AudioSource source = gameObject.AddComponent<AudioSource>();
+            source.playOnAwake = false;
+            source.spatialBlend = 0f;
+            GameAudio.Route(source, AudioChannel.Effects);
+            charge = new ChargeSound(source);
         }
 
         private void Start()
@@ -62,14 +68,22 @@ namespace GameHub.Animals
         private void Update()
         {
             hud.Tick(Time.deltaTime);
+            charge.Tick(Time.deltaTime);
             if (!isLevelActive || !isTrackingEmotion || currentAnimal == null)
+            {
+                charge.Stop();
                 return;
+            }
 
             bool isExpectedEmotion = UFeelAPI.Emotion.Dominant == Animals[(int)currentAnimalType].Emotion;
             float step = Time.deltaTime / EmotionHoldDuration;
             progress = Mathf.Clamp01(isExpectedEmotion ? progress + step : progress - (step * EmotionDecayRatio));
 
             hud.SetProgress(progress, isExpectedEmotion);
+            if (isExpectedEmotion)
+                charge.Set(progress);
+            else
+                charge.Stop();
 
             if (progress >= 1f)
                 OnAnimalMatched();
@@ -101,12 +115,12 @@ namespace GameHub.Animals
 
                 if (remainingAnimals.Count > 0)
                 {
-                    yield return EndGame("Game over", "Back to the hub", Theme.Danger);
+                    yield return EndGame("Game over", "Back to the hub", Theme.Danger, SoundCue.Fail);
                     yield break;
                 }
             }
 
-            yield return EndGame("Congratulations", "You are a master of emotions!", Theme.Accent);
+            yield return EndGame("Congratulations", "You are a master of emotions!", Theme.Accent, SoundCue.Win);
         }
 
         private IEnumerator StartLevel(int level)
@@ -114,6 +128,7 @@ namespace GameHub.Animals
             AnimalDefinition newAnimal = Animals[level - 1];
             isLevelActive = false;
             hud.SetLevel(level);
+            GameSounds.Play(SoundCue.Start);
             hud.ShowCard("Level " + level.ToString(CultureInfo.InvariantCulture), $"{newAnimal.Type}  ·  {newAnimal.EmotionLabel}", Theme.Accent);
             yield return MessageDelay;
             hud.HideCard();
@@ -146,9 +161,10 @@ namespace GameHub.Animals
             }
         }
 
-        private IEnumerator EndGame(string title, string subtitle, Color accent)
+        private IEnumerator EndGame(string title, string subtitle, Color accent, SoundCue cue)
         {
             isLevelActive = false;
+            GameSounds.Play(cue);
             hud.HideAnimal();
             hud.ShowCard(title, subtitle, accent);
             yield return MessageDelay;
@@ -170,6 +186,7 @@ namespace GameHub.Animals
         private void OnAnimalMatched()
         {
             isTrackingEmotion = false;
+            GameSounds.Play(SoundCue.Success);
             score++;
             hud.SetScore(score);
             hud.HideAnimal();

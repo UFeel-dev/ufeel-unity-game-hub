@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using GameHub.Common.Editor;
 using UnityEditor;
@@ -14,10 +13,6 @@ namespace GameHub.Hub.Editor
 
         private static readonly (string Field, string File, Func<float[]> Synthesize)[] Sounds =
         {
-            ("ambient", "HubAmbient", HubSynth.Ambient),
-            ("menuMove", "HubMenuMove", HubSynth.MenuMove),
-            ("menuConfirm", "HubMenuConfirm", HubSynth.MenuConfirm),
-            ("menuBack", "HubMenuBack", HubSynth.MenuBack),
             ("carouselHum", "HubCarouselHum", HubSynth.CarouselHum),
         };
 
@@ -35,15 +30,6 @@ namespace GameHub.Hub.Editor
             SerializedObject serialized = new(set);
             foreach ((string field, string file, Func<float[]> synthesize) in Sounds)
                 serialized.FindProperty(field).objectReferenceValue = Write(file, synthesize());
-
-            List<AudioClip> steps = new();
-            for (int i = 0; i < HubSynth.StepVariants; i++)
-                steps.Add(Write($"HubStep{i}", HubSynth.Step(i)));
-
-            SerializedProperty stepList = serialized.FindProperty("steps");
-            stepList.arraySize = steps.Count;
-            for (int i = 0; i < steps.Count; i++)
-                stepList.GetArrayElementAtIndex(i).objectReferenceValue = steps[i];
 
             serialized.ApplyModifiedPropertiesWithoutUndo();
             AssetDatabase.SaveAssets();

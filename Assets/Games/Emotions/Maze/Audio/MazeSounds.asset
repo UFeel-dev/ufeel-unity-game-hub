@@ -12,16 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f72003da699f4b02876e58141f5e7b76, type: 3}
   m_Name: MazeSounds
   m_EditorClassIdentifier: 
-  ambient: {fileID: 8300000, guid: ac7147867da8471a9bbcdaf4acb5f5eb, type: 3}
-  charge: {fileID: 8300000, guid: 57518f2f182e4119953c209c8a2e9ab7, type: 3}
   doorOpen: {fileID: 8300000, guid: 2de3a194684a4161bb9ca20b2e9da91b, type: 3}
   doorClose: {fileID: 8300000, guid: 8f67d0d629964a7e88fb967c405b193a, type: 3}
   hint: {fileID: 8300000, guid: 2a16c19750f4417bac8c707ee2e93980, type: 3}
   bonus: {fileID: 8300000, guid: e3c0e85499ee46e09645d04c1ac9b63e, type: 3}
   trap: {fileID: 8300000, guid: 5a3a1cdffacd4f7395713e3fb68e7811, type: 3}
   win: {fileID: 8300000, guid: 15bb642ce23341948ecc240b5dbe6931, type: 3}
-  steps:
-  - {fileID: 8300000, guid: 276fdf955f9448c08531b43c53642e4b, type: 3}
-  - {fileID: 8300000, guid: 81a7dfa4e78840c6ba2e6ed3bb44063c, type: 3}
-  - {fileID: 8300000, guid: f4a865c12f9243db8ab9d18bd6d1d330, type: 3}
-  - {fileID: 8300000, guid: 9cc6ab037154487ab10b0b13c4e16f4a, type: 3}

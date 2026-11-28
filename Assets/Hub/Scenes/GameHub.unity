@@ -2716,7 +2716,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sounds: {fileID: 11400000, guid: a9e7579aa2c64fda8233f68ce48f5c9d, type: 2}
   carousel: {fileID: 90357485}
-  player: {fileID: 943825822}
 --- !u!4 &634826910
 Transform:
   m_ObjectHideFlags: 0

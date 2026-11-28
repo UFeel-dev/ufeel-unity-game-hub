@@ -28,17 +28,22 @@ namespace GameHub.Survivor
             if (EyeInput.Instance != null && EyeInput.Instance.RightPressed)
             {
                 focusedIndex = (focusedIndex + 1) % buttons.Length;
+                GameSounds.Play(SoundCue.MenuMove);
                 UpdateFocus();
             }
 
             if (EyeInput.Instance != null && EyeInput.Instance.LeftPressed)
             {
                 focusedIndex = (focusedIndex - 1 + buttons.Length) % buttons.Length;
+                GameSounds.Play(SoundCue.MenuMove);
                 UpdateFocus();
             }
 
             if (BlinkDetector.Instance != null && BlinkDetector.Instance.DoubleBlinkPressed)
+            {
+                GameSounds.Play(SoundCue.MenuConfirm);
                 buttons[focusedIndex].Select();
+            }
         }
 
         private static void OnButtonSelected(string buttonName)

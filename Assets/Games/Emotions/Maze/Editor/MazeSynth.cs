@@ -5,35 +5,6 @@ namespace GameHub.Maze.Editor
 {
     public static class MazeSynth
     {
-        public const int StepVariants = 4;
-
-        private const float AmbientSeconds = 32f;
-
-        private static readonly float[][] PadChords =
-        {
-            new[] { 110f, 164.81f, 220f, 261.63f, 329.63f },
-            new[] { 87.31f, 130.81f, 220f, 261.63f, 329.63f },
-            new[] { 130.81f, 196f, 261.63f, 329.63f, 392f },
-            new[] { 98f, 146.83f, 196f, 246.94f, 293.66f },
-        };
-
-        private static readonly float[] PadDetune = { 0.998f, 1.002f };
-        private static readonly float[] BellNotes = { 440f, 523.25f, 587.33f, 659.25f, 783.99f, 880f };
-
-        public static float[] Ambient()
-        {
-            float[] samples = new float[Count(AmbientSeconds)];
-            AddPad(samples, PadChords, PadDetune, 0.2f, 0.12f);
-            AddBells(samples, BellNotes, 0.18f, 1.6f, 3);
-            AddAir(samples, 0.06f, 7);
-            return Normalize(samples, 0.5f);
-        }
-
-        public static float[] Charge()
-        {
-            return Wave(2f, 0.6f, t => (Sine(220f, t) * 0.4f) + (Sine(330f, t) * 0.25f) + (Sine(440f, t) * 0.15f) + (Sine(441f, t) * 0.15f));
-        }
-
         public static float[] DoorOpen()
         {
             Random random = new(11);
@@ -78,12 +49,6 @@ namespace GameHub.Maze.Editor
                 float envelope = Clamp01(t * 50f) * MathF.Exp(-t * 2f);
                 return ((tone * 0.5f) + (Noise(random) * 0.1f)) * envelope;
             });
-        }
-
-        public static float[] Step(int variant)
-        {
-            Random random = new(variant + 1);
-            return Wave(0.18f, 0f, t => ((Noise(random) * 0.5f) + Sine(90f, t)) * MathF.Exp(-t * 35f) * Clamp01(t * 2000f) * 0.5f);
         }
     }
 }

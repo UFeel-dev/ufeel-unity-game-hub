@@ -1,3 +1,4 @@
+using GameHub.Common;
 using UnityEngine;
 
 namespace GameHub.Survivor
@@ -19,6 +20,7 @@ namespace GameHub.Survivor
                 return;
 
             Current = Mathf.Max(Current - amount, 0);
+            GameSounds.Play(Current == 0 ? SoundCue.Fail : SoundCue.Hurt);
 
             if (Current == 0)
                 SurvivorGameManager.Instance.GameOver();

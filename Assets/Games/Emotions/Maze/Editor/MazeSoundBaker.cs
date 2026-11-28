@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using GameHub.Common.Editor;
 using UnityEditor;
@@ -14,8 +13,6 @@ namespace GameHub.Maze.Editor
 
         private static readonly (string Field, string File, Func<float[]> Synthesize)[] Sounds =
         {
-            ("ambient", "MazeAmbient", MazeSynth.Ambient),
-            ("charge", "MazeCharge", MazeSynth.Charge),
             ("doorOpen", "MazeDoorOpen", MazeSynth.DoorOpen),
             ("doorClose", "MazeDoorClose", MazeSynth.DoorClose),
             ("hint", "MazeHint", MazeSynth.Hint),
@@ -38,15 +35,6 @@ namespace GameHub.Maze.Editor
             SerializedObject serialized = new(set);
             foreach ((string field, string file, Func<float[]> synthesize) in Sounds)
                 serialized.FindProperty(field).objectReferenceValue = Write(file, synthesize());
-
-            List<AudioClip> steps = new();
-            for (int i = 0; i < MazeSynth.StepVariants; i++)
-                steps.Add(Write($"MazeStep{i}", MazeSynth.Step(i)));
-
-            SerializedProperty stepList = serialized.FindProperty("steps");
-            stepList.arraySize = steps.Count;
-            for (int i = 0; i < steps.Count; i++)
-                stepList.GetArrayElementAtIndex(i).objectReferenceValue = steps[i];
 
             serialized.ApplyModifiedPropertiesWithoutUndo();
             AssetDatabase.SaveAssets();

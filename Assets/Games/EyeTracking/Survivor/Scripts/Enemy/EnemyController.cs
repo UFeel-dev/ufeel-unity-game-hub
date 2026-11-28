@@ -1,3 +1,4 @@
+using GameHub.Common;
 using UnityEngine;
 
 namespace GameHub.Survivor
@@ -24,6 +25,7 @@ namespace GameHub.Survivor
 
         public void Die()
         {
+            GameSounds.Play(SoundCue.Hit);
             if (ScoreManager.Instance != null)
                 ScoreManager.Instance.RegisterKill();
             Destroy(gameObject);

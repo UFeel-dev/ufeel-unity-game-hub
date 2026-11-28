@@ -7,7 +7,6 @@ namespace GameHub.Hub
     {
         [SerializeField] private HubSoundSet sounds;
         [SerializeField] private CarouselRotator carousel;
-        [SerializeField] private Transform player;
 
         private HubWelcome? welcome;
 
@@ -31,7 +30,7 @@ namespace GameHub.Hub
         private void Update()
         {
             bool hubActive = SceneLoader.IsHubActive;
-            Audio.Tick(Time.deltaTime, hubActive, carousel.IsRotatingToTarget, player.position);
+            Audio.Tick(Time.deltaTime, hubActive, carousel.IsRotatingToTarget);
 
             if (welcome != null && welcome.Tick(Time.unscaledDeltaTime))
                 welcome = null;

@@ -98,12 +98,14 @@ namespace GameHub.Common
             int clicked = keys.Clicked(mouse);
             if (clicked == CloseAction)
             {
+                GameSounds.Play(SoundCue.MenuBack);
                 Hide();
                 return;
             }
 
             if (clicked == RefreshAction || LayoutInput.GetKeyDown(KeyCode.R))
             {
+                GameSounds.Play(SoundCue.MenuConfirm);
                 Refresh();
                 return;
             }

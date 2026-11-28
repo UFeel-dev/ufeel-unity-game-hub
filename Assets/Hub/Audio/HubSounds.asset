@@ -12,13 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b7d2b0ab5ec4133a1ddf305504e42f7, type: 3}
   m_Name: HubSounds
   m_EditorClassIdentifier: 
-  ambient: {fileID: 8300000, guid: 090daca5feea4998a1481355e5ccd613, type: 3}
-  menuMove: {fileID: 8300000, guid: a08d7df4111542c988a7ccf4703d158b, type: 3}
-  menuConfirm: {fileID: 8300000, guid: 555f15e509a74b5082ef6b702d1afef3, type: 3}
-  menuBack: {fileID: 8300000, guid: f6c808f1abbd4d98ac2e6930c6082189, type: 3}
   carouselHum: {fileID: 8300000, guid: d58ed83f482b4816b38f47e6717a8e54, type: 3}
-  steps:
-  - {fileID: 8300000, guid: 1ab8a8fb568c49be91a7b0384c4405ee, type: 3}
-  - {fileID: 8300000, guid: 6af55bb5b0a840f5a08bec2015a37e45, type: 3}
-  - {fileID: 8300000, guid: c5f51412540349d89d39f7c9b18c870c, type: 3}
-  - {fileID: 8300000, guid: aa4de46aa1c941a892074a39955ec640, type: 3}
