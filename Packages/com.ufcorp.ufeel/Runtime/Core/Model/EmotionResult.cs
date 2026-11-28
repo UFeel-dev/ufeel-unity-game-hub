@@ -21,7 +21,6 @@ namespace UFeel
     {
         None,
         Angry,
-        Contemptuous,
         Disgusted,
         Fearful,
         Happy,

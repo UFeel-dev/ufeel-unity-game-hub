@@ -266,7 +266,6 @@ namespace UFeel
             return emotion switch
             {
                 EmotionType.Angry => "Look angry: lower and pull your eyebrows together, glare and press your lips",
-                EmotionType.Contemptuous => "Look contemptuous: raise one corner of your mouth",
                 EmotionType.Disgusted => "Look disgusted: wrinkle your nose and raise your upper lip",
                 EmotionType.Fearful =>
                     "Look fearful: raise and pull your eyebrows together, open your eyes wide and stretch your lips",

@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   size: 3
   emotions:
-  - 5
-  - 8
+  - 4
+  - 7
   loopRatio: 0
   closingChance: 0
   oneWayChance: 0
