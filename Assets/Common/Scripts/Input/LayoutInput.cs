@@ -57,12 +57,6 @@ namespace GameHub.Common
             return key != null ? key.wasPressedThisFrame : Input.GetKeyDown(code);
         }
 
-        public static bool GetKeyUp(KeyCode code)
-        {
-            KeyControl? key = Resolve(code);
-            return key != null ? key.wasReleasedThisFrame : Input.GetKeyUp(code);
-        }
-
         public static float GetHorizontalAxis()
         {
             return GetAxis(KeyAction.MoveLeft, KeyAction.MoveRight, Key.LeftArrow, Key.RightArrow);
