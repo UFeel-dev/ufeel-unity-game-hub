@@ -4,8 +4,10 @@ using UnityEngine.SceneManagement;
 
 namespace GameHub.Common
 {
+    [DefaultExecutionOrder(AfterEscapeHandlers)]
     public class PauseMenu : MonoBehaviour
     {
+        private const int AfterEscapeHandlers = 1000;
         private const float ScrimOpacity = 0.82f;
         private const int MaxRows = 5;
 
@@ -13,7 +15,7 @@ namespace GameHub.Common
         {
             new("Select", 0, KeyHint.Up, KeyHint.Down),
             new("Confirm", 0, "Enter"),
-            new("Resume", 0, "M"),
+            new("Resume", 0, "Esc"),
         };
 
         private readonly PointerInput mouse = new();
@@ -70,7 +72,7 @@ namespace GameHub.Common
 
             if (!paused)
             {
-                if (UiFocus.IsFree && LayoutInput.GetKeyDown(KeyCode.M))
+                if (UiFocus.IsFree && MenuKeys.Back())
                     Pause();
                 return;
             }
@@ -80,12 +82,6 @@ namespace GameHub.Common
             keys.SetVisible(onTop);
             if (!UiFocus.Has(this))
                 return;
-
-            if (LayoutInput.GetKeyDown(KeyCode.M))
-            {
-                Resume();
-                return;
-            }
 
             switch (screen.List.HandleInput(deltaTime, mouse))
             {
@@ -112,6 +108,7 @@ namespace GameHub.Common
 
         private void Pause()
         {
+            GameSounds.Play(SoundCue.MenuConfirm);
             previousLockState = Cursor.lockState;
             previousCursorVisible = Cursor.visible;
             scrim.Show(true, Fader.DefaultSeconds);

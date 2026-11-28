@@ -24,7 +24,7 @@ namespace GameHub.Hub
         private readonly GazeIndicator gaze;
         private readonly List<KeyHint> hints = new();
 
-        private (bool UsingMenu, bool InCategory, bool EyeControl, string? EnterLabel)? shownHints;
+        private (bool UsingMenu, bool InCategory, bool EyeControl, string? EnterLabel, int KeysVersion)? shownHints;
 
         public DoorPicker(UiKit kit, Transform owner, int rows)
         {
@@ -66,14 +66,14 @@ namespace GameHub.Hub
 
         public void SetHints(bool usingMenu, bool inCategory, bool eyeControl, string? enterLabel)
         {
-            (bool, bool, bool, string?) wanted = (usingMenu, inCategory, eyeControl, enterLabel);
+            (bool, bool, bool, string?, int) wanted = (usingMenu, inCategory, eyeControl, enterLabel, KeyBinds.Version);
             if (shownHints == wanted)
                 return;
 
             shownHints = wanted;
             hints.Clear();
             if (enterLabel != null)
-                hints.Add(new KeyHint(enterLabel, 0, "E"));
+                hints.Add(new KeyHint(enterLabel, 0, KeyBinds.Label(KeyAction.Interact)));
 
             if (usingMenu)
             {
@@ -81,17 +81,17 @@ namespace GameHub.Hub
                 hints.Add(new KeyHint(inCategory ? "Go" : "Open", 0, "Enter"));
                 if (inCategory)
                     hints.Add(new KeyHint("Back", 0, "Esc"));
-                hints.Add(new KeyHint("Look around", 0, "Tab"));
+                hints.Add(new KeyHint("Look around", 0, KeyBinds.Label(KeyAction.FreeMouse)));
             }
             else
             {
-                hints.Add(new KeyHint("Use the menu", 0, "Tab"));
+                hints.Add(new KeyHint("Use the menu", 0, KeyBinds.Label(KeyAction.FreeMouse)));
             }
 
             hints.Add(new KeyHint("Door number", 0, "0-9"));
             string state = eyeControl ? $"<color=#{Theme.Hex(Theme.Accent)}>on</color>" : "off";
-            hints.Add(new KeyHint($"Eye control {state}", 0, "N"));
-            hints.Add(new KeyHint("Menu", 0, "M"));
+            hints.Add(new KeyHint($"Eye control {state}", 0, KeyBinds.Label(KeyAction.EyeControl)));
+            hints.Add(new KeyHint("Pause", 0, "Esc"));
             keys.Set(hints);
         }
 

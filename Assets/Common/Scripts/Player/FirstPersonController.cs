@@ -6,7 +6,6 @@ namespace GameHub.Common
     public class FirstPersonController : MonoBehaviour
     {
         private const float MaxPitch = 89f;
-        private const KeyCode FlashlightKey = KeyCode.T;
 
         [Header("Movement")]
         [SerializeField] private float moveSpeed = 5f;
@@ -17,6 +16,7 @@ namespace GameHub.Common
         [SerializeField] private float mouseSensitivity = 2f;
 
         private CharacterController controller;
+        private Footsteps footsteps;
         private Light? flashlight;
         private float flashlightIntensity;
         private float pitch;
@@ -27,6 +27,7 @@ namespace GameHub.Common
         {
             if (!TryGetComponent(out controller))
                 controller = gameObject.AddComponent<CharacterController>();
+            footsteps = new Footsteps(gameObject);
             if (TryGetComponent(out MeshRenderer body))
                 body.shadowCastingMode = ShadowCastingMode.ShadowsOnly;
 
@@ -55,7 +56,7 @@ namespace GameHub.Common
                 Look();
             }
 
-            if (LayoutInput.GetKeyDown(KeyCode.Tab))
+            if (KeyBinds.Down(KeyAction.FreeMouse))
             {
                 isMouseLookEnabled = !isMouseLookEnabled;
                 SetCursorLocked(isMouseLookEnabled);
@@ -80,7 +81,7 @@ namespace GameHub.Common
             if (flashlight == null)
                 return;
 
-            if (LayoutInput.GetKeyDown(FlashlightKey))
+            if (KeyBinds.Down(KeyAction.Flashlight))
                 flashlight.enabled = !flashlight.enabled;
 
             flashlight.intensity = flashlightIntensity * GameSettings.FlashlightMultiplier;
@@ -93,6 +94,7 @@ namespace GameHub.Common
             move.y = verticalVelocity;
 
             controller.Move(moveSpeed * Time.deltaTime * move);
+            footsteps.Tick(transform.position, controller.isGrounded);
         }
 
         private void Look()

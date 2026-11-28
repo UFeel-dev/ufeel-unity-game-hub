@@ -42,7 +42,7 @@ namespace GameHub.RhythmGame
 
             RectTransform listArea = UiKit.NewRect("Songs", root);
             UiLayout.Place(listArea, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(Theme.Margin, 20f), new Vector2(ListWidth, VisibleRows * RowHeight));
-            List = new MenuList(kit, listArea, VisibleRows, RowHeight, Theme.Heading);
+            List = new MenuList(kit, listArea, VisibleRows, RowHeight, Theme.Heading) { PlaysSounds = false };
 
             RectTransform panel = UiKit.NewRect("Details", root);
             UiLayout.Place(panel, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-Theme.Margin, 30f), new Vector2(PanelWidth, 640f));

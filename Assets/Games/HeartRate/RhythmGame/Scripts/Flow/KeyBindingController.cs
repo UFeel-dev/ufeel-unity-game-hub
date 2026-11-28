@@ -135,7 +135,7 @@ namespace GameHub.RhythmGame
                 return Navigation.None;
             }
 
-            if (context.Stage.KeyBar.Clicked(context.Mouse) == CancelAction)
+            if (context.Stage.KeyBar.Clicked(context.Mouse) == CancelAction || MenuKeys.Back())
             {
                 SetListening(false);
                 return Navigation.None;
@@ -145,12 +145,9 @@ namespace GameHub.RhythmGame
             if (key == Key.None)
                 return Navigation.None;
 
-            if (key != Key.Escape)
-            {
-                KeyBindings.Set(Lane(selected), Slot(selected), key);
-                context.Sounds.Confirm();
-                RefreshLabels();
-            }
+            KeyBindings.Set(Lane(selected), Slot(selected), key);
+            context.Sounds.Confirm();
+            RefreshLabels();
             SetListening(false);
             return Navigation.None;
         }

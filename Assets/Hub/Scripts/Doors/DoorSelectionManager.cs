@@ -30,7 +30,6 @@ namespace GameHub.Hub
         private HubStairs? stairs;
         private CharacterController? rider;
         private DoorCategory? openCategory;
-        private HubAtmosphere? atmosphere;
         private DoorChainController? loweredChain;
         private Coroutine? lowering;
         private string typed = string.Empty;
@@ -70,7 +69,6 @@ namespace GameHub.Hub
 
             picker = new DoorPicker(UiKit.Shared, transform, rows);
             ShowRoot(0);
-            TryGetComponent(out atmosphere);
             if (stairsRoot != null)
                 stairs = new HubStairs(stairsRoot);
         }
@@ -94,7 +92,7 @@ namespace GameHub.Hub
             if (!UiFocus.IsFree)
                 return;
 
-            if (LayoutInput.GetKeyDown(KeyCode.N))
+            if (KeyBinds.Down(KeyAction.EyeControl))
                 ToggleEyeControl();
 
             HandleDigits();
@@ -149,6 +147,7 @@ namespace GameHub.Hub
                     picker.List.Step(1);
                     break;
                 case GazeAction.Confirm:
+                    GameSounds.Play(SoundCue.MenuConfirm);
                     ConfirmSelection();
                     break;
             }
@@ -156,27 +155,21 @@ namespace GameHub.Hub
 
         private void HandleMenu(float deltaTime)
         {
+            picker.List.AllowBack = openCategory != null || typed.Length > 0;
             switch (picker.List.HandleInput(deltaTime, mouse))
             {
-                case MenuAction.Moved:
-                    atmosphere?.Audio.MenuMove();
-                    break;
                 case MenuAction.Confirmed when typed.Length > 0:
-                    atmosphere?.Audio.MenuConfirm();
                     GoToTyped();
                     break;
                 case MenuAction.Confirmed:
                 case MenuAction.Increase when openCategory == null:
-                    atmosphere?.Audio.MenuConfirm();
                     ConfirmSelection();
                     break;
                 case MenuAction.Back when typed.Length > 0:
-                    atmosphere?.Audio.MenuBack();
                     SetTyped(string.Empty);
                     break;
                 case MenuAction.Back:
                 case MenuAction.Decrease:
-                    atmosphere?.Audio.MenuBack();
                     CloseCategory();
                     break;
             }

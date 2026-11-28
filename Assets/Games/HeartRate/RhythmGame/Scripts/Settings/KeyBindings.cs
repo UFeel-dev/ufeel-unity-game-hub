@@ -1,4 +1,5 @@
 using System.Globalization;
+using GameHub.Common;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -69,8 +70,7 @@ namespace GameHub.RhythmGame
                     return "DOWN";
             }
 
-            Keyboard? keyboard = Keyboard.current;
-            string name = keyboard != null ? keyboard[key].displayName : key.ToString();
+            string? name = KeyLayout.Character(key);
             return string.IsNullOrEmpty(name) ? key.ToString() : name.ToUpperInvariant();
         }
 

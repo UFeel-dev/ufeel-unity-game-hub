@@ -78,12 +78,12 @@ namespace GameHub.Maze
                 return;
 
             hud.Tick(Time.deltaTime);
-            if (UiFocus.IsFree && LayoutInput.GetKeyDown(KeyCode.L))
+            if (UiFocus.IsFree && KeyBinds.Down(KeyAction.LevelSelect))
             {
                 if (Time.time > leaveConfirmUntil)
                 {
                     leaveConfirmUntil = Time.time + LeaveConfirmSeconds;
-                    hud.Notify("Press L again to leave the level");
+                    hud.Notify($"Press {KeyBinds.Label(KeyAction.LevelSelect)} again to leave the level");
                 }
                 else
                 {
@@ -100,7 +100,6 @@ namespace GameHub.Maze
 
             Vector3 position = player.transform.position;
             hud.Map.Track(new Vector2(position.x / roomSpacing, position.z / roomSpacing), player.transform.eulerAngles.y);
-            soundPlayer.Walk(position);
             Vector2Int room = RoomAt(position);
             if (room != playerRoom)
                 EnterRoom(room);

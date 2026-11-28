@@ -13,6 +13,7 @@ namespace GameHub.EscapeRoom
         private const float DefaultFuzzyThreshold = 0.72f;
         private const float TextFadeDelay = 3f;
         private const float HintOffset = 120f;
+        private const float CommandVolume = 0.5f;
         private const float EndOpacity = 0.92f;
         private const string EndTitle = "Félicitations !";
         private const string EndSubtitle = "Vous avez réussi à vous échapper !";
@@ -96,10 +97,10 @@ namespace GameHub.EscapeRoom
             hint.Tick(Time.deltaTime);
             endCard.Tick(Time.deltaTime);
 
-            if (LayoutInput.GetKeyUp(KeyCode.V))
+            if (KeyBinds.Up(KeyAction.RestartListening))
                 UFeelAPI.SpeechToText.StartDetection();
 
-            if (LayoutInput.GetKeyDown(KeyCode.H))
+            if (KeyBinds.Down(KeyAction.Hint))
                 ShowHint(HintFor(currentStep));
 
             string? speech = UFeelAPI.SpeechToText.Current;
@@ -110,6 +111,7 @@ namespace GameHub.EscapeRoom
                 return;
 
             lastProcessedSpeech = speech;
+            GameSounds.Play(SoundCue.MenuConfirm, CommandVolume);
             ExecuteCurrentStep();
         }
 
@@ -358,6 +360,7 @@ namespace GameHub.EscapeRoom
         private IEnumerator ShowEndScreen()
         {
             yield return EndScreenDelay;
+            GameSounds.Play(SoundCue.Win);
             endCard.Show(EndTitle, EndSubtitle, Theme.Accent, fadeDuration);
             yield return new WaitForSeconds(fadeDuration);
             yield return ReturnToHubDelay;

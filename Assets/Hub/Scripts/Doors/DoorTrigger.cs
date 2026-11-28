@@ -55,7 +55,7 @@ namespace GameHub.Hub
         private void Update()
         {
             SceneLoader? loader = SceneLoader.Instance;
-            if (!playerInRange || loader == null || loader.IsLoading || loader.HasPendingRoom || !UiFocus.IsFree || !LayoutInput.GetKeyDown(KeyCode.E))
+            if (!playerInRange || loader == null || loader.IsLoading || loader.HasPendingRoom || !UiFocus.IsFree || !KeyBinds.Down(KeyAction.Interact))
                 return;
 
             if (IsInProgress)

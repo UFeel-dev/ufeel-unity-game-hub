@@ -21,8 +21,6 @@ namespace GameHub.Maze
         private const float IntroSeconds = 3f;
         private const string Open = "Open";
 
-        private static readonly KeyHint[] Hints = { new("Level select", 0, "L") };
-
         private readonly RectTransform canvas;
         private readonly RectTransform meters;
         private readonly Dictionary<EmotionType, MeterView> views = new();
@@ -31,6 +29,7 @@ namespace GameHub.Maze
         private readonly Toast notice;
         private readonly KeyBar keys;
         private float introRemaining;
+        private int keysVersion = -1;
 
         public MazeHud(UiKit kit, Transform owner, IReadOnlyList<EmotionInfo> emotions, MazeGrid grid, MazeIcons icons)
         {
@@ -52,7 +51,6 @@ namespace GameHub.Maze
             Map = new MazeMinimap(kit, canvas, grid, icons);
             notice = new Toast(kit, canvas, new Vector2(0.5f, 1f), NoticeOffset, Theme.Body);
             keys = new KeyBar(kit, canvas);
-            keys.Set(Hints);
             card = new TitleCard(kit, canvas, CardOpacity);
         }
 
@@ -96,6 +94,12 @@ namespace GameHub.Maze
 
         public void Tick(float deltaTime)
         {
+            if (keysVersion != KeyBinds.Version)
+            {
+                keysVersion = KeyBinds.Version;
+                keys.Set(new[] { new KeyHint("Level select", 0, KeyBinds.Label(KeyAction.LevelSelect)) });
+            }
+
             foreach (MeterView view in views.Values)
                 view.Tick(deltaTime);
             notice.Tick(deltaTime);

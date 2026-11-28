@@ -11,8 +11,7 @@ namespace GameHub.RhythmGame
         private const double PreparingBudgetMs = 10.0;
         private const int PlayAction = 1;
         private const int OptionsAction = 2;
-        private const int BackAction = 3;
-        private const int NextSongAction = 4;
+        private const int NextSongAction = 3;
 
         private static readonly KeyHint[] Hints =
         {
@@ -21,7 +20,6 @@ namespace GameHub.RhythmGame
             new("Adjust", 0, KeyHint.Left, KeyHint.Right),
             new("Play", PlayAction, "Enter"),
             new("Options", OptionsAction, "O"),
-            new("Back", BackAction, "Esc"),
         };
 
         private readonly IReadOnlyList<RhythmSong> songs;
@@ -67,6 +65,7 @@ namespace GameHub.RhythmGame
                 items.Add(EntryFor(song));
 
             View.List.UseVerticalKeys = false;
+            View.List.AllowBack = false;
             View.List.SetItems(items, selection);
             View.SetVisible(true);
             context.Stage.KeyBar.Set(Hints);
@@ -138,9 +137,6 @@ namespace GameHub.RhythmGame
                     return Navigation.None;
                 case MenuAction.Confirmed:
                     return Confirm();
-                case MenuAction.Back:
-                    context.Sounds.Back();
-                    return Navigation.Hub;
                 case MenuAction.Decrease:
                     Adjust(-1);
                     return Navigation.None;
@@ -161,9 +157,6 @@ namespace GameHub.RhythmGame
                 case OptionsAction:
                     context.Sounds.Confirm();
                     return Navigation.Options;
-                case BackAction:
-                    context.Sounds.Back();
-                    return Navigation.Hub;
                 case NextSongAction:
                     if (View.List.Step(1) == MenuAction.Moved)
                         OnMoved();

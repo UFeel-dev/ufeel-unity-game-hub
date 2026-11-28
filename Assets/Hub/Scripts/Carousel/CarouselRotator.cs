@@ -52,7 +52,7 @@ namespace GameHub.Hub
                 PositionDoors();
             }
 
-            if (LayoutInput.GetKeyDown(KeyCode.F))
+            if (KeyBinds.Down(KeyAction.FastCarousel))
                 isAccelerated = !isAccelerated;
         }
 

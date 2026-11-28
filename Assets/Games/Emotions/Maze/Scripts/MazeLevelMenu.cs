@@ -52,6 +52,7 @@ namespace GameHub.Maze
                 new Vector2(Width + (2f * PanelPadding), panelHeight));
 
             screen = new ListScreen(kit, canvas, "MazeLevelList", rows, center, Vector2.zero, Width, RowHeight);
+            screen.List.AllowBack = false;
             BuildEntries();
             screen.Show("Maze", entries, Mathf.Min(MazeSave.UnlockedLevels, levelCount) - 1);
             screen.SetFooter("Clear a level to unlock the next one.");
@@ -81,7 +82,10 @@ namespace GameHub.Maze
             if (!UiFocus.IsFree)
                 return null;
 
-            bool confirmed = keys.Clicked(mouse) == PlayAction || screen.List.HandleInput(deltaTime, mouse) == MenuAction.Confirmed;
+            bool clicked = keys.Clicked(mouse) == PlayAction;
+            if (clicked)
+                GameSounds.Play(SoundCue.MenuConfirm);
+            bool confirmed = clicked || screen.List.HandleInput(deltaTime, mouse) == MenuAction.Confirmed;
             int row = screen.List.Selected;
             if (row != ResetRow)
                 resetArmed = false;

@@ -36,6 +36,10 @@ namespace GameHub.Common
 
         public bool UseVerticalKeys { get; set; } = true;
 
+        public bool AllowBack { get; set; } = true;
+
+        public bool PlaysSounds { get; set; } = true;
+
         public void SetItems(IReadOnlyList<MenuEntry> source, int selection)
         {
             items.Clear();
@@ -54,7 +58,37 @@ namespace GameHub.Common
 
         public MenuAction HandleInput(float deltaTime, PointerInput mouse)
         {
-            if (MenuKeys.Back())
+            MenuAction action = ReadInput(deltaTime, mouse);
+            Feedback(action);
+            return action;
+        }
+
+        public void Select(int index)
+        {
+            if (items.Count == 0)
+                return;
+
+            Selected = Mathf.Clamp(index, 0, items.Count - 1);
+            Refresh(false);
+        }
+
+        public MenuAction Step(int step)
+        {
+            MenuAction action = Move(step);
+            Feedback(action);
+            return action;
+        }
+
+        public void Tick(float deltaTime)
+        {
+            float blend = 1f - Mathf.Exp(-AnimationSpeed * deltaTime);
+            for (int i = 0; i < rows.Count; i++)
+                rows[i].Animate(windowStart + i == Selected, blend);
+        }
+
+        private MenuAction ReadInput(float deltaTime, PointerInput mouse)
+        {
+            if (AllowBack && MenuKeys.Back())
                 return MenuAction.Back;
             if (MenuKeys.Confirm() || LayoutInput.GetKeyDown(KeyCode.Space))
                 return items.Count > 0 ? MenuAction.Confirmed : MenuAction.None;
@@ -85,16 +119,7 @@ namespace GameHub.Common
             return Apply(direction);
         }
 
-        public void Select(int index)
-        {
-            if (items.Count == 0)
-                return;
-
-            Selected = Mathf.Clamp(index, 0, items.Count - 1);
-            Refresh(false);
-        }
-
-        public MenuAction Step(int step)
+        private MenuAction Move(int step)
         {
             if (items.Count < 2)
                 return MenuAction.None;
@@ -104,11 +129,25 @@ namespace GameHub.Common
             return MenuAction.Moved;
         }
 
-        public void Tick(float deltaTime)
+        private void Feedback(MenuAction action)
         {
-            float blend = 1f - Mathf.Exp(-AnimationSpeed * deltaTime);
-            for (int i = 0; i < rows.Count; i++)
-                rows[i].Animate(windowStart + i == Selected, blend);
+            if (!PlaysSounds)
+                return;
+
+            switch (action)
+            {
+                case MenuAction.Moved:
+                case MenuAction.Decrease:
+                case MenuAction.Increase:
+                    GameSounds.Play(SoundCue.MenuMove);
+                    break;
+                case MenuAction.Confirmed:
+                    GameSounds.Play(SoundCue.MenuConfirm);
+                    break;
+                case MenuAction.Back:
+                    GameSounds.Play(SoundCue.MenuBack);
+                    break;
+            }
         }
 
         private int Direction()
@@ -117,17 +156,17 @@ namespace GameHub.Common
                 return 1;
             if (UseVerticalKeys && MenuKeys.Down(true))
                 return 2;
-            if (LayoutInput.GetKey(KeyCode.LeftArrow) || LayoutInput.GetKey(KeyCode.A))
+            if (MenuKeys.Left())
                 return 3;
-            return LayoutInput.GetKey(KeyCode.RightArrow) || LayoutInput.GetKey(KeyCode.D) ? 4 : 0;
+            return MenuKeys.Right() ? 4 : 0;
         }
 
         private MenuAction Apply(int direction)
         {
             return direction switch
             {
-                1 => Step(-1),
-                2 => Step(1),
+                1 => Move(-1),
+                2 => Move(1),
                 3 => MenuAction.Decrease,
                 _ => MenuAction.Increase,
             };
@@ -136,7 +175,7 @@ namespace GameHub.Common
         private MenuAction HandlePointer(PointerInput mouse)
         {
             if (mouse.Scroll != 0f && mouse.IsOver(area))
-                return Step(mouse.Scroll > 0f ? -1 : 1);
+                return Move(mouse.Scroll > 0f ? -1 : 1);
 
             for (int i = 0; i < rows.Count && windowStart + i < items.Count; i++)
             {

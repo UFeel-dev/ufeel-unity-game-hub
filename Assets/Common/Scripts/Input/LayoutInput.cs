@@ -43,6 +43,7 @@ namespace GameHub.Common
 
         private static Keyboard cachedKeyboard;
         private static string cachedLayout;
+        private static int cachedLayoutVersion;
 
         public static bool GetKey(KeyCode code)
         {
@@ -62,16 +63,14 @@ namespace GameHub.Common
             return key != null ? key.wasReleasedThisFrame : Input.GetKeyUp(code);
         }
 
-        public static float GetHorizontalAxis(bool includeArrows = true)
+        public static float GetHorizontalAxis()
         {
-            return includeArrows
-                ? GetAxis(Key.A, Key.D, Key.LeftArrow, Key.RightArrow)
-                : GetAxis(Key.A, Key.D, Key.A, Key.D);
+            return GetAxis(KeyAction.MoveLeft, KeyAction.MoveRight, Key.LeftArrow, Key.RightArrow);
         }
 
         public static float GetVerticalAxis()
         {
-            return GetAxis(Key.S, Key.W, Key.DownArrow, Key.UpArrow);
+            return GetAxis(KeyAction.MoveBack, KeyAction.MoveForward, Key.DownArrow, Key.UpArrow);
         }
 
         public static Vector2 GetMouseDelta()
@@ -79,15 +78,15 @@ namespace GameHub.Common
             return new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
         }
 
-        private static float GetAxis(Key negative, Key positive, Key alternativeNegative, Key alternativePositive)
+        private static float GetAxis(KeyAction negative, KeyAction positive, Key negativeArrow, Key positiveArrow)
         {
             Keyboard keyboard = Keyboard.current;
             if (keyboard == null)
                 return 0f;
             float value = 0f;
-            if (keyboard[negative].isPressed || keyboard[alternativeNegative].isPressed)
+            if (KeyBinds.Held(negative) || keyboard[negativeArrow].isPressed)
                 value--;
-            if (keyboard[positive].isPressed || keyboard[alternativePositive].isPressed)
+            if (KeyBinds.Held(positive) || keyboard[positiveArrow].isPressed)
                 value++;
             return value;
         }
@@ -97,11 +96,12 @@ namespace GameHub.Common
             Keyboard keyboard = Keyboard.current;
             if (keyboard == null)
                 return null;
-            if (keyboard != cachedKeyboard || keyboard.keyboardLayout != cachedLayout)
+            if (keyboard != cachedKeyboard || keyboard.keyboardLayout != cachedLayout || KeyLayout.Version != cachedLayoutVersion)
             {
                 ResolvedKeys.Clear();
                 cachedKeyboard = keyboard;
                 cachedLayout = keyboard.keyboardLayout;
+                cachedLayoutVersion = KeyLayout.Version;
             }
             if (ResolvedKeys.TryGetValue(code, out KeyControl cached))
                 return cached;
@@ -117,8 +117,7 @@ namespace GameHub.Common
             if (code is >= KeyCode.A and <= KeyCode.Z)
             {
                 int offset = code - KeyCode.A;
-                string letter = ((char)('a' + offset)).ToString();
-                return keyboard.FindKeyOnCurrentKeyboardLayout(letter) ?? keyboard[Key.A + offset];
+                return KeyLayout.Find(keyboard, (char)('a' + offset)) ?? keyboard[Key.A + offset];
             }
             if (code is >= KeyCode.Alpha1 and <= KeyCode.Alpha9)
                 return keyboard[Key.Digit1 + (code - KeyCode.Alpha1)];
