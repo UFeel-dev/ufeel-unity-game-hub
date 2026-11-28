@@ -46,6 +46,8 @@ namespace GameHub.Common
                 return;
 
             UpdateFlashlight();
+            if (isMouseLookEnabled && Application.isFocused && Cursor.lockState != CursorLockMode.Locked)
+                SetCursorLocked(true);
 
             if (isMouseLookEnabled)
             {
