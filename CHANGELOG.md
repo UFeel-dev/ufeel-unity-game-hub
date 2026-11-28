@@ -18,15 +18,26 @@
 - Door selection is a room menu with one sub-menu per category: mouse, arrow keys, typed door number or eyes. The hub shows its key shortcuts.
 - While the mouse is free (Tab), the player stands still and the arrow keys drive the menus.
 - Eye control of the room menu: looking left or right moves after a short dwell and repeats while held, closing the eyes for 0.7 s selects, with an indicator under the menu. It replaces the double blink.
-- The car is now fully driven with the eyes: looking up or down shifts between Drive, Stop and Reverse, looking left or right steers, and a gear indicator shows both. The keyboard stays as a fallback.
+- The car is now fully driven with the eyes: by default it heads where the player looks on screen, and **G** switches to the direction mode (looking up or down shifts between Drive, Stop and Reverse, left or right steers). The keyboard stays as a fallback. The car can no longer be left, and has a body, cabin, wheels and lights instead of a box.
 - The pause menu offers Lobby only outside the hub.
 - The microphone selector opens from the pause menu instead of next to it.
 - The Maze is now a generated labyrinth with seven levels, walkable fog doors instead of teleports, and new room visuals.
 - The flashlight now follows where the player looks, in the hub and the Maze.
 - The player's capsule is hidden from the camera but still casts a shadow.
+- The emotion model now runs through ONNX, without libtorch.
+- Calibration screens pause the game time while shown.
+- The pause menu opens with Esc instead of M. Esc still goes back in menus first.
+- Softer menu sounds, played by every menu, including eye-driven moves.
+- All room music, hub and Maze included, crossfades on room changes. The Maze track is tenser.
+- Footsteps in every walkable room, the Car and Escape Room included, and quieter. The Escape Room TV is a soft generated murmur, and the TV and radio voice are much quieter.
 
 ### Added
 
+- **Settings > Controls**: rebind gameplay keys, with swap on conflict and reset to defaults. Key hints follow the bindings.
+- Music in the Animals, Car, Survivor, Horror Room and Escape Room scenes, with a distinct track for Car (driving groove), Animals (marimba) and the Escape Room (music box melody and clock), and sound cues in Animals, Car, Survivor and the Escape Room.
+- Animals plays the Maze charge sound while the expected emotion fills the bar.
+- Emotion calibration (F7, or **Settings > Emotion calibration**): the player acts each emotion for a few seconds in front of the camera and the emotion model adapts to their face. The profile is saved and loaded at startup, and **Settings > Reset emotion calibration** returns to the general model. Emotion games hint at it once per session while the emotions are not calibrated.
+- **Settings > Eye-tracking calibration** starts the eye-tracking calibration (F8).
 - Settings screen in the pause menu: master, music and effects volume, mouse sensitivity, flashlight intensity, fullscreen and VSync, saved between sessions. Every audio source goes through the `GameMixer` Music or Effects group.
 - Eye-tracking calibration overlay (F8) and automatic loading of the shared calibration profile.
 - Linux player builds ship `dependencies/` and `models/`.
@@ -50,6 +61,7 @@
 
 ### Removed
 
+- The contemptuous emotion (`EmotionType.Contemptuous`), which the model never reports. Maze levels keep their emotions.
 - Empty Environment, Runner and UnlockWorld scenes, the API testing scene, third-party demo scenes and unused assets.
 - Unused packages (HDRP, Visual Scripting, Timeline, AI Navigation, Collab, VS Code, Multiplayer Center, Test Framework).
 - The inactive mirror workflow and the `tools/refresh-package` script.
@@ -58,6 +70,8 @@
 
 ### Fixed
 
+- Linux-only issue: Linux builds named keys as on QWERTY whatever the layout. Key names now come from the X11 keymap.
+- Touching a closed hub door no longer hides the hub and drops the player into the void.
 - UFeel kept the camera open after a script reload in Play mode until Unity was closed. It now stops before the reload and starts again after.
 - Changing a script in Play mode broke the running game. Play mode now stops before recompiling.
 - Speech rules matched in the wrong direction and fired on empty speech.

@@ -8,7 +8,7 @@ The UFeel Unity Game Hub is a Unity project demonstrating the **UFeel** native l
 graph TD
     Game[Game scripts] -->|facades, rules| API[UFeelAPI · main thread]
     API -->|Latest snapshot| Session
-    Screens[UFeelScreens · F1, F8, F9] -->|calibration, microphones, camera frames| API
+    Screens[UFeelScreens · F1, F7, F8, F9] -->|calibrations, microphones, camera frames| API
     subgraph Core["Runtime/Core · UFeel.Core (engine-agnostic C# adapter)"]
         Session[UFeelSession · background thread] --> Processor[UFeelProcessor]
     end
@@ -21,7 +21,7 @@ graph TD
 | Path | Role |
 | --- | --- |
 | `Runtime/Core/` | C# adapter synced from the ufeel package (`tools/update-ufeel.sh`). Do not edit here, change it in the ufeel repo. |
-| `Runtime/UFeelAPI.cs` | Unity host: starts the session, loads the calibration profile, evaluates rules in `Update`, disposes on quit. |
+| `Runtime/UFeelAPI.cs` | Unity host: starts the session, loads the eye-tracking and emotion calibration profiles, evaluates rules in `Update`, disposes on quit. |
 | `Runtime/Facades/` | `UFeelAPI.Emotion`, `.EyeTracking`, `.SpeechToText`, `.HeartRate`, `.CameraFeed`: read the per-frame snapshot and keep the read features running. |
 | `Runtime/CameraFeed/` | Copies the webcam frames for `UFeelAPI.CameraFeed` while capturing. |
 | `Runtime/Plugins/Linux-x86_64/` | Native library, `dependencies/` (found through RUNPATH) and `models/`. |
@@ -31,7 +31,7 @@ graph TD
 
 - Native calls run only on the session thread.
 - Game code reads immutable snapshots and never blocks.
-- Commands (calibration, speech toggle, microphone selection) are queued through `UFeelSession.ExecuteAsync`.
+- Commands (calibrations, speech toggle, microphone selection) are queued through `UFeelSession.ExecuteAsync`.
 
 ## Project layout (`Assets`)
 
@@ -63,6 +63,12 @@ The hub loads a game additively when the player enters a door. A game whose root
 
 `GameSettings` saves the player settings in `PlayerPrefs` and applies them at startup. The master volume sets `AudioListener.volume`. The music and effects volumes set the `MusicVolume` and `EffectsVolume` parameters of `GameMixer`, so every audio source must output to its Music or Effects group: set **Output** in the inspector, or call `GameAudio.Route` for sources created in code. `FirstPersonController` multiplies its sensitivity by `GameSettings.LookMultiplier`.
 
+`GameSounds.Play(SoundCue)` plays shared menu and game cues from `Common/Resources/Audio/Cues`. `SceneMusic` loops `Common/Resources/Music/<active scene>` when it exists, crossfades on scene changes, and keeps the hub track while a room is only previewed through a door (`PlayerScene`). `FirstPersonController` plays footsteps from `Common/Resources/Audio/Steps/<scene>`, or `Default`. `MenuList` plays the menu cues itself unless `PlaysSounds` is false. Both are baked by **Tools > Common > Bake Sounds** (`GameSynth`).
+
+## Input
+
+Gameplay keys go through `KeyBinds` (`KeyAction`, saved in `PlayerPrefs`), never hardcoded keys. Menu keys (arrows, Enter, Esc) are fixed in `MenuKeys`. Bindings are key positions. `KeyLayout` names them for the current layout (from the X11 keymap in Linux builds, where the Input System only reports US names). `MenuKeys.Back()` consumes Escape for the frame: menus handle it first, and `PauseMenu` runs last and opens only if Escape is unused and no UI holds focus. A `MenuList` whose `AllowBack` is false lets Escape through.
+
 ## UI
 
 | Component | Role |
@@ -82,8 +88,8 @@ The hub loads a game additively when the player enters a door. A game whose root
 | Screen | Owner |
 | --- | --- |
 | Room menu (categories, then rooms) and hub key hints | `DoorSelectionManager`, `DoorPicker` (`Hub`) |
-| Pause menu (M) and its settings | `PauseMenu`, `SettingsPanel` |
-| Camera feedback and readings (F1), eye-tracking calibration (F8), microphone (F9) | `UFeelScreens`, created at startup |
+| Pause menu (Esc) and its settings, with controls, both calibrations and the emotion calibration reset | `PauseMenu`, `SettingsPanel`, `ControlsPanel` |
+| Camera feedback and readings (F1), emotion calibration (F7), eye-tracking calibration (F8), microphone (F9) | `UFeelScreens`, created at startup. Calibration screens pause the game time while shown. |
 | Game HUDs | `AnimalsHud`, `MazeHud`, `CarHud`, `SpeechManager`, `StageView` (rhythm game) |
 | Maze level select | `MazeLevelMenu` |
 

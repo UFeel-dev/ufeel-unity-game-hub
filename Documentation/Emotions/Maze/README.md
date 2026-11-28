@@ -10,18 +10,18 @@ Emotion-driven labyrinth experience.
 
 ## Gameplay
 
-- The Maze opens on a level select. Only Level 1 is unlocked at first; clearing a level unlocks and starts the next one. Clearing the last level unlocks **Unlimited**, an endless series of growing mazes.
+- The Maze opens on a level select. Only Level 1 is unlocked at first. Clearing a level unlocks and starts the next one. Clearing the last level unlocks **Unlimited**, an endless series of growing mazes.
 - Each maze is randomly generated.
-- Each door asks for an emotion. The closest door is outlined; hold its emotion for about two seconds and the fog clears so you can walk through.
+- Each door asks for an emotion. The closest door is outlined. Hold its emotion for about two seconds and the fog clears so you can walk through.
 - Some doors close behind you or only open from one side.
 - Special rooms: **Hint** (shows the way out), **Bonus** (reveals the map around), **Trap** (back to the start).
 - The minimap (top left) fills in as you explore.
 - Sound: an ambient pad (Music volume), footsteps, door and special room sounds (Effects volume).
 
 | Key | Action |
-|---|---|
+| --- | --- |
 | L (twice) | Back to the level select |
-| M | Pause |
+| Esc | Pause |
 
 ## Objective
 
@@ -36,7 +36,7 @@ Levels are assets in `Assets/Games/Emotions/Maze/Levels`:
 
 Progress is stored in `PlayerPrefs`. It can be reset from the level select or with **Reset saved progress** in the `MazeCatalog` context menu.
 
-The sounds are procedural and baked into `Assets/Games/Emotions/Maze/Audio`, referenced by the `MazeSounds` asset. After changing `MazeSynth`, regenerate them with **Tools > Maze > Bake Sounds**.
+The sounds are procedural and baked into `Assets/Games/Emotions/Maze/Audio`, referenced by the `MazeSounds` asset. After changing `MazeSynth`, regenerate them with **Tools > Maze > Bake Sounds**. The music, footsteps and charge sound are shared: `GameSynth`, **Tools > Common > Bake Sounds**.
 
 ## Main Script
 

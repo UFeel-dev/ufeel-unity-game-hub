@@ -28,3 +28,5 @@ Solve the room's challenges and escape using voice commands.
 | --- | --- |
 | **H** | Display a hint |
 | **V** | Restart speech detection |
+
+Keys can be rebound in **Pause > Settings > Controls**.

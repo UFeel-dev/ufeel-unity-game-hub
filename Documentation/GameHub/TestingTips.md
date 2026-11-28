@@ -25,6 +25,7 @@ Instructions for testing and debugging the UFeel package across the Game Hub sce
 - **Emotion not recognized?**
   - Check for sufficient front-facing light.
   - Ensure your face is fully visible in the webcam's field of view.
+  - Press **F7** to calibrate the emotions to your face: act each emotion shown on screen for a few seconds (about one minute in total). The profile is saved and reloaded at the next launch. **Settings > Reset emotion calibration** returns to the general model.
 
 ## Eye Tracking Scene
 
@@ -34,7 +35,7 @@ Instructions for testing and debugging the UFeel package across the Game Hub sce
 
 - From the hub, enter the **Car** door and walk into the vehicle.
 - Accelerate with **W** (**Z** on AZERTY) and check that looking left or right steers the vehicle.
-- Press **F8** to calibrate if the gaze range feels too narrow.
+- Press **F8** to calibrate eye tracking if the gaze range feels too narrow.
 
 ### Troubleshooting Eye Tracking
 
@@ -49,7 +50,7 @@ Instructions for testing and debugging the UFeel package across the Game Hub sce
 ### Testing Steps for the Game Hub
 
 - Open `Assets/Hub/Scenes/GameHub.unity` and press Play.
-- Use the carousel to enter each game, then come back through the pause menu (**M**, then the lobby button).
+- Use the carousel to enter each game, then come back through the pause menu (**Esc**, then the lobby button).
 - Return to the hub between tests to check that transitions keep the webcam available.
 
 ### Troubleshooting the Game Hub

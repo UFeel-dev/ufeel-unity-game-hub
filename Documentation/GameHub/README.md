@@ -14,7 +14,7 @@ Unity project showcasing the [UFeel](../../Packages/com.ufcorp.ufeel) biometric 
 - Additive scene loading, one assembly per game
 - Round room with textures, floating dust and a coloured light above each room door (`Assets/Hub/Prefabs/HubRoom.prefab`)
 - The selected door stops halfway down and a staircase rises up to it, the room behind is shown through the doorway
-- Ambient music, menu, carousel and footstep sounds in `Assets/Hub/Audio` (regenerate them with **Tools > Hub > Bake Sounds**), and a welcome screen on first launch
+- Carousel and footstep sounds in `Assets/Hub/Audio` (regenerate them with **Tools > Hub > Bake Sounds**), and a welcome screen on first launch
 
 ## Technologies
 
@@ -24,7 +24,7 @@ Unity project showcasing the [UFeel](../../Packages/com.ufcorp.ufeel) biometric 
 
 ## Keyboard shortcuts
 
-Movement uses the key positions (WASD on QWERTY, ZQSD on AZERTY). Letter shortcuts follow the keyboard layout.
+Defaults below. Every key except Esc, Enter, arrows, digits and Backspace can be rebound in **Pause > Settings > Controls**. Binding a key already in use swaps the two. Keys are physical positions (WASD on QWERTY is ZQSD on AZERTY).
 
 | Key | Action |
 | --- | --- |
@@ -36,9 +36,9 @@ Movement uses the key positions (WASD on QWERTY, ZQSD on AZERTY). Letter shortcu
 | **T** | Toggle the flashlight (intensity is in the settings) |
 | **Tab** | Toggle between looking around and using the menus |
 | **0-9**, **Enter** | Go to the door with this number |
-| **Escape** | Back to the room categories |
-| **M** | Toggle the pause menu (with the settings and the microphone selection) |
+| **Esc** | Back in the room menu, otherwise toggle the pause menu (settings, controls, both calibrations, microphone) |
 | **F1** | Camera feedback and debug data |
+| **F7** | Emotion calibration |
 | **F8** | Eye-tracking calibration |
 | **F9** | Microphone selector |
 

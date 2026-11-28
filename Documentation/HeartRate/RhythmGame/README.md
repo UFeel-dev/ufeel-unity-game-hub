@@ -79,7 +79,7 @@ Slider ranges, steps and the heart rate span: `DifficultySettings`.
 | **Shift** | Fine steps with **← →**: 0.1 on sliders, 1 elsewhere |
 | **Enter** | Play, confirm |
 | **O** | Options |
-| **Escape** | Back, pause in game |
+| **Escape** | Back, pause in game, the hub pause menu from the song select |
 | **R** | Retry from the results |
 | **F3 / F4** | Scroll slower / faster in game |
 | **F5 / F6** | Audio offset −5 / +5 ms in game |
