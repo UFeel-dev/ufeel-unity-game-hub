@@ -13,6 +13,8 @@ namespace UFeel
         InvalidProcessor = 3,
         InternalError = 4,
         UnsupportedFeature = 5,
+        NoEmotion = 6,
+        Calibrating = 7,
     }
 
     public enum EmotionType
@@ -44,15 +46,18 @@ namespace UFeel
 
         public EmotionStatus Status { get; }
 
-        /// <summary>Keyed by native label, lowercase (e.g. "happy").</summary>
+        /// <summary>Gets the scores keyed by native label, lowercase (e.g. "happy").</summary>
         public IReadOnlyDictionary<string, float> Scores => scores ?? NoScores;
 
-        /// <summary>Null without a valid face.</summary>
+        /// <summary>Gets the dominant emotion, null without a valid face.</summary>
         public EmotionType? Dominant { get; }
 
         public bool IsValid => Status == EmotionStatus.Valid;
 
-        public static EmotionResult Unavailable(EmotionStatus status) => new EmotionResult(status, NoScores);
+        public bool FacePresent =>
+            Status is EmotionStatus.Valid or EmotionStatus.NoEmotion or EmotionStatus.Calibrating;
+
+        public static EmotionResult Unavailable(EmotionStatus status) => new(status, NoScores);
 
         public static EmotionType Parse(string label)
         {

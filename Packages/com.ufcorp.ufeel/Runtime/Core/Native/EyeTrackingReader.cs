@@ -8,7 +8,7 @@ namespace UFeel.Native
 {
     internal sealed class EyeTrackingReader : IDisposable
     {
-        private readonly NativeResultBuffer buffer = new NativeResultBuffer(
+        private readonly NativeResultBuffer buffer = new(
             NativeMethods.ufeel_create_eye_tracking_result,
             NativeMethods.ufeel_free_eye_tracking_result,
             "eye-tracking");
@@ -17,7 +17,7 @@ namespace UFeel.Native
         {
             Marshal.StructureToPtr(default(NativeEyeTrackingResult), buffer.Pointer, false);
 
-            var status = (UFeelStatus)NativeMethods.ufeel_get_eye_tracking_result(processor, buffer.Pointer);
+            UFeelStatus status = (UFeelStatus)NativeMethods.ufeel_get_eye_tracking_result(processor, buffer.Pointer);
             UFeelException.ThrowUnless(status, UFeelStatus.NoEyeTracking, "retrieve the gaze estimate");
 
             NativeEyeTrackingResult result = Marshal.PtrToStructure<NativeEyeTrackingResult>(buffer.Pointer);

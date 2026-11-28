@@ -13,6 +13,19 @@ EmotionType? dominant = UFeelAPI.Emotion.Dominant; // null without a face
 EmotionResult current = UFeelAPI.Emotion.Current;  // Status, Scores ("happy" = 0.82, ...)
 ```
 
+Emotions come from a general model until the player calibrates them. The calibration records the player acting each emotion for a few seconds (about one minute in total) and adapts the model to their face. The saved profile (`~/.local/share/UFeel/emotion-profile-v1.txt`) loads at startup. A profile recorded with another emotion model is ignored. Run a calibration with a presenter that shows the camera, the emotion to act and its texts:
+
+```csharp
+EmotionCalibrationResult result = await UFeelAPI.Emotion.CalibrateAsync(presenter); // IEmotionCalibrationPresenter, saves the profile on success
+UFeelAPI.Emotion.CancelCalibration();
+bool profileRemoved = await UFeelAPI.Emotion.ResetCalibrationAsync(); // back to the general model, false when the profile could not be deleted
+bool calibrated = UFeelAPI.Emotion.IsCalibrated;
+bool running = UFeelAPI.Emotion.IsCalibrating;
+bool inUse = UFeelAPI.Emotion.IsInUse; // read during the last second
+```
+
+While it runs, `Current.Status` is `EmotionStatus.Calibrating` and no emotion is reported. Cancelling or failing keeps the previous calibration. `result.HardestEmotion` names an emotion that was hard to tell apart, so the player can recalibrate with a clearer expression.
+
 ## Eye tracking
 
 ```csharp
@@ -26,11 +39,12 @@ uint blinks = UFeelAPI.EyeTracking.BlinkCount;    // +1 per blink, compare with 
 Vector2 position = UFeelAPI.EyeTracking.Position; // 0..1, origin top-left
 ```
 
-Blinking and gaze direction work without calibration. Calibration refines the gaze range. The screen position needs a calibration. The saved profile (`~/.local/share/UFeel/eyeTracking-profile-v3.txt`, shared with the ufeel test harness) loads at startup. Otherwise run a calibration with a presenter that shows its targets and texts:
+Blinking and gaze direction work without calibration. Eye-tracking calibration refines the gaze range. The screen position needs a calibration. The saved profile (`~/.local/share/UFeel/eyeTracking-profile-v4.txt`, shared with the ufeel test harnesses) loads at startup. Otherwise run a calibration with a presenter that shows its targets and texts:
 
 ```csharp
-CalibrationResult result = await UFeelAPI.EyeTracking.CalibrateAsync(presenter); // ICalibrationPresenter, saves the profile on success
+EyeTrackingCalibrationResult result = await UFeelAPI.EyeTracking.CalibrateAsync(presenter); // IEyeTrackingCalibrationPresenter, saves the profile on success
 UFeelAPI.EyeTracking.CancelCalibration();
+bool calibrated = UFeelAPI.EyeTracking.IsCalibrated;
 bool running = UFeelAPI.EyeTracking.IsCalibrating;
 bool inUse = UFeelAPI.EyeTracking.IsInUse; // read during the last second
 ```

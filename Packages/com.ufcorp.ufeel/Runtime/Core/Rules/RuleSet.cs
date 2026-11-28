@@ -5,29 +5,18 @@ using System.Collections.Generic;
 
 namespace UFeel
 {
-    public readonly struct RuleKey : IEquatable<RuleKey>
-    {
-        internal RuleKey(int id) => Id = id;
-
-        internal int Id { get; }
-
-        public bool Equals(RuleKey other) => Id == other.Id;
-        public override bool Equals(object? obj) => obj is RuleKey other && Equals(other);
-        public override int GetHashCode() => Id;
-    }
-
     /// <summary>
     /// Not thread-safe: add, remove and evaluate from the same (main) thread.
     /// Additions and removals apply on the next evaluation.
     /// </summary>
     public sealed class RuleSet
     {
-        private readonly List<Rule> rules = new List<Rule>();
-        private readonly List<Rule> pendingAdds = new List<Rule>();
-        private readonly HashSet<int> pendingRemovals = new HashSet<int>();
+        private readonly List<Rule> rules = new();
+        private readonly List<Rule> pendingAdds = new();
+        private readonly HashSet<int> pendingRemovals = new();
         private int nextId;
 
-        /// <summary>Receives exceptions from conditions and actions. Rethrown when null.</summary>
+        /// <summary>Gets or sets the handler receiving exceptions from conditions and actions. Exceptions are rethrown when null.</summary>
         public Action<Exception>? ErrorHandler { get; set; }
 
         public RuleKey Add(Func<bool> condition, Action action, bool onlyOnce)
@@ -37,7 +26,7 @@ namespace UFeel
             if (action is null)
                 throw new ArgumentNullException(nameof(action));
 
-            var rule = new Rule(nextId++, condition, action, onlyOnce);
+            Rule rule = new(nextId++, condition, action, onlyOnce);
             pendingAdds.Add(rule);
             return new RuleKey(rule.Id);
         }

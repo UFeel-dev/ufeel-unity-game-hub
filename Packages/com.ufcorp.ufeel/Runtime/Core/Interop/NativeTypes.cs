@@ -1,4 +1,5 @@
 #nullable enable
+#pragma warning disable SA1649
 
 using System;
 using System.Runtime.InteropServices;
@@ -82,6 +83,28 @@ namespace UFeel.Interop
         public int InvalidTargetCount;
         public int TargetsWithInsufficientRawSamples;
         public int TargetsWithInsufficientRetainedSamples;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct NativeEmotionCalibrationProgress
+    {
+        public int TargetsWithEnoughSamples;
+        public int TargetCount;
+        public int SamplesForCurrentTarget;
+        public int RequiredSamplesPerTarget;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct NativeEmotionCalibrationDiagnostics
+    {
+        public int FailureReason;
+        public int TargetCount;
+        public int TargetsWithEnoughSamples;
+        public int MinimumSamples;
+        public int MaximumSamples;
+        public float MeanAccuracy;
+        public int WeakestTarget;
+        public float WeakestTargetAccuracy;
     }
 
     [StructLayout(LayoutKind.Sequential)]

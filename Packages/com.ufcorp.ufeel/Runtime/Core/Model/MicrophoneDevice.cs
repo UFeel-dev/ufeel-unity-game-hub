@@ -13,12 +13,12 @@ namespace UFeel
             IsDefault = isDefault;
         }
 
-        /// <summary>Stable across runs, used to select the microphone.</summary>
+        /// <summary>Gets the identifier used to select the microphone, stable across runs.</summary>
         public string Id { get; }
 
         public string Name { get; }
 
-        /// <summary>The system default microphone, used when none is selected.</summary>
+        /// <summary>Gets a value indicating whether this is the system default microphone, used when none is selected.</summary>
         public bool IsDefault { get; }
     }
 }

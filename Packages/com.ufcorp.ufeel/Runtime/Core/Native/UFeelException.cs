@@ -12,6 +12,23 @@ namespace UFeel
             Status = status;
         }
 
+        public UFeelException()
+            : this(UFeelStatus.InternalError, "complete the native operation")
+        {
+        }
+
+        public UFeelException(string message)
+            : base(message)
+        {
+            Status = UFeelStatus.InternalError;
+        }
+
+        public UFeelException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+            Status = UFeelStatus.InternalError;
+        }
+
         public UFeelStatus Status { get; }
 
         internal static void ThrowIfFailed(UFeelStatus status, string operation)
@@ -42,6 +59,8 @@ namespace UFeel
                 UFeelStatus.InvalidProcessor => "The processor handle is invalid.",
                 UFeelStatus.InvalidFrame => "The frame is unavailable or invalid.",
                 UFeelStatus.UnsupportedFeature => "The feature is not built into this library.",
+                UFeelStatus.EmotionCalibrationFailed => "Emotion calibration failed.",
+                UFeelStatus.EmotionProfileFailed => "The emotion calibration profile operation failed.",
                 _ => "An unknown native-library error occurred.",
             };
         }

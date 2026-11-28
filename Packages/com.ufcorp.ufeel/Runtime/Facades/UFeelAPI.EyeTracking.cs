@@ -13,7 +13,7 @@ namespace UFeel
         {
             private const float InUseSeconds = 1.0F;
 
-            private static Task<CalibrationResult>? calibration;
+            private static Task<EyeTrackingCalibrationResult>? calibration;
             private static CancellationTokenSource? calibrationCancellation;
 
             public static EyeTrackingResult Current
@@ -79,7 +79,7 @@ namespace UFeel
 
             /// <summary>Saves the profile on success. Returns the running calibration if one is in progress.</summary>
             /// <exception cref="InvalidOperationException">Thrown when UFeel is unavailable.</exception>
-            public static Task<CalibrationResult> CalibrateAsync(ICalibrationPresenter presenter)
+            public static Task<EyeTrackingCalibrationResult> CalibrateAsync(IEyeTrackingCalibrationPresenter presenter)
             {
                 if (calibration != null && !calibration.IsCompleted)
                     return calibration;
@@ -88,17 +88,17 @@ namespace UFeel
                     throw new InvalidOperationException("UFeel is unavailable.");
 
                 calibrationCancellation = new CancellationTokenSource();
-                calibration = RunCalibrationAsync(new EyeTrackingCalibration(session, presenter, profiles), calibrationCancellation.Token);
+                calibration = RunCalibrationAsync(new EyeTrackingCalibration(session, presenter, eyeTrackingProfiles), calibrationCancellation.Token);
                 return calibration;
             }
 
             public static void CancelCalibration() => calibrationCancellation?.Cancel();
 
-            private static async Task<CalibrationResult> RunCalibrationAsync(EyeTrackingCalibration run, CancellationToken token)
+            private static async Task<EyeTrackingCalibrationResult> RunCalibrationAsync(EyeTrackingCalibration run, CancellationToken token)
             {
                 try
                 {
-                    CalibrationResult outcome = await run.RunAsync(token);
+                    EyeTrackingCalibrationResult outcome = await run.RunAsync(token);
                     if (outcome.Succeeded)
                         Calibrated = true;
 

@@ -23,10 +23,10 @@ namespace UFeel
 
         private readonly UFeelProcessor processor;
         private readonly IFrameObserver? frameObserver;
-        private readonly LatestFrameCapture capture = new LatestFrameCapture();
-        private readonly EyeTrackingSmoother smoother = new EyeTrackingSmoother();
-        private readonly ConcurrentQueue<IPendingCommand> commands = new ConcurrentQueue<IPendingCommand>();
-        private readonly AutoResetEvent wake = new AutoResetEvent(false);
+        private readonly LatestFrameCapture capture = new();
+        private readonly EyeTrackingSmoother smoother = new();
+        private readonly ConcurrentQueue<IPendingCommand> commands = new();
+        private readonly AutoResetEvent wake = new(false);
         private readonly Thread thread;
 
         private UFeelSnapshot latest = UFeelSnapshot.Initial;
@@ -69,12 +69,12 @@ namespace UFeel
 
         public UFeelSnapshot Latest => Volatile.Read(ref latest);
 
-        /// <summary>Features built into the native library, discovered while running.</summary>
+        /// <summary>Gets the features built into the native library, discovered while running.</summary>
         public DetectionType SupportedFeatures => (DetectionType)Volatile.Read(ref supported);
 
         public bool IsSpeechToTextEnabled => speechEnabled;
 
-        /// <summary>Null while the default microphone is used.</summary>
+        /// <summary>Gets the selected microphone identifier, null while the default microphone is used.</summary>
         public string? SelectedMicrophoneId => selectedMicrophoneId;
 
         public void Start() => thread.Start();
@@ -85,7 +85,7 @@ namespace UFeel
             if (command is null)
                 throw new ArgumentNullException(nameof(command));
 
-            var pending = new PendingCommand<T>(command);
+            PendingCommand<T> pending = new(command);
             if (stopping)
             {
                 pending.Cancel();
@@ -193,11 +193,13 @@ namespace UFeel
                     CheckMicrophones();
                     Step();
                 }
+#pragma warning disable CA1031, EPC12
                 catch (Exception exception)
                 {
                     Publish(exception.Message);
                     wake.WaitOne(ErrorRetryWait);
                 }
+#pragma warning restore CA1031, EPC12
             }
         }
 
@@ -209,12 +211,13 @@ namespace UFeel
 
         private void CheckMicrophones()
         {
-            if (MicrophonesChanged is null || Clock.Since(lastMicrophoneCheck) < MicrophoneCheckInterval)
+            Action? handler = MicrophonesChanged;
+            if (handler is null || Clock.Since(lastMicrophoneCheck) < MicrophoneCheckInterval)
                 return;
 
             lastMicrophoneCheck = Clock.Now;
             if (processor.HaveMicrophonesChanged())
-                MicrophonesChanged?.Invoke();
+                handler();
         }
 
         private void CancelPendingCommands()
@@ -247,7 +250,7 @@ namespace UFeel
             if (due != DetectionType.None)
             {
                 UFeelStatus status = Process(due);
-                Publish(status == UFeelStatus.Ok || status == UFeelStatus.UnsupportedFeature
+                Publish(status is UFeelStatus.Ok or UFeelStatus.UnsupportedFeature
                     ? CurrentFrameMessage(needsFrames)
                     : $"Detection failed ({status}), retrying on the next frame");
                 return;
@@ -391,7 +394,7 @@ namespace UFeel
 
         private void Publish(string? message)
         {
-            var snapshot = new UFeelSnapshot(
+            UFeelSnapshot snapshot = new(
                 ++sequence,
                 frameAvailable,
                 message,
@@ -406,17 +409,20 @@ namespace UFeel
 
         private interface IPendingCommand
         {
-            void Run(UFeelProcessor processor);
-            void Cancel();
+            public void Run(UFeelProcessor processor);
+            public void Cancel();
         }
 
         private sealed class PendingCommand<T> : IPendingCommand
         {
             private readonly Func<UFeelProcessor, T> command;
             private readonly TaskCompletionSource<T> completion =
-                new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
+                new(TaskCreationOptions.RunContinuationsAsynchronously);
 
-            public PendingCommand(Func<UFeelProcessor, T> command) => this.command = command;
+            public PendingCommand(Func<UFeelProcessor, T> command)
+            {
+                this.command = command;
+            }
 
             public Task<T> Task => completion.Task;
 
@@ -426,10 +432,12 @@ namespace UFeel
                 {
                     completion.TrySetResult(command(processor));
                 }
+#pragma warning disable CA1031
                 catch (Exception exception)
                 {
                     completion.TrySetException(exception);
                 }
+#pragma warning restore CA1031
             }
 
             public void Cancel() => completion.TrySetCanceled();

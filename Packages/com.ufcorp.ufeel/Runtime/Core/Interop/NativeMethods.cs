@@ -3,6 +3,8 @@
 using System;
 using System.Runtime.InteropServices;
 
+[assembly: DefaultDllImportSearchPaths(DllImportSearchPath.SafeDirectories)]
+
 namespace UFeel.Interop
 {
     // ! must match the exports of ufeel.h, in header order
@@ -68,6 +70,38 @@ namespace UFeel.Interop
 
         [DllImport(Library, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void ufeel_free_emotions_result(IntPtr result);
+
+        [DllImport(Library, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int ufeel_begin_emotion_calibration(IntPtr processor);
+
+        [DllImport(Library, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int ufeel_set_emotion_calibration_target(
+            IntPtr processor, [MarshalAs(UnmanagedType.LPUTF8Str)] string utf8Emotion);
+
+        [DllImport(Library, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int ufeel_finish_emotion_calibration(IntPtr processor);
+
+        [DllImport(Library, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int ufeel_cancel_emotion_calibration(IntPtr processor);
+
+        [DllImport(Library, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int ufeel_clear_emotion_calibration(IntPtr processor);
+
+        [DllImport(Library, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int ufeel_get_emotion_calibration_progress(
+            IntPtr processor, out NativeEmotionCalibrationProgress progress);
+
+        [DllImport(Library, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int ufeel_get_emotion_calibration_diagnostics(
+            IntPtr processor, out NativeEmotionCalibrationDiagnostics diagnostics);
+
+        [DllImport(Library, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int ufeel_save_emotion_calibration_profile(
+            IntPtr processor, [MarshalAs(UnmanagedType.LPUTF8Str)] string utf8Path);
+
+        [DllImport(Library, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int ufeel_load_emotion_calibration_profile(
+            IntPtr processor, [MarshalAs(UnmanagedType.LPUTF8Str)] string utf8Path);
 
         [DllImport(Library, CallingConvention = CallingConvention.Cdecl)]
         internal static extern int ufeel_update_eye_tracking(IntPtr processor);

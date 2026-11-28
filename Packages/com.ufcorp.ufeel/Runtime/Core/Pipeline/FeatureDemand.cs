@@ -19,7 +19,7 @@ namespace UFeel
                 lastRequest[i] = long.MinValue;
         }
 
-        public static FeatureDemand CreateDefault() => new FeatureDemand(TimeSpan.FromSeconds(2));
+        public static FeatureDemand CreateDefault() => new(TimeSpan.FromSeconds(2));
 
         public void Request(DetectionType features)
         {

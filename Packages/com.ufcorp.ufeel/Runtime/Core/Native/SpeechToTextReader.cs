@@ -8,14 +8,14 @@ namespace UFeel.Native
 {
     internal sealed class SpeechToTextReader : IDisposable
     {
-        private readonly NativeResultBuffer buffer = new NativeResultBuffer(
+        private readonly NativeResultBuffer buffer = new(
             NativeMethods.ufeel_create_speech_to_text_result,
             NativeMethods.ufeel_free_speech_to_text_result,
             "speech-to-text");
 
         public SpeechToTextResult Read(IntPtr processor)
         {
-            var status = (UFeelStatus)NativeMethods.ufeel_get_speech_to_text_result(processor, buffer.Pointer);
+            UFeelStatus status = (UFeelStatus)NativeMethods.ufeel_get_speech_to_text_result(processor, buffer.Pointer);
             UFeelException.ThrowUnless(status, UFeelStatus.NoSpeech, "retrieve the speech-to-text result");
 
             NativeSpeechToTextResult result = Marshal.PtrToStructure<NativeSpeechToTextResult>(buffer.Pointer);

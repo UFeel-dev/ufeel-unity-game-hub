@@ -23,6 +23,6 @@ namespace UFeel
         public uint Bpm { get; }
         public bool IsValid => Status == HeartRateStatus.Valid;
 
-        public static HeartRateResult Unavailable(HeartRateStatus status) => new HeartRateResult(status, 0);
+        public static HeartRateResult Unavailable(HeartRateStatus status) => new(status, 0);
     }
 }

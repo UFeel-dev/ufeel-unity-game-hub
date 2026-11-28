@@ -28,14 +28,14 @@ namespace UFeel
         private static readonly TimeSpan ProgressPoll = TimeSpan.FromMilliseconds(200);
 
         private readonly UFeelSession session;
-        private readonly ICalibrationPresenter presenter;
-        private readonly CalibrationProfileStore? profiles;
+        private readonly IEyeTrackingCalibrationPresenter presenter;
+        private readonly EyeTrackingCalibrationProfileStore? profiles;
         private int running;
 
         public EyeTrackingCalibration(
             UFeelSession session,
-            ICalibrationPresenter presenter,
-            CalibrationProfileStore? profiles = null)
+            IEyeTrackingCalibrationPresenter presenter,
+            EyeTrackingCalibrationProfileStore? profiles = null)
         {
             this.session = session ?? throw new ArgumentNullException(nameof(session));
             this.presenter = presenter ?? throw new ArgumentNullException(nameof(presenter));
@@ -45,7 +45,7 @@ namespace UFeel
         public bool IsRunning => Volatile.Read(ref running) != 0;
 
         /// <summary>Cancelling keeps the previously active model.</summary>
-        public async Task<CalibrationResult> RunAsync(CancellationToken token)
+        public async Task<EyeTrackingCalibrationResult> RunAsync(CancellationToken token)
         {
             if (Interlocked.Exchange(ref running, 1) != 0)
                 throw new InvalidOperationException("Eye-tracking calibration is already running.");
@@ -68,13 +68,13 @@ namespace UFeel
                 for (int i = 0; i < Targets.Length; i++)
                     await CollectTargetAsync(i, token);
 
-                CalibrationResult result = await session.ExecuteAsync(Finish);
+                EyeTrackingCalibrationResult result = await session.ExecuteAsync(Finish);
                 nativeActive = false;
                 return result;
             }
             catch (OperationCanceledException) when (token.IsCancellationRequested)
             {
-                return CalibrationResult.Cancel();
+                return EyeTrackingCalibrationResult.Cancel();
             }
             finally
             {
@@ -130,7 +130,7 @@ namespace UFeel
             long start = Clock.Now;
             while (true)
             {
-                CalibrationProgress progress = await session.ExecuteAsync(p => p.GetEyeTrackingCalibrationProgress());
+                EyeTrackingCalibrationProgress progress = await session.ExecuteAsync(p => p.GetEyeTrackingCalibrationProgress());
                 string samples = $"{progress.SamplesForCurrentTarget}/{progress.RequiredSamplesPerTarget} usable frames";
 
                 presenter.ShowStatus($"Calibration target {position}: {samples}");
@@ -144,10 +144,10 @@ namespace UFeel
             }
         }
 
-        private CalibrationResult Finish(UFeelProcessor processor)
+        private EyeTrackingCalibrationResult Finish(UFeelProcessor processor)
         {
             if (!processor.FinishEyeTrackingCalibration())
-                return CalibrationResult.Failure(processor.GetEyeTrackingCalibrationDiagnostics());
+                return EyeTrackingCalibrationResult.Failure(processor.GetEyeTrackingCalibrationDiagnostics());
 
             bool saved = false;
             if (profiles != null)
@@ -156,13 +156,13 @@ namespace UFeel
                 {
                     saved = profiles.Save(processor);
                 }
-                catch (Exception exception) when (exception is IOException || exception is UnauthorizedAccessException)
+                catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
                 {
                     saved = false;
                 }
             }
 
-            return CalibrationResult.Success(saved, profiles != null);
+            return EyeTrackingCalibrationResult.Success(saved, profiles != null);
         }
 
         private async Task CancelNativeCalibrationAsync()
@@ -171,7 +171,7 @@ namespace UFeel
             {
                 await session.ExecuteAsync(p => p.CancelEyeTrackingCalibration());
             }
-            catch (Exception exception) when (exception is UFeelException || exception is OperationCanceledException)
+            catch (Exception exception) when (exception is UFeelException or OperationCanceledException)
             {
             }
         }

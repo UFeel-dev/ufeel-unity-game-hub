@@ -28,7 +28,7 @@ namespace UFeel.Native
 
             int byteCount = (int)info.DataSize;
             if (buffer is null ||
-                buffer.Data.Length != byteCount ||
+                buffer.Buffer.Length != byteCount ||
                 buffer.Width != info.Width ||
                 buffer.Height != info.Height ||
                 buffer.Channels != info.Channels ||
@@ -37,7 +37,7 @@ namespace UFeel.Native
                 buffer = new FrameData(new byte[byteCount], info.Width, info.Height, info.Channels, info.Stride);
             }
 
-            var status = (UFeelStatus)NativeMethods.ufeel_copy_frame(processor, buffer.Data, byteCount);
+            UFeelStatus status = (UFeelStatus)NativeMethods.ufeel_copy_frame(processor, buffer.Buffer, byteCount);
             return status == UFeelStatus.Ok ? buffer : null;
         }
     }

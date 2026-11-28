@@ -16,7 +16,7 @@ namespace UFeel
         private readonly SpeechToTextReader speechToText;
         private readonly MicrophonesReader microphones;
         private readonly HeartRateReader heartRate;
-        private readonly FrameReader frames = new FrameReader();
+        private readonly FrameReader frames = new();
 
         private IntPtr handle;
 
@@ -63,17 +63,17 @@ namespace UFeel
                 throw new ArgumentNullException(nameof(frame));
 
             IntPtr processor = Handle;
-            GCHandle pinned = GCHandle.Alloc(frame.Data, GCHandleType.Pinned);
+            GCHandle pinned = GCHandle.Alloc(frame.Buffer, GCHandleType.Pinned);
             try
             {
-                var nativeFrame = new NativeFrame
+                NativeFrame nativeFrame = new()
                 {
                     Data = pinned.AddrOfPinnedObject(),
                     Width = frame.Width,
                     Height = frame.Height,
                     Channels = frame.Channels,
                     Stride = frame.Stride,
-                    DataSize = (ulong)frame.Data.Length,
+                    DataSize = (ulong)frame.Buffer.Length,
                 };
 
                 return (UFeelStatus)NativeMethods.ufeel_update_from_frame(processor, (int)detection, in nativeFrame);
@@ -135,7 +135,7 @@ namespace UFeel
         /// <summary>Null selects the default microphone. False when no listed microphone has this id.</summary>
         public bool SelectMicrophone(string? id)
         {
-            var status = (UFeelStatus)NativeMethods.ufeel_set_microphone(Handle, id);
+            UFeelStatus status = (UFeelStatus)NativeMethods.ufeel_set_microphone(Handle, id);
             if (status == UFeelStatus.InvalidArgument)
                 return false;
 
@@ -146,7 +146,7 @@ namespace UFeel
         /// <summary>True once after a microphone was added or removed, or the system default changed.</summary>
         public bool HaveMicrophonesChanged()
         {
-            var status = (UFeelStatus)NativeMethods.ufeel_get_microphones_changed(Handle, out int changed);
+            UFeelStatus status = (UFeelStatus)NativeMethods.ufeel_get_microphones_changed(Handle, out int changed);
             if (status == UFeelStatus.UnsupportedFeature)
                 return false;
 
@@ -172,7 +172,7 @@ namespace UFeel
         /// <summary>False when the samples were not good enough (see diagnostics).</summary>
         public bool FinishEyeTrackingCalibration()
         {
-            var status = (UFeelStatus)NativeMethods.ufeel_finish_eye_tracking_calibration(Handle);
+            UFeelStatus status = (UFeelStatus)NativeMethods.ufeel_finish_eye_tracking_calibration(Handle);
             if (status == UFeelStatus.EyeTrackingCalibrationFailed)
                 return false;
 
@@ -187,30 +187,30 @@ namespace UFeel
                 "cancel eye-tracking calibration");
         }
 
-        public CalibrationProgress GetEyeTrackingCalibrationProgress()
+        public EyeTrackingCalibrationProgress GetEyeTrackingCalibrationProgress()
         {
             UFeelException.ThrowIfFailed(
                 (UFeelStatus)NativeMethods.ufeel_get_eye_tracking_calibration_progress(
                     Handle, out NativeEyeTrackingCalibrationProgress progress),
                 "retrieve eye-tracking calibration progress");
 
-            return new CalibrationProgress(
+            return new EyeTrackingCalibrationProgress(
                 progress.TargetsWithEnoughSamples,
                 progress.TargetCount,
                 progress.SamplesForCurrentTarget,
                 progress.RequiredSamplesPerTarget);
         }
 
-        public CalibrationDiagnostics GetEyeTrackingCalibrationDiagnostics()
+        public EyeTrackingCalibrationDiagnostics GetEyeTrackingCalibrationDiagnostics()
         {
             UFeelException.ThrowIfFailed(
                 (UFeelStatus)NativeMethods.ufeel_get_eye_tracking_calibration_diagnostics(
                     Handle, out NativeEyeTrackingCalibrationDiagnostics d),
                 "retrieve eye-tracking calibration diagnostics");
 
-            return new CalibrationDiagnostics
+            return new EyeTrackingCalibrationDiagnostics
             {
-                FailureReason = (CalibrationFailureReason)d.FailureReason,
+                FailureReason = (EyeTrackingCalibrationFailureReason)d.FailureReason,
                 InputTargetCount = d.InputTargetCount,
                 TargetsWithEnoughRawSamples = d.TargetsWithEnoughRawSamples,
                 TargetsWithEnoughRetainedSamples = d.TargetsWithEnoughRetainedSamples,
@@ -235,8 +235,9 @@ namespace UFeel
         public bool SaveEyeTrackingCalibrationProfile(string path)
         {
             RequirePath(path, nameof(path));
-            return ProfileResult(
+            return TrueUnless(
                 (UFeelStatus)NativeMethods.ufeel_save_eye_tracking_calibration_profile(Handle, path),
+                UFeelStatus.EyeTrackingProfileFailed,
                 "save the eye-tracking calibration profile");
         }
 
@@ -244,12 +245,116 @@ namespace UFeel
         public bool LoadEyeTrackingCalibrationProfile(string path)
         {
             RequirePath(path, nameof(path));
-            return ProfileResult(
+            return TrueUnless(
                 (UFeelStatus)NativeMethods.ufeel_load_eye_tracking_calibration_profile(Handle, path),
+                UFeelStatus.EyeTrackingProfileFailed,
                 "load the eye-tracking calibration profile");
         }
 
+        /// <summary>False when the emotion model does not export the features calibration needs.</summary>
+        public bool BeginEmotionCalibration()
+        {
+            return TrueUnless(
+                (UFeelStatus)NativeMethods.ufeel_begin_emotion_calibration(Handle),
+                UFeelStatus.EmotionCalibrationFailed,
+                "begin emotion calibration");
+        }
+
+        public void SetEmotionCalibrationTarget(EmotionType emotion)
+        {
+            UFeelException.ThrowIfFailed(
+                (UFeelStatus)NativeMethods.ufeel_set_emotion_calibration_target(Handle, emotion.ToString()),
+                "set the emotion calibration target");
+        }
+
+        /// <summary>False when the recorded expressions were not good enough (see diagnostics).</summary>
+        public bool FinishEmotionCalibration()
+        {
+            return TrueUnless(
+                (UFeelStatus)NativeMethods.ufeel_finish_emotion_calibration(Handle),
+                UFeelStatus.EmotionCalibrationFailed,
+                "finish emotion calibration");
+        }
+
+        public void CancelEmotionCalibration()
+        {
+            UFeelException.ThrowIfFailed(
+                (UFeelStatus)NativeMethods.ufeel_cancel_emotion_calibration(Handle),
+                "cancel emotion calibration");
+        }
+
+        public void ClearEmotionCalibration()
+        {
+            UFeelException.ThrowIfFailed(
+                (UFeelStatus)NativeMethods.ufeel_clear_emotion_calibration(Handle),
+                "clear emotion calibration");
+        }
+
+        public EmotionCalibrationProgress GetEmotionCalibrationProgress()
+        {
+            UFeelException.ThrowIfFailed(
+                (UFeelStatus)NativeMethods.ufeel_get_emotion_calibration_progress(
+                    Handle, out NativeEmotionCalibrationProgress progress),
+                "retrieve emotion calibration progress");
+
+            return new EmotionCalibrationProgress(
+                progress.TargetsWithEnoughSamples,
+                progress.TargetCount,
+                progress.SamplesForCurrentTarget,
+                progress.RequiredSamplesPerTarget);
+        }
+
+        public EmotionCalibrationDiagnostics GetEmotionCalibrationDiagnostics()
+        {
+            UFeelException.ThrowIfFailed(
+                (UFeelStatus)NativeMethods.ufeel_get_emotion_calibration_diagnostics(
+                    Handle, out NativeEmotionCalibrationDiagnostics d),
+                "retrieve emotion calibration diagnostics");
+
+            return new EmotionCalibrationDiagnostics
+            {
+                FailureReason = (EmotionCalibrationFailureReason)d.FailureReason,
+                TargetCount = d.TargetCount,
+                TargetsWithEnoughSamples = d.TargetsWithEnoughSamples,
+                MinimumSamples = d.MinimumSamples,
+                MaximumSamples = d.MaximumSamples,
+                MeanAccuracy = d.MeanAccuracy,
+                WeakestTarget = d.WeakestTarget >= 0 ? d.WeakestTarget : null,
+                WeakestTargetAccuracy = d.WeakestTargetAccuracy,
+            };
+        }
+
+        public bool SaveEmotionCalibrationProfile(string path)
+        {
+            RequirePath(path, nameof(path));
+            return TrueUnless(
+                (UFeelStatus)NativeMethods.ufeel_save_emotion_calibration_profile(Handle, path),
+                UFeelStatus.EmotionProfileFailed,
+                "save the emotion calibration profile");
+        }
+
+        /// <summary>False when the file is missing, invalid or from another emotion model.</summary>
+        public bool LoadEmotionCalibrationProfile(string path)
+        {
+            RequirePath(path, nameof(path));
+            return TrueUnless(
+                (UFeelStatus)NativeMethods.ufeel_load_emotion_calibration_profile(Handle, path),
+                UFeelStatus.EmotionProfileFailed,
+                "load the emotion calibration profile");
+        }
+
+        ~UFeelProcessor()
+        {
+            Release();
+        }
+
         public void Dispose()
+        {
+            Release();
+            GC.SuppressFinalize(this);
+        }
+
+        private void Release()
         {
             heartRate?.Dispose();
             microphones?.Dispose();
@@ -275,9 +380,9 @@ namespace UFeel
             }
         }
 
-        private static bool ProfileResult(UFeelStatus status, string operation)
+        private static bool TrueUnless(UFeelStatus status, UFeelStatus failure, string operation)
         {
-            if (status == UFeelStatus.EyeTrackingProfileFailed)
+            if (status == failure)
                 return false;
 
             UFeelException.ThrowIfFailed(status, operation);

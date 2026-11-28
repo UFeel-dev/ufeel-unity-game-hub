@@ -4,7 +4,7 @@ namespace UFeel
 {
     public sealed class UFeelSnapshot
     {
-        public static readonly UFeelSnapshot Initial = new UFeelSnapshot(
+        public static readonly UFeelSnapshot Initial = new(
             sequence: 0,
             frameAvailable: false,
             message: null,
@@ -35,12 +35,12 @@ namespace UFeel
 
         public bool FrameAvailable { get; }
 
-        /// <summary>Null when the last step succeeded.</summary>
+        /// <summary>Gets the status message, null when the last step succeeded.</summary>
         public string? Message { get; }
 
         public EmotionResult Emotions { get; }
 
-        /// <summary>Smoothed estimate.</summary>
+        /// <summary>Gets the smoothed eye tracking estimate.</summary>
         public EyeTrackingResult EyeTracking { get; }
 
         public SpeechToTextResult SpeechToText { get; }

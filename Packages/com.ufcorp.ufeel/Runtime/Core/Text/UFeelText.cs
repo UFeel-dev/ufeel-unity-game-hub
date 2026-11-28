@@ -16,8 +16,10 @@ namespace UFeel
                 return result.Status switch
                 {
                     EmotionStatus.FaceUnavailable => "Face not detected",
+                    EmotionStatus.NoEmotion => "Face detected, no clear emotion",
                     EmotionStatus.FrameUnavailable => "Camera frame unavailable",
                     EmotionStatus.UnsupportedFeature => "Emotion detection is not built in",
+                    EmotionStatus.Calibrating => "Emotion calibration in progress",
                     _ => "Emotion data unavailable",
                 };
             }
@@ -73,7 +75,7 @@ namespace UFeel
             if (result.AreEyesClosed)
                 return "Eyes closed";
 
-            var directions = new List<string>(2);
+            List<string> directions = new(2);
             if (result.Directions.HasDirection(EyeTrackingDirection.Left))
                 directions.Add("left");
             if (result.Directions.HasDirection(EyeTrackingDirection.Right))
@@ -135,14 +137,14 @@ namespace UFeel
             };
         }
 
-        public static string CalibrationFailure(CalibrationDiagnostics diagnostics)
+        public static string EyeTrackingCalibrationFailure(EyeTrackingCalibrationDiagnostics diagnostics)
         {
             if (diagnostics is null)
                 throw new ArgumentNullException(nameof(diagnostics));
 
-            var lines = new List<string>
+            List<string> lines = new()
             {
-                "Failure: " + FailureReason(diagnostics.FailureReason),
+                "Failure: " + EyeTrackingCalibrationFailure(diagnostics.FailureReason),
                 $"Valid targets: {diagnostics.ValidTargetCount}/{diagnostics.InputTargetCount}",
                 $"Targets with enough raw samples: {diagnostics.TargetsWithEnoughRawSamples}",
                 $"Targets with enough retained samples: {diagnostics.TargetsWithEnoughRetainedSamples}",
@@ -191,32 +193,95 @@ namespace UFeel
             return string.Join(Environment.NewLine, lines);
         }
 
-        public static string FailureReason(CalibrationFailureReason reason)
+        public static string EyeTrackingCalibrationFailure(EyeTrackingCalibrationFailureReason reason)
         {
             return reason switch
             {
-                CalibrationFailureReason.NotCalibrating =>
-                    "Calibration was not active. Start a new calibration.",
-                CalibrationFailureReason.TooFewValidTargets =>
+                EyeTrackingCalibrationFailureReason.NotCalibrating =>
+                    "Eye-tracking calibration was not active. Start a new eye-tracking calibration.",
+                EyeTrackingCalibrationFailureReason.TooFewValidTargets =>
                     "Not enough valid calibration targets were collected.",
-                CalibrationFailureReason.InsufficientSamples =>
+                EyeTrackingCalibrationFailureReason.InsufficientSamples =>
                     "There were not enough usable samples. Keep your head steady and look directly at each target.",
-                CalibrationFailureReason.InsufficientHorizontalCoverage =>
+                EyeTrackingCalibrationFailureReason.InsufficientHorizontalCoverage =>
                     "The calibration targets did not cover enough of the screen horizontally.",
-                CalibrationFailureReason.InsufficientVerticalCoverage =>
+                EyeTrackingCalibrationFailureReason.InsufficientVerticalCoverage =>
                     "The calibration targets did not cover enough of the screen vertically.",
-                CalibrationFailureReason.InsufficientSpatialGridCoverage =>
+                EyeTrackingCalibrationFailureReason.InsufficientSpatialGridCoverage =>
                     "The targets were not distributed sufficiently across the screen.",
-                CalibrationFailureReason.RegressionFailed =>
+                EyeTrackingCalibrationFailureReason.RegressionFailed =>
                     "The calibration model could not be fitted. Repeat calibration.",
-                CalibrationFailureReason.CrossValidationMeanErrorExceeded =>
+                EyeTrackingCalibrationFailureReason.CrossValidationMeanErrorExceeded =>
                     "Average calibration error was too high. Repeat calibration while looking steadily at each target.",
-                CalibrationFailureReason.CrossValidationMaxErrorExceeded =>
+                EyeTrackingCalibrationFailureReason.CrossValidationMaxErrorExceeded =>
                     "At least one target had excessive prediction error. Repeat calibration and focus on each target.",
-                CalibrationFailureReason.InvalidCrossValidationResult =>
+                EyeTrackingCalibrationFailureReason.InvalidCrossValidationResult =>
                     "Calibration validation produced an invalid result. Repeat calibration.",
-                _ => "Calibration failed without a specific failure reason.",
+                _ => "Eye-tracking calibration failed without a specific failure reason.",
             };
+        }
+
+        public static string EmotionCalibrationFailure(EmotionCalibrationDiagnostics diagnostics)
+        {
+            if (diagnostics is null)
+                throw new ArgumentNullException(nameof(diagnostics));
+
+            List<string> lines = new()
+            {
+                "Failure: " + EmotionCalibrationFailure(diagnostics.FailureReason),
+                $"Emotions with enough samples: {diagnostics.TargetsWithEnoughSamples}/{diagnostics.TargetCount}",
+            };
+
+            if (diagnostics.MinimumSamples > 0 || diagnostics.MaximumSamples > 0)
+                lines.Add($"Samples per emotion: {diagnostics.MinimumSamples}-{diagnostics.MaximumSamples}");
+
+            if (diagnostics.MeanAccuracy > 0F)
+                lines.Add(string.Format(CultureInfo.InvariantCulture, "Mean accuracy: {0:F2}", diagnostics.MeanAccuracy));
+
+            return string.Join(Environment.NewLine, lines);
+        }
+
+        public static string EmotionCalibrationFailure(EmotionCalibrationFailureReason reason)
+        {
+            return reason switch
+            {
+                EmotionCalibrationFailureReason.NotCalibrating =>
+                    "Emotion calibration was not active. Start a new emotion calibration.",
+                EmotionCalibrationFailureReason.UnsupportedModel =>
+                    "This emotion model cannot be calibrated. Update the UFeel emotion model.",
+                EmotionCalibrationFailureReason.MissingEmotions =>
+                    "Some emotions were not recorded. Repeat emotion calibration.",
+                EmotionCalibrationFailureReason.InsufficientSamples =>
+                    "Your face was not visible long enough. Stay in front of the camera and repeat emotion calibration.",
+                EmotionCalibrationFailureReason.SolveFailed =>
+                    "The emotion calibration could not be fitted. Repeat emotion calibration.",
+                EmotionCalibrationFailureReason.IndistinctExpressions =>
+                    "The expressions were too similar to tell apart. Repeat emotion calibration with clearer expressions.",
+                _ => "Emotion calibration failed without a specific failure reason.",
+            };
+        }
+
+        public static string EmotionCalibrationTip(EmotionType emotion)
+        {
+            return emotion switch
+            {
+                EmotionType.Angry => "Look angry: lower and pull your eyebrows together, glare and press your lips",
+                EmotionType.Contemptuous => "Look contemptuous: raise one corner of your mouth",
+                EmotionType.Disgusted => "Look disgusted: wrinkle your nose and raise your upper lip",
+                EmotionType.Fearful =>
+                    "Look fearful: raise and pull your eyebrows together, open your eyes wide and stretch your lips",
+                EmotionType.Happy => "Look happy: smile",
+                EmotionType.Neutral => "Look neutral: relax your face",
+                EmotionType.Sad =>
+                    "Look sad: lower the corners of your mouth and raise the inner ends of your eyebrows",
+                EmotionType.Surprised => "Look surprised: raise your eyebrows, open your eyes and your mouth",
+                _ => "Act the emotion",
+            };
+        }
+
+        public static string EmotionCalibrationHint(EmotionType emotion)
+        {
+            return $"{emotion} was hard to tell apart: recalibrate with a clearer expression";
         }
     }
 }

@@ -10,7 +10,7 @@ namespace UFeel
     /// </summary>
     public sealed class FeatureScheduler
     {
-        private readonly object sync = new object();
+        private readonly object sync = new();
         private readonly TimeSpan[] intervals;
         private readonly TimeSpan?[] overrides = new TimeSpan?[DetectionTypes.Each.Length];
         private readonly long?[] lastRun = new long?[DetectionTypes.Each.Length];

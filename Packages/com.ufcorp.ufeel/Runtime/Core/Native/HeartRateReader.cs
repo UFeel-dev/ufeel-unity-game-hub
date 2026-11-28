@@ -8,7 +8,7 @@ namespace UFeel.Native
 {
     internal sealed class HeartRateReader : IDisposable
     {
-        private readonly NativeResultBuffer buffer = new NativeResultBuffer(
+        private readonly NativeResultBuffer buffer = new(
             NativeMethods.ufeel_create_heart_rate_result,
             NativeMethods.ufeel_free_heart_rate_result,
             "heart-rate");
@@ -17,7 +17,7 @@ namespace UFeel.Native
         {
             Marshal.StructureToPtr(default(NativeHeartRateResult), buffer.Pointer, false);
 
-            var status = (UFeelStatus)NativeMethods.ufeel_get_heart_rate_result(processor, buffer.Pointer);
+            UFeelStatus status = (UFeelStatus)NativeMethods.ufeel_get_heart_rate_result(processor, buffer.Pointer);
             UFeelException.ThrowUnless(status, UFeelStatus.NoHeartRate, "retrieve the heart rate");
 
             NativeHeartRateResult result = Marshal.PtrToStructure<NativeHeartRateResult>(buffer.Pointer);

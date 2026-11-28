@@ -12,8 +12,10 @@ Engine-agnostic C# binding for `libufeel_wrapper`. Limited to C# 9 / netstandard
 
 ```csharp
 var processor = new UFeelProcessor(UFeelPackageLayout.FromRoot(packageDirectory));
-var profiles = CalibrationProfileStore.CreateDefault();
-profiles.Load(processor); // before Start()
+var eyeTrackingProfiles = EyeTrackingCalibrationProfileStore.CreateDefault();
+var emotionProfiles = EmotionCalibrationProfileStore.CreateDefault();
+eyeTrackingProfiles.Load(processor); // before Start()
+emotionProfiles.Load(processor); // Invalid after a model update
 
 var session = new UFeelSession(processor); // owns and disposes the processor
 session.Start();
@@ -25,7 +27,10 @@ IReadOnlyList<MicrophoneDevice> microphones = await session.GetMicrophonesAsync(
 await session.SelectMicrophoneAsync(microphones[0].Id); // null: default microphone
 session.MicrophonesChanged += RefreshMicrophoneList; // plugged, unplugged or new system default
 await session.SetSpeechToTextEnabledAsync(true);
-await new EyeTrackingCalibration(session, presenter, profiles).RunAsync(token);
+await new EyeTrackingCalibration(session, eyeTrackingPresenter, eyeTrackingProfiles).RunAsync(token);
+await new EmotionCalibration(session, emotionPresenter, emotionProfiles).RunAsync(token); // about one minute
+await session.ExecuteAsync(p => p.ClearEmotionCalibration()); // back to the general model
+bool profileRemoved = emotionProfiles.Remove(); // false when a profile file could not be deleted
 
 session.Dispose();
 ```
@@ -38,8 +43,9 @@ session.Dispose();
 | `UFeelSession` | Background thread running the processor. Publishes `Latest` (immutable, lock-free) and runs commands through `ExecuteAsync`. |
 | `FeatureDemand` | Selects the features that run: pinned, or requested within the last 2 s. |
 | `FeatureScheduler` | Per-feature intervals, one image feature per frame. |
-| `EyeTrackingCalibration` | Guided calibration through an `ICalibrationPresenter`. |
-| `CalibrationProfileStore` | Profile file, shared by every host by default. |
+| `EyeTrackingCalibration` | Guided eye-tracking calibration through an `IEyeTrackingCalibrationPresenter`. |
+| `EmotionCalibration` | Guided per-player emotion calibration through an `IEmotionCalibrationPresenter`. |
+| `EyeTrackingCalibrationProfileStore`, `EmotionCalibrationProfileStore` | Calibration profile files, shared by every host by default. |
 | `RuleSet` | Condition to action rules, evaluated on the host's main thread. |
 | `UFeelText` | Display strings for results. |
 

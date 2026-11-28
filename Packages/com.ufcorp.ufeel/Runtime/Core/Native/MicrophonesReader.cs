@@ -11,14 +11,14 @@ namespace UFeel.Native
     {
         private static readonly int ItemSize = Marshal.SizeOf<NativeMicrophone>();
 
-        private readonly NativeResultBuffer buffer = new NativeResultBuffer(
+        private readonly NativeResultBuffer buffer = new(
             NativeMethods.ufeel_create_microphones_result,
             NativeMethods.ufeel_free_microphones_result,
             "microphones");
 
         public IReadOnlyList<MicrophoneDevice> Read(IntPtr processor)
         {
-            var status = (UFeelStatus)NativeMethods.ufeel_get_microphones_result(processor, buffer.Pointer);
+            UFeelStatus status = (UFeelStatus)NativeMethods.ufeel_get_microphones_result(processor, buffer.Pointer);
             if (status == UFeelStatus.UnsupportedFeature)
                 return Array.Empty<MicrophoneDevice>();
 
@@ -29,7 +29,7 @@ namespace UFeel.Native
             if (result.Count < 0 || (result.Count > 0 && result.Microphones == IntPtr.Zero))
                 throw new InvalidOperationException("The native microphones result has an invalid buffer.");
 
-            var microphones = new MicrophoneDevice[result.Count];
+            MicrophoneDevice[] microphones = new MicrophoneDevice[result.Count];
             for (int i = 0; i < result.Count; i++)
             {
                 NativeMicrophone item = Marshal.PtrToStructure<NativeMicrophone>(

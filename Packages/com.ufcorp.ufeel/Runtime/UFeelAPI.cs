@@ -13,7 +13,8 @@ namespace UFeel
 
         private static UFeelAPI? instance;
         private static UFeelSession? session;
-        private static CalibrationProfileStore? profiles;
+        private static EyeTrackingCalibrationProfileStore? eyeTrackingProfiles;
+        private static EmotionCalibrationProfileStore? emotionProfiles;
         private static UFeelSnapshot frameSnapshot = UFeelSnapshot.Initial;
         private static int frameSnapshotFrame = -1;
 
@@ -104,11 +105,16 @@ namespace UFeel
             UFeelProcessor processor = new(UFeelPackageLayout.FromRoot(UFeelPackagePaths.NativeRoot));
             try
             {
-                profiles = CalibrationProfileStore.CreateDefault();
-                ProfileLoadResult profile = profiles.Load(processor);
-                EyeTracking.Calibrated = profile == ProfileLoadResult.Loaded;
+                eyeTrackingProfiles = EyeTrackingCalibrationProfileStore.CreateDefault();
+                emotionProfiles = EmotionCalibrationProfileStore.CreateDefault();
+                ProfileLoadResult eyeTrackingProfile = eyeTrackingProfiles.Load(processor);
+                ProfileLoadResult emotionProfile = emotionProfiles.Load(processor);
+                EyeTracking.Calibrated = eyeTrackingProfile == ProfileLoadResult.Loaded;
+                Emotion.Calibrated = emotionProfile == ProfileLoadResult.Loaded;
                 processor.SetEyeTrackingHeadWeight(EyeTracking.HeadWeight);
-                Debug.Log($"UFeel started (eye-tracking profile: {profile}, {profiles.Path})");
+                Debug.Log(
+                    $"UFeel started (eye-tracking profile: {eyeTrackingProfile}, {eyeTrackingProfiles.Path}; " +
+                    $"emotion profile: {emotionProfile}, {emotionProfiles.Path})");
 
                 session = new UFeelSession(processor, frameObserver: FrameCapture);
             }
@@ -147,6 +153,7 @@ namespace UFeel
         private static void Shutdown()
         {
             EyeTracking.CancelCalibration();
+            Emotion.CancelCalibration();
             UFeelSession? running = session;
             session = null;
             frameSnapshotFrame = -1;

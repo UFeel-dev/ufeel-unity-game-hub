@@ -24,10 +24,10 @@ namespace UFeel
 
         public string RootDirectory { get; }
 
-        /// <summary>The root itself when the package has no models/ (e.g. heart-rate only).</summary>
+        /// <summary>Gets the models/ directory, or the root itself when the package has none (e.g. heart-rate only).</summary>
         public string ModelDirectory { get; }
 
-        /// <summary>Falls back to <see cref="ModelDirectory"/>: the native side needs a non-empty path even without speech. (note: this is a workaround and will be removed in the future)</summary>
+        /// <summary>Gets the speech model path, falling back to <see cref="ModelDirectory"/>: the native side needs a non-empty path even without speech. (note: this is a workaround and will be removed in the future)</summary>
         public string SpeechModelPath { get; }
 
         public static UFeelPackageLayout FromRoot(string rootDirectory, SpeechLanguage language = SpeechLanguage.French)

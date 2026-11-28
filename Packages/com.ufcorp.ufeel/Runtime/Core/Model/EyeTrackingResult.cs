@@ -4,53 +4,6 @@ using System;
 
 namespace UFeel
 {
-    public enum EyeTrackingStatus
-    {
-        NotCalibrated = 0,
-        FaceUnavailable = 1,
-        LowQuality = 3,
-        Calibrating = 4,
-        Valid = 5,
-        Disabled = 6,
-        FrameUnavailable = 7,
-        InvalidProcessor = 8,
-        InternalError = 9,
-    }
-
-    [Flags]
-    public enum EyeTrackingDirection
-    {
-        None = 0,
-        Left = 1 << 0,
-        Right = 1 << 1,
-        Up = 1 << 2,
-        Down = 1 << 3,
-        Center = 1 << 4,
-    }
-
-    [Flags]
-    public enum EyeState
-    {
-        None = 0,
-        Tracked = 1 << 0,
-        LeftClosed = 1 << 1,
-        RightClosed = 1 << 2,
-    }
-
-    public static class EyeTrackingDirectionExtensions
-    {
-        /// <summary><see cref="Enum.HasFlag"/> boxes on Mono (Unity).</summary>
-        public static bool HasDirection(this EyeTrackingDirection value, EyeTrackingDirection direction)
-        {
-            return (value & direction) != EyeTrackingDirection.None;
-        }
-
-        public static bool HasState(this EyeState value, EyeState state)
-        {
-            return (value & state) == state;
-        }
-    }
-
     /// <summary>Coordinates are normalized screen positions (0..1, origin top-left).</summary>
     public readonly struct EyeTrackingResult
     {
@@ -123,8 +76,67 @@ namespace UFeel
         public EyeTrackingResult WithEstimate(float x, float y)
         {
             return new EyeTrackingResult(
-                Status, x, y, RecordedX, RecordedY, Confidence, Directions,
-                GazeX, GazeY, LeftOpenness, RightOpenness, EyeState, BlinkCount, EyesClosedSeconds);
+                Status,
+                x,
+                y,
+                RecordedX,
+                RecordedY,
+                Confidence,
+                Directions,
+                GazeX,
+                GazeY,
+                LeftOpenness,
+                RightOpenness,
+                EyeState,
+                BlinkCount,
+                EyesClosedSeconds);
+        }
+    }
+
+    public enum EyeTrackingStatus
+    {
+        NotCalibrated = 0,
+        FaceUnavailable = 1,
+        LowQuality = 3,
+        Calibrating = 4,
+        Valid = 5,
+        Disabled = 6,
+        FrameUnavailable = 7,
+        InvalidProcessor = 8,
+        InternalError = 9,
+    }
+
+    [Flags]
+    public enum EyeTrackingDirection
+    {
+        None = 0,
+        Left = 1 << 0,
+        Right = 1 << 1,
+        Up = 1 << 2,
+        Down = 1 << 3,
+        Center = 1 << 4,
+    }
+
+    [Flags]
+    public enum EyeState
+    {
+        None = 0,
+        Tracked = 1 << 0,
+        LeftClosed = 1 << 1,
+        RightClosed = 1 << 2,
+    }
+
+    public static class EyeTrackingDirectionExtensions
+    {
+        /// <summary><see cref="Enum.HasFlag"/> boxes on Mono (Unity).</summary>
+        public static bool HasDirection(this EyeTrackingDirection value, EyeTrackingDirection direction)
+        {
+            return (value & direction) != EyeTrackingDirection.None;
+        }
+
+        public static bool HasState(this EyeState value, EyeState state)
+        {
+            return (value & state) == state;
         }
     }
 }
