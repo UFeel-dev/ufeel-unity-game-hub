@@ -5,10 +5,6 @@ namespace GameHub.Common
 {
     public sealed class UFeelScreens : MonoBehaviour
     {
-        private const KeyCode CameraKey = KeyCode.F1;
-        private const KeyCode CalibrationKey = KeyCode.F8;
-        private const KeyCode MicrophoneKey = KeyCode.F9;
-
         private const float ToastOffset = 40f;
 
         private static UFeelScreens? instance;
@@ -17,13 +13,34 @@ namespace GameHub.Common
 
         private CameraPanel cameraPanel;
         private MicrophonePanel microphone;
-        private CalibrationScreen calibration;
-        private Toast toast;
+        private EyeTrackingCalibrationScreen eyeTrackingCalibration;
+        private EmotionCalibrationScreen emotionCalibration;
+        private CalibrationToast toast;
+
+        private static bool IsCalibrating => UFeelAPI.EyeTracking.IsCalibrating || UFeelAPI.Emotion.IsCalibrating;
 
         public static void ShowMicrophone()
         {
             if (instance != null)
                 instance.microphone.Show();
+        }
+
+        public static void BeginEyeTrackingCalibration()
+        {
+            if (instance != null && !IsCalibrating)
+                instance.eyeTrackingCalibration.Begin();
+        }
+
+        public static void BeginEmotionCalibration()
+        {
+            if (instance != null && !IsCalibrating)
+                instance.emotionCalibration.Begin();
+        }
+
+        public static void ResetEmotionCalibration()
+        {
+            if (instance != null)
+                instance.emotionCalibration.Reset();
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -48,8 +65,9 @@ namespace GameHub.Common
             RectTransform canvas = UiCanvas.Create("UFeelScreens", transform, UiCanvas.SystemOrder);
             cameraPanel = new CameraPanel(kit, canvas);
             microphone = new MicrophonePanel(kit, canvas);
-            toast = new Toast(kit, canvas, new Vector2(0.5f, 1f), ToastOffset);
-            calibration = new CalibrationScreen(kit, canvas, toast);
+            toast = new CalibrationToast(new Toast(kit, canvas, new Vector2(0.5f, 1f), ToastOffset));
+            eyeTrackingCalibration = new EyeTrackingCalibrationScreen(kit, canvas, toast);
+            emotionCalibration = new EmotionCalibrationScreen(kit, canvas, toast);
         }
 
         private void OnEnable()
@@ -77,17 +95,21 @@ namespace GameHub.Common
             float deltaTime = Time.unscaledDeltaTime;
             mouse.Tick();
 
-            if (LayoutInput.GetKeyDown(CameraKey))
+            if (KeyBinds.Down(KeyAction.CameraPanel))
                 cameraPanel.Toggle();
-            if (!UFeelAPI.EyeTracking.IsCalibrating && LayoutInput.GetKeyDown(CalibrationKey))
-                calibration.Begin();
-            else if (!UFeelAPI.EyeTracking.IsCalibrating && LayoutInput.GetKeyDown(MicrophoneKey))
+            if (KeyBinds.Down(KeyAction.EmotionCalibration))
+                BeginEmotionCalibration();
+            else if (KeyBinds.Down(KeyAction.EyeTrackingCalibration))
+                BeginEyeTrackingCalibration();
+            else if (!IsCalibrating && KeyBinds.Down(KeyAction.Microphone))
                 microphone.Toggle();
 
+            UFeelAPI.CameraFeed.IsCapturing = cameraPanel.IsVisible || emotionCalibration.IsShown;
             cameraPanel.Tick();
             microphone.Tick(deltaTime, mouse);
-            calibration.Tick(deltaTime);
-            toast.Tick(deltaTime);
+            eyeTrackingCalibration.Tick(deltaTime);
+            emotionCalibration.Tick();
+            toast.Tick(deltaTime, eyeTrackingCalibration.Hint);
         }
 
         private void OnMicrophonesChanged()

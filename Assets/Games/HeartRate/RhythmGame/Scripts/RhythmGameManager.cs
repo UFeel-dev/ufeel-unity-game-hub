@@ -49,7 +49,7 @@ namespace GameHub.RhythmGame
         private SongSelectController songSelect;
         private OptionsController options;
         private KeyBindingController keys;
-        private CalibrationController calibration;
+        private OffsetCalibrationController offsetCalibration;
         private HudLayoutController hudLayout;
         private FlatlineSequence flatline;
         private GameSession? session;
@@ -73,7 +73,7 @@ namespace GameHub.RhythmGame
             songSelect = new SongSelectController(library != null ? library.Songs : Array.Empty<RhythmSong>(), context, preview, sets);
             options = new OptionsController(context);
             keys = new KeyBindingController(context);
-            calibration = new CalibrationController(context, new[] { CreateSource("Click A", AudioChannel.Effects), CreateSource("Click B", AudioChannel.Effects) }, clickClip);
+            offsetCalibration = new OffsetCalibrationController(context, new[] { CreateSource("Click A", AudioChannel.Effects), CreateSource("Click B", AudioChannel.Effects) }, clickClip);
             hudLayout = new HudLayoutController(context);
             flatline = new FlatlineSequence(context);
         }
@@ -114,8 +114,8 @@ namespace GameHub.RhythmGame
                 case RhythmState.Keys:
                     Route(keys.Tick());
                     break;
-                case RhythmState.Calibration:
-                    Route(calibration.Tick());
+                case RhythmState.OffsetCalibration:
+                    Route(offsetCalibration.Tick());
                     break;
                 case RhythmState.HudLayout:
                     Route(hudLayout.Tick(deltaTime));
@@ -180,11 +180,6 @@ namespace GameHub.RhythmGame
                     songSelect.Leave();
                     StartSession(songSelect.ChosenSong, sets[songSelect.ChosenSong], songSelect.ChosenSettings);
                     break;
-                case Navigation.Hub:
-                    songSelect.Leave();
-                    preview.Stop();
-                    GameFlow.ReturnToHub();
-                    break;
                 case Navigation.Options:
                     LeaveCurrent();
                     options.Enter();
@@ -195,11 +190,11 @@ namespace GameHub.RhythmGame
                     keys.Enter();
                     state = RhythmState.Keys;
                     break;
-                case Navigation.Calibration:
+                case Navigation.OffsetCalibration:
                     LeaveCurrent();
                     preview.Stop();
-                    calibration.Enter();
-                    state = RhythmState.Calibration;
+                    offsetCalibration.Enter();
+                    state = RhythmState.OffsetCalibration;
                     break;
                 case Navigation.HudLayout:
                     LeaveCurrent();
@@ -239,8 +234,8 @@ namespace GameHub.RhythmGame
                 case RhythmState.Keys:
                     keys.Leave();
                     break;
-                case RhythmState.Calibration:
-                    calibration.Leave();
+                case RhythmState.OffsetCalibration:
+                    offsetCalibration.Leave();
                     break;
                 case RhythmState.HudLayout:
                     hudLayout.Leave();

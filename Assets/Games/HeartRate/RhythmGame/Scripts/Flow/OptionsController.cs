@@ -11,7 +11,7 @@ namespace GameHub.RhythmGame
         private const int KeysRow = 0;
         private const int ScrollRow = 1;
         private const int OffsetRow = 2;
-        private const int CalibrateRow = 3;
+        private const int CalibrateOffsetRow = 3;
         private const int StyleRow = 4;
         private const int ShowKeysRow = 5;
         private const int LayoutRow = 6;
@@ -99,9 +99,9 @@ namespace GameHub.RhythmGame
                 case KeysRow:
                     context.Sounds.Confirm();
                     return Navigation.Keys;
-                case CalibrateRow:
+                case CalibrateOffsetRow:
                     context.Sounds.Confirm();
-                    return Navigation.Calibration;
+                    return Navigation.OffsetCalibration;
                 case LayoutRow:
                     context.Sounds.Confirm();
                     return Navigation.HudLayout;

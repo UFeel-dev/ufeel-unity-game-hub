@@ -13,17 +13,6 @@ namespace GameHub.Hub
 
         private static readonly KeyHint[] Hints = { new("Continue", ContinueAction, "Enter") };
 
-        private static readonly (string Keys, string Action)[] Controls =
-        {
-            ("WASD / ZQSD", "Move"),
-            ("Mouse", "Look around"),
-            ("Tab", "Use the room menu"),
-            ("E", "Enter the door in front of you"),
-            ("M", "Pause and settings"),
-            ("F8", "Calibrate eye tracking"),
-            ("F1", "Camera and sensor data"),
-        };
-
         private readonly RectTransform canvas;
         private readonly Scrim scrim;
         private readonly KeyBar keys;
@@ -41,17 +30,18 @@ namespace GameHub.Hub
             UiLayout.Place(title.rectTransform, center, new Vector2(0f, 240f), new Vector2(Width, 96f));
 
             TextMeshProUGUI subtitle = kit.NewText("Subtitle", canvas, Theme.Heading, false, TextAlignmentOptions.Center, Theme.TextDim);
-            subtitle.text = "Pick a room in the menu, walk to its door and press E.";
+            subtitle.text = $"Pick a room in the menu, walk to its door and press {KeyBinds.Label(KeyAction.Interact)}.";
             UiLayout.Place(subtitle.rectTransform, center, new Vector2(0f, 160f), new Vector2(Width, 48f));
 
-            for (int i = 0; i < Controls.Length; i++)
+            (string Keys, string Action)[] controls = Controls();
+            for (int i = 0; i < controls.Length; i++)
             {
                 float y = 70f - (i * 48f);
                 TextMeshProUGUI key = kit.NewText("Key", canvas, Theme.Body, true, TextAlignmentOptions.MidlineRight, Theme.Accent);
-                key.text = Controls[i].Keys;
+                key.text = controls[i].Keys;
                 UiLayout.Place(key.rectTransform, center, new Vector2(1f, 0.5f), new Vector2(-20f, y), new Vector2(400f, 44f));
                 TextMeshProUGUI action = kit.NewText("Action", canvas, Theme.Body, false, TextAlignmentOptions.MidlineLeft, Theme.Text);
-                action.text = Controls[i].Action;
+                action.text = controls[i].Action;
                 UiLayout.Place(action.rectTransform, center, new Vector2(0f, 0.5f), new Vector2(20f, y), new Vector2(500f, 44f));
             }
 
@@ -76,6 +66,7 @@ namespace GameHub.Hub
             if (!confirmed)
                 return false;
 
+            GameSounds.Play(SoundCue.MenuConfirm);
             Close();
             PlayerPrefs.SetInt(SeenKey, 1);
             PlayerPrefs.Save();
@@ -87,6 +78,22 @@ namespace GameHub.Hub
             UiFocus.Release(this);
             if (canvas != null)
                 Object.Destroy(canvas.gameObject);
+        }
+
+        private static (string Keys, string Action)[] Controls()
+        {
+            string move = KeyBinds.Label(KeyAction.MoveForward) + KeyBinds.Label(KeyAction.MoveLeft) + KeyBinds.Label(KeyAction.MoveBack) + KeyBinds.Label(KeyAction.MoveRight);
+            return new[]
+            {
+                (move, "Move"),
+                ("Mouse", "Look around"),
+                (KeyBinds.Label(KeyAction.FreeMouse), "Use the room menu"),
+                (KeyBinds.Label(KeyAction.Interact), "Enter the door in front of you"),
+                ("Esc", "Pause, settings and controls"),
+                (KeyBinds.Label(KeyAction.EmotionCalibration), "Calibrate emotions"),
+                (KeyBinds.Label(KeyAction.EyeTrackingCalibration), "Calibrate eye tracking"),
+                (KeyBinds.Label(KeyAction.CameraPanel), "Camera and sensor data"),
+            };
         }
     }
 }

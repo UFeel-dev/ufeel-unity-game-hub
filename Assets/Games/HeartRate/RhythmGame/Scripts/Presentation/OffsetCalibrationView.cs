@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace GameHub.RhythmGame
 {
-    public sealed class CalibrationView
+    public sealed class OffsetCalibrationView
     {
         private const float RingSize = 180f;
         private const float DotSize = 12f;
@@ -18,9 +18,9 @@ namespace GameHub.RhythmGame
         private readonly TextMeshProUGUI result;
         private readonly List<Image> dots = new();
 
-        public CalibrationView(UiKit kit, Transform parent, int taps)
+        public OffsetCalibrationView(UiKit kit, Transform parent, int taps)
         {
-            root = UiKit.NewRect("Calibration", parent);
+            root = UiKit.NewRect("OffsetCalibration", parent);
             UiLayout.Stretch(root);
 
             TextMeshProUGUI title = kit.NewText("Title", root, Theme.Title, true, TextAlignmentOptions.Center, Theme.Text);

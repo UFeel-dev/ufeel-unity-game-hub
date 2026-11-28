@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UFeel;
 using UnityEngine;
 
 namespace GameHub.Common
@@ -21,6 +22,11 @@ namespace GameHub.Common
         private readonly ListScreen screen;
         private readonly KeyBar keys;
         private readonly List<MenuEntry> entries = new();
+        private readonly ControlsPanel controls;
+
+        private bool eyeTrackingCalibrated;
+        private bool emotionCalibrated;
+        private bool resetArmed;
 
         public SettingsPanel(UiKit kit, Transform parent)
         {
@@ -29,6 +35,7 @@ namespace GameHub.Common
             keys = new KeyBar(kit, parent);
             keys.Set(Hints);
             keys.SetVisible(false);
+            controls = new ControlsPanel(kit, parent);
         }
 
         private enum Row
@@ -40,6 +47,10 @@ namespace GameHub.Common
             FlashlightIntensity,
             Fullscreen,
             VSync,
+            Controls,
+            EyeTrackingCalibration,
+            EmotionCalibration,
+            ResetEmotionCalibration,
             Back,
         }
 
@@ -53,6 +64,7 @@ namespace GameHub.Common
                 return;
 
             IsVisible = true;
+            resetArmed = false;
             UiFocus.Capture(this);
             scrim.Show(true, Fader.DefaultSeconds);
             keys.SetVisible(true);
@@ -65,6 +77,7 @@ namespace GameHub.Common
             if (!IsVisible)
                 return;
 
+            controls.Hide();
             IsVisible = false;
             GameSettings.Save();
             UiFocus.Release(this);
@@ -77,11 +90,16 @@ namespace GameHub.Common
         {
             scrim.Tick(deltaTime);
             screen.Tick(deltaTime);
-            if (!IsVisible || !UiFocus.Has(this))
+            controls.Tick(deltaTime, mouse);
+            bool onTop = IsVisible && UiFocus.IsTop(this);
+            screen.SetVisible(onTop);
+            keys.SetVisible(onTop);
+            if (!onTop || !UiFocus.Has(this))
                 return;
 
             if (keys.Clicked(mouse) == BackAction)
             {
+                GameSounds.Play(SoundCue.MenuBack);
                 Hide();
                 return;
             }
@@ -97,13 +115,56 @@ namespace GameHub.Common
                 case MenuAction.Increase:
                     Adjust(1);
                     break;
-                case MenuAction.Confirmed when (Row)screen.List.Selected == Row.Back:
+                case MenuAction.Confirmed:
+                    Confirm((Row)screen.List.Selected);
+                    break;
+            }
+
+            if (!IsVisible)
+                return;
+
+            bool disarm = resetArmed && (Row)screen.List.Selected != Row.ResetEmotionCalibration;
+            if (disarm)
+                resetArmed = false;
+            if (disarm || eyeTrackingCalibrated != UFeelAPI.EyeTracking.IsCalibrated || emotionCalibrated != UFeelAPI.Emotion.IsCalibrated)
+                Refresh();
+        }
+
+        private void Confirm(Row row)
+        {
+            switch (row)
+            {
+                case Row.Back:
                     Hide();
                     break;
-                case MenuAction.Confirmed:
+                case Row.Controls:
+                    controls.Show();
+                    break;
+                case Row.EyeTrackingCalibration:
+                    UFeelScreens.BeginEyeTrackingCalibration();
+                    break;
+                case Row.EmotionCalibration:
+                    UFeelScreens.BeginEmotionCalibration();
+                    break;
+                case Row.ResetEmotionCalibration:
+                    ConfirmEmotionReset();
+                    break;
+                default:
                     Adjust(1);
                     break;
             }
+        }
+
+        private void ConfirmEmotionReset()
+        {
+            if (!emotionCalibrated)
+                return;
+
+            if (resetArmed)
+                UFeelScreens.ResetEmotionCalibration();
+
+            resetArmed = !resetArmed;
+            Refresh();
         }
 
         private void Adjust(int direction)
@@ -136,6 +197,11 @@ namespace GameHub.Common
                     return;
             }
 
+            Refresh();
+        }
+
+        private void Refresh()
+        {
             Rebuild();
             for (int i = 0; i < entries.Count; i++)
                 screen.List.SetItem(i, entries[i]);
@@ -143,6 +209,9 @@ namespace GameHub.Common
 
         private void Rebuild()
         {
+            eyeTrackingCalibrated = UFeelAPI.EyeTracking.IsCalibrated;
+            emotionCalibrated = UFeelAPI.Emotion.IsCalibrated;
+
             entries.Clear();
             entries.Add(new MenuEntry("Master volume", Percent(GameSettings.MasterVolume)));
             entries.Add(new MenuEntry("Music volume", Percent(GameSettings.MusicVolume)));
@@ -151,6 +220,10 @@ namespace GameHub.Common
             entries.Add(new MenuEntry("Flashlight intensity", Percent(GameSettings.FlashlightIntensity)));
             entries.Add(new MenuEntry("Fullscreen", OnOff(GameSettings.Fullscreen)));
             entries.Add(new MenuEntry("VSync", OnOff(GameSettings.VSync)));
+            entries.Add(new MenuEntry("Controls"));
+            entries.Add(new MenuEntry("Eye-tracking calibration", eyeTrackingCalibrated ? "Calibrated" : "Not calibrated"));
+            entries.Add(new MenuEntry("Emotion calibration", emotionCalibrated ? "Personal" : "Default"));
+            entries.Add(new MenuEntry("Reset emotion calibration", resetArmed ? "Press again" : string.Empty, isEnabled: emotionCalibrated));
             entries.Add(new MenuEntry("Back"));
         }
 

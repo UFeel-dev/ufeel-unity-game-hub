@@ -43,16 +43,16 @@ namespace GameHub.Common
             root.gameObject.SetActive(false);
         }
 
+        public bool IsVisible => root.gameObject.activeSelf;
+
         public void Toggle()
         {
-            bool visible = !root.gameObject.activeSelf;
-            root.gameObject.SetActive(visible);
-            UFeelAPI.CameraFeed.IsCapturing = visible;
+            root.gameObject.SetActive(!IsVisible);
         }
 
         public void Tick()
         {
-            if (!root.gameObject.activeSelf)
+            if (!IsVisible)
                 return;
 
             Texture2D? frame = UFeelAPI.CameraFeed.Frame;

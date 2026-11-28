@@ -5,7 +5,7 @@ namespace GameHub.RhythmGame
 {
     public sealed class StageView
     {
-        public const int CalibrationTaps = 16;
+        public const int OffsetCalibrationTaps = 16;
 
         private const float ScrimAlpha = 0.82f;
 
@@ -22,9 +22,11 @@ namespace GameHub.RhythmGame
             SongSelect = new SongSelectView(kit, parent);
             Results = new ResultsView(kit, parent);
             Options = new ListScreen(kit, parent, "Options", OptionsController.RowCount);
+            Options.List.PlaysSounds = false;
             Keys = new KeyBindingView(kit, parent);
-            Calibration = new CalibrationView(kit, parent, CalibrationTaps);
+            OffsetCalibration = new OffsetCalibrationView(kit, parent, OffsetCalibrationTaps);
             Pause = new ListScreen(kit, parent, "Pause", 3);
+            Pause.List.PlaysSounds = false;
             HudLayout = new HudLayoutView(kit, parent);
             KeyBar = new KeyBar(kit, parent);
             Overlay = new OverlayView(kit, parent);
@@ -42,7 +44,7 @@ namespace GameHub.RhythmGame
 
         public KeyBindingView Keys { get; }
 
-        public CalibrationView Calibration { get; }
+        public OffsetCalibrationView OffsetCalibration { get; }
 
         public ListScreen Pause { get; }
 
@@ -72,7 +74,7 @@ namespace GameHub.RhythmGame
             Results.SetVisible(false);
             Options.Hide();
             Keys.SetVisible(false);
-            Calibration.SetVisible(false);
+            OffsetCalibration.SetVisible(false);
             Pause.Hide();
             HudLayout.SetVisible(false);
             ShowScrim(false);

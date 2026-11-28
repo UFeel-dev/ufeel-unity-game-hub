@@ -5,7 +5,7 @@ namespace GameHub.RhythmGame
         SongSelect,
         Options,
         Keys,
-        Calibration,
+        OffsetCalibration,
         HudLayout,
         Playing,
         Paused,

@@ -5,10 +5,9 @@ namespace GameHub.RhythmGame
         None,
         Back,
         Play,
-        Hub,
         Options,
         Keys,
-        Calibration,
+        OffsetCalibration,
         HudLayout,
     }
 }

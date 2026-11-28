@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace GameHub.RhythmGame
 {
-    public sealed class CalibrationController
+    public sealed class OffsetCalibrationController
     {
         private const double Interval = 0.5;
         private const double LeadIn = 1.0;
@@ -35,7 +35,7 @@ namespace GameHub.RhythmGame
         private readonly AudioClip click;
         private readonly DspClock clock = new();
         private readonly LaneInput input = new();
-        private readonly List<double> offsets = new(StageView.CalibrationTaps);
+        private readonly List<double> offsets = new(StageView.OffsetCalibrationTaps);
 
         private double start;
         private double nextClick;
@@ -43,14 +43,14 @@ namespace GameHub.RhythmGame
         private int result;
         private bool done;
 
-        public CalibrationController(SessionContext context, AudioSource[] sources, AudioClip click)
+        public OffsetCalibrationController(SessionContext context, AudioSource[] sources, AudioClip click)
         {
             this.context = context;
             this.sources = sources;
             this.click = click;
         }
 
-        private CalibrationView View => context.Stage.Calibration;
+        private OffsetCalibrationView View => context.Stage.OffsetCalibration;
 
         public void Enter()
         {
@@ -145,7 +145,7 @@ namespace GameHub.RhythmGame
 
             offsets.Add(error);
             View.SetProgress(offsets.Count);
-            if (offsets.Count < StageView.CalibrationTaps)
+            if (offsets.Count < StageView.OffsetCalibrationTaps)
                 return;
 
             offsets.Sort();
