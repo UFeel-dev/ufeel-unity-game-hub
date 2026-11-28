@@ -7,7 +7,6 @@ namespace GameHub.Car
     {
         [SerializeField] private VehicleController vehicleController;
         [SerializeField] private Camera vehicleCamera;
-        [SerializeField] private Vector3 exitOffset = new(2f, 0f, 0f);
 
         private GameObject player;
         private bool isInVehicle;
@@ -18,28 +17,10 @@ namespace GameHub.Car
             SetVehicleActive(false);
         }
 
-        private void Update()
-        {
-            if (isInVehicle && UiFocus.IsFree && LayoutInput.GetKeyDown(KeyCode.E))
-                ExitVehicle();
-        }
-
         private void OnTriggerEnter(Collider other)
         {
             if (!isInVehicle && other.CompareTag(Tags.Player))
                 EnterVehicle();
-        }
-
-        public void ExitVehicle()
-        {
-            isInVehicle = false;
-            SetVehicleActive(false);
-
-            if (player == null)
-                return;
-
-            player.SetActive(true);
-            player.transform.position = transform.position + exitOffset;
         }
 
         private void EnterVehicle()

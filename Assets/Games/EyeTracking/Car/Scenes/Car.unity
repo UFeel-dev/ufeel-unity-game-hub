@@ -769,7 +769,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   vehicleController: {fileID: 504246956}
   vehicleCamera: {fileID: 688219469}
-  exitOffset: {x: 2, y: 0, z: 0}
 --- !u!114 &504246956
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1296,7 +1295,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 277e5b67fe1e3cfb28c7467addd6758c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  vehicleEntryTrigger: {fileID: 504246954}
 --- !u!1 &1890115967
 GameObject:
   m_ObjectHideFlags: 0

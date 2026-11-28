@@ -14,10 +14,13 @@ namespace GameHub.Car
         private const float Bottom = 84f;
         private const float ShadeDepth = 320f;
         private const float ShadeOpacity = 0.6f;
-        private const string Instructions = "Look up or down to shift, left or right to steer";
+        private const float MarkerSize = 36f;
+        private const float MarkerOpacity = 0.5f;
+        private const float MarkerFollow = 8f;
+        private const string DirectionInstructions = "Look up or down to shift, left or right to steer";
+        private const string ScreenInstructions = "Look where you want to go: higher is faster, lower reverses";
 
         private static readonly string[] GearLabels = { "Drive", "Stop", "Reverse" };
-        private static readonly KeyHint[] Hints = { new("Get out", 0, "E") };
 
         private readonly RectTransform canvas;
         private readonly TextMeshProUGUI[] gears = new TextMeshProUGUI[GearLabels.Length];
@@ -25,6 +28,9 @@ namespace GameHub.Car
         private readonly Image down;
         private readonly Image left;
         private readonly Image right;
+        private readonly TextMeshProUGUI caption;
+        private readonly Image marker;
+        private Vector2 markerAnchor = new(0.5f, 0.5f);
 
         public CarHud(UiKit kit, Transform owner)
         {
@@ -48,12 +54,11 @@ namespace GameHub.Car
             left = Arrow(kit, pad, 90f, new Vector2(-SideArrowX, middle));
             right = Arrow(kit, pad, -90f, new Vector2(SideArrowX, middle));
 
-            TextMeshProUGUI caption = kit.NewText("Caption", pad, Theme.Tiny, false, TextAlignmentOptions.Center, Theme.TextDim);
+            caption = kit.NewText("Caption", pad, Theme.Tiny, false, TextAlignmentOptions.Center, Theme.TextDim);
             UiLayout.Row(caption.rectTransform, height, RowHeight);
-            caption.text = Instructions;
 
-            KeyBar keys = new(kit, canvas);
-            keys.Set(Hints);
+            marker = UiKit.NewImage("Gaze", canvas, kit.Sprites.Ring, Theme.Fade(Theme.Accent, MarkerOpacity));
+            marker.rectTransform.sizeDelta = Vector2.one * MarkerSize;
 
             SetVisible(false);
         }
@@ -63,8 +68,24 @@ namespace GameHub.Car
             canvas.gameObject.SetActive(visible);
         }
 
-        public void Set(Gear gear, int shiftDirection, float shiftProgress, int steering)
+        public void SetMode(bool directions)
         {
+            caption.text = directions ? DirectionInstructions : ScreenInstructions;
+        }
+
+        public void Set(Gear gear, int shiftDirection, float shiftProgress, int steering, Vector2? gaze, float deltaTime)
+        {
+            bool wasShown = marker.gameObject.activeSelf;
+            marker.gameObject.SetActive(gaze.HasValue);
+            if (gaze.HasValue)
+            {
+                Vector2 target = new(0.5f + (gaze.Value.x * 0.5f), 0.5f - (gaze.Value.y * 0.5f));
+                markerAnchor = wasShown ? Vector2.Lerp(markerAnchor, target, 1f - Mathf.Exp(-MarkerFollow * deltaTime)) : target;
+                marker.rectTransform.anchorMin = markerAnchor;
+                marker.rectTransform.anchorMax = markerAnchor;
+                marker.rectTransform.anchoredPosition = Vector2.zero;
+            }
+
             for (int i = 0; i < gears.Length; i++)
                 gears[i].color = i == Row(gear) ? Theme.Accent : Theme.TextFaint;
 
