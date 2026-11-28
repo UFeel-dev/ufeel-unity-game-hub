@@ -115,7 +115,7 @@ namespace GameHub.Hub
 
                 portal = FindAnyObjectByType<RoomPortal>();
                 if (portal != null)
-                    portal.Open(position, rootObjects);
+                    portal.Open(position, rootObjects, hubSettings, loadedSceneSettings);
             }
 
             onLoaded?.Invoke();

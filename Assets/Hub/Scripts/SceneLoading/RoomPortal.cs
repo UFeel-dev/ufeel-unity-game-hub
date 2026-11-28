@@ -1,5 +1,6 @@
 using GameHub.Common;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace GameHub.Hub
 {
@@ -16,6 +17,8 @@ namespace GameHub.Hub
         private Camera? portalCamera;
         private RenderTexture? texture;
         private Vector3 offset;
+        private RenderSettingsSnapshot? hubSettings;
+        private RenderSettingsSnapshot? roomSettings;
         private int hubMask;
         private int viewerMask;
 
@@ -34,7 +37,7 @@ namespace GameHub.Hub
 
         private void OnDestroy()
         {
-            ReleaseTexture();
+            Close();
         }
 
         private void LateUpdate()
@@ -52,9 +55,13 @@ namespace GameHub.Hub
             ClipAtPortal();
         }
 
-        public void Open(Vector3 roomEntry, GameObject[] roomObjects)
+        public void Open(Vector3 roomEntry, GameObject[] roomObjects, RenderSettingsSnapshot hub, RenderSettingsSnapshot room)
         {
             offset = roomEntry - HubLayout.HubEntry;
+            hubSettings = hub;
+            roomSettings = room;
+            RenderPipelineManager.beginCameraRendering += OnBeginCamera;
+            RenderPipelineManager.endCameraRendering += OnEndCamera;
             foreach (GameObject roomObject in roomObjects)
             {
                 foreach (Light roomLight in roomObject.GetComponentsInChildren<Light>(true))
@@ -86,7 +93,23 @@ namespace GameHub.Hub
 
             portalCamera = null;
             screen.enabled = false;
+            RenderPipelineManager.beginCameraRendering -= OnBeginCamera;
+            RenderPipelineManager.endCameraRendering -= OnEndCamera;
+            hubSettings = null;
+            roomSettings = null;
             ReleaseTexture();
+        }
+
+        private void OnBeginCamera(ScriptableRenderContext context, Camera renderingCamera)
+        {
+            if (renderingCamera == portalCamera)
+                roomSettings?.Apply();
+        }
+
+        private void OnEndCamera(ScriptableRenderContext context, Camera renderingCamera)
+        {
+            if (renderingCamera == portalCamera)
+                hubSettings?.Apply();
         }
 
         private static void SetLayer(Transform root, int layer)
