@@ -20,7 +20,6 @@ You can find the website [here](https://ufeel.guitt.re).
 | [Architecture](ARCHITECTURE.md) | System architecture and component overview |
 | [API Reference](Packages/com.ufcorp.ufeel/Runtime/API.md) | UFeel Unity API usage guide |
 | [Game Hub](Documentation/GameHub/README.md) | Game Hub overview and controls |
-| [Setup Instructions](Documentation/GameHub/SetupInstructions.md) | How to run the project |
 | [Scene Reference](Documentation/GameHub/Scenes.md) | Scene-by-scene breakdown |
 | [Testing & Debugging](Documentation/GameHub/TestingTips.md) | Testing and debugging guide |
 | [Changelog](CHANGELOG.md) | Release history |
@@ -29,11 +28,13 @@ You can find the website [here](https://ufeel.guitt.re).
 
 ## Quick Start
 
+Needs Linux x86_64, Unity 6000.0.58f2, Git LFS (native libraries and models), a webcam, and a microphone for the speech games.
+
 1. Clone the [repository](https://github.com/UFeel-dev/ufeel-unity-game-hub) with Git LFS.
-2. Open it in Unity Hub with Unity 6000.0.58f2.
+2. Open it in Unity Hub.
 3. Open `Assets/Hub/Scenes/GameHub.unity` and press Play.
 
-Note: A webcam is required for most features.
+The UFeel package is embedded in `Packages/com.ufcorp.ufeel`. `tools/update-ufeel.sh` updates it from a ufeel build.
 
 ## License
 

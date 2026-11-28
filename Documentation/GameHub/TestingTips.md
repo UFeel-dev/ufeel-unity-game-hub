@@ -2,8 +2,6 @@
 
 > [<- Game Hub](README.md)
 
-Instructions for testing and debugging the UFeel package across the Game Hub scenes.
-
 ## General Requirements
 
 - A working webcam with permissions granted (may be requested on first launch).
@@ -29,13 +27,13 @@ Instructions for testing and debugging the UFeel package across the Game Hub sce
 
 ## Eye Tracking Scene
 
-**Scene Purpose:** Controls a vehicle using gaze-based direction.
+**Scene Purpose:** Drives a vehicle with the eyes.
 
 ### Testing Steps for Eye Tracking
 
 - From the hub, enter the **Car** door and walk into the vehicle.
-- Accelerate with **W** (**Z** on AZERTY) and check that looking left or right steers the vehicle.
-- Press **F8** to calibrate eye tracking if the gaze range feels too narrow.
+- Look higher on the screen to drive, left or right to steer, lower to reverse. The ring follows the gaze.
+- Press **G** to switch to the direction mode, and **F8** to calibrate eye tracking if the gaze range feels too narrow.
 
 ### Troubleshooting Eye Tracking
 
@@ -66,6 +64,4 @@ Instructions for testing and debugging the UFeel package across the Game Hub sce
 - Vary your facial expression intensity to check threshold tuning.
 - Test with multiple people to evaluate detection robustness.
 
-For integration help or feature requests, open an issue on the repository.
-
-**See also:** [Scene Reference](Scenes.md) - [Setup Instructions](SetupInstructions.md) - [API Reference](../../Packages/com.ufcorp.ufeel/Runtime/API.md)
+**See also:** [Scene Reference](Scenes.md) - [API Reference](../../Packages/com.ufcorp.ufeel/Runtime/API.md)

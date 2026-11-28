@@ -2,12 +2,6 @@
 
 > [<- Back to README](README.md)
 
-## Overview
-
-This project is an open-source library and set of plugins for advanced input systems in games and software (eye tracking, emotion-based inputs, etc.), including sample projects for supported game engines.
-
-All contributions are subject to the terms described below.
-
 ## Accepted Types of Contributions
 
 We accept the following types of contributions:
@@ -84,8 +78,7 @@ Do not submit contributions that are encumbered by patent claims you cannot lice
 
 ## Attribution
 
-- Do not remove existing copyright notices.
-- New files must include appropriate copyright headers consistent with the project.
+Do not remove existing copyright notices.
 
 ## Communication and Review
 
@@ -93,15 +86,4 @@ Do not submit contributions that are encumbered by patent claims you cannot lice
 - Design decisions may be challenged during review
 - Maintainers reserve the right to reject contributions that do not align with the project's goals
 
-All decisions by maintainers are final.
-
-We may respond within 5 business days.
-
-## Questions and Proposals
-
 For significant changes or new features, open an issue before starting implementation.
-Uncoordinated major changes are likely to be rejected.
-
-## Final Notes
-
-Contributions are evaluated on correctness, clarity, and maintainability.

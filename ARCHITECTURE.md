@@ -37,7 +37,7 @@ graph TD
 
 | Path | Role |
 | --- | --- |
-| `Hub/` | `GameHub` scene: first-person lobby with the door carousel, door selection (keyboard, dropdown or eye tracking) and additive loading of the games. `Hub/Editor/` holds the carousel builder (**Tools > Game Hub > Carousel Builder**) and its `CarouselLayout.json`. |
+| `Hub/` | `GameHub` scene: first-person lobby with the door carousel, room menu (mouse, keys, door number or eyes) and additive loading of the games. `Hub/Editor/` holds the carousel builder (**Tools > Game Hub > Carousel Builder**) and its `CarouselLayout.json`. |
 | `Common/` | Code shared by the hub and the games: UI kit, pause menu, settings, UFeel screens, keyboard-layout-aware input, gaze direction, first-person controller, return to the hub, heart rate tempo, tags and scene names. `Common/Resources/Fonts` holds the Barlow Semi Condensed font assets, `Common/Resources/Audio/GameMixer` the audio mixer. |
 | `Games/<Category>/<Game>/` | One folder per game (`Scenes`, `Scripts`, and the game's own `Prefabs`, `Materials`, `Audio`, `Sprites`, `Textures` or `Models`). |
 | `ThirdParty/` | Imported packs and models, kept as distributed. |
@@ -63,7 +63,7 @@ The hub loads a game additively when the player enters a door. A game whose root
 
 `GameSettings` saves the player settings in `PlayerPrefs` and applies them at startup. The master volume sets `AudioListener.volume`. The music and effects volumes set the `MusicVolume` and `EffectsVolume` parameters of `GameMixer`, so every audio source must output to its Music or Effects group: set **Output** in the inspector, or call `GameAudio.Route` for sources created in code. `FirstPersonController` multiplies its sensitivity by `GameSettings.LookMultiplier`.
 
-`GameSounds.Play(SoundCue)` plays shared menu and game cues from `Common/Resources/Audio/Cues`. `SceneMusic` loops `Common/Resources/Music/<active scene>` when it exists, crossfades on scene changes, and keeps the hub track while a room is only previewed through a door (`PlayerScene`). `FirstPersonController` plays footsteps from `Common/Resources/Audio/Steps/<scene>`, or `Default`. `MenuList` plays the menu cues itself unless `PlaysSounds` is false. Both are baked by **Tools > Common > Bake Sounds** (`GameSynth`).
+`GameSounds.Play(SoundCue)` plays shared menu and game cues from `Common/Resources/Audio/Cues`. `SceneMusic` loops `Common/Resources/Music/<active scene>` when it exists, crossfades on scene changes, and keeps the hub track while a room is only previewed through a door (`PlayerScene`). `FirstPersonController` plays footsteps from `Common/Resources/Audio/Steps/<scene>`, or `Default`. `MenuList` plays the menu cues itself unless `PlaysSounds` is false. The cues, music and footsteps are baked by **Tools > Common > Bake Sounds** (`GameSynth`).
 
 ## Input
 
@@ -93,4 +93,4 @@ Gameplay keys go through `KeyBinds` (`KeyAction`, saved in `PlayerPrefs`), never
 | Game HUDs | `AnimalsHud`, `MazeHud`, `CarHud`, `SpeechManager`, `StageView` (rhythm game) |
 | Maze level select | `MazeLevelMenu` |
 
-**See also:** [API Reference](Packages/com.ufcorp.ufeel/Runtime/API.md) - [Setup Instructions](Documentation/GameHub/SetupInstructions.md)
+**See also:** [API Reference](Packages/com.ufcorp.ufeel/Runtime/API.md)

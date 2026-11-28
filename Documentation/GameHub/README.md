@@ -14,7 +14,7 @@ Unity project showcasing the [UFeel](../../Packages/com.ufcorp.ufeel) biometric 
 - Additive scene loading, one assembly per game
 - Round room with textures, floating dust and a coloured light above each room door (`Assets/Hub/Prefabs/HubRoom.prefab`)
 - The selected door stops halfway down and a staircase rises up to it, the room behind is shown through the doorway
-- Carousel and footstep sounds in `Assets/Hub/Audio` (regenerate them with **Tools > Hub > Bake Sounds**), and a welcome screen on first launch
+- Carousel sounds in `Assets/Hub/Audio` (regenerate them with **Tools > Hub > Bake Sounds**), and a welcome screen on first launch
 
 ## Technologies
 
@@ -46,7 +46,6 @@ Defaults below. Every key except Esc, Enter, arrows, digits and Backspace can be
 
 | Document | Description |
 | --- | --- |
-| [Setup Instructions](SetupInstructions.md) | How to run the project |
 | [Scene Reference](Scenes.md) | Scene-by-scene breakdown |
 | [Testing & Debugging](TestingTips.md) | Testing and debugging guide |
 | [API Reference](../../Packages/com.ufcorp.ufeel/Runtime/API.md) | UFeel Unity API |
