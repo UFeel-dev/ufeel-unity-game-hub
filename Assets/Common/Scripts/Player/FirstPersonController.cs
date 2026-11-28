@@ -1,10 +1,12 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace GameHub.Common
 {
     public class FirstPersonController : MonoBehaviour
     {
         private const float MaxPitch = 89f;
+        private const KeyCode FlashlightKey = KeyCode.T;
 
         [Header("Movement")]
         [SerializeField] private float moveSpeed = 5f;
@@ -15,6 +17,8 @@ namespace GameHub.Common
         [SerializeField] private float mouseSensitivity = 2f;
 
         private CharacterController controller;
+        private Light? flashlight;
+        private float flashlightIntensity;
         private float pitch;
         private float verticalVelocity;
         private bool isMouseLookEnabled = true;
@@ -23,6 +27,12 @@ namespace GameHub.Common
         {
             if (!TryGetComponent(out controller))
                 controller = gameObject.AddComponent<CharacterController>();
+            if (TryGetComponent(out MeshRenderer body))
+                body.shadowCastingMode = ShadowCastingMode.ShadowsOnly;
+
+            flashlight = cameraRoot != null ? cameraRoot.GetComponentInChildren<Light>(true) : null;
+            if (flashlight != null)
+                flashlightIntensity = flashlight.intensity;
         }
 
         private void Start()
@@ -34,6 +44,10 @@ namespace GameHub.Common
         {
             if (UiFocus.IsCaptured)
                 return;
+
+            UpdateFlashlight();
+            if (isMouseLookEnabled && Application.isFocused && Cursor.lockState != CursorLockMode.Locked)
+                SetCursorLocked(true);
 
             if (isMouseLookEnabled)
             {
@@ -59,6 +73,17 @@ namespace GameHub.Common
         {
             Cursor.lockState = locked ? CursorLockMode.Locked : CursorLockMode.None;
             Cursor.visible = !locked;
+        }
+
+        private void UpdateFlashlight()
+        {
+            if (flashlight == null)
+                return;
+
+            if (LayoutInput.GetKeyDown(FlashlightKey))
+                flashlight.enabled = !flashlight.enabled;
+
+            flashlight.intensity = flashlightIntensity * GameSettings.FlashlightMultiplier;
         }
 
         private void Move()

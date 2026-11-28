@@ -37,6 +37,7 @@ namespace GameHub.Common
             MusicVolume,
             EffectsVolume,
             LookSensitivity,
+            FlashlightIntensity,
             Fullscreen,
             VSync,
             Back,
@@ -122,6 +123,9 @@ namespace GameHub.Common
                 case Row.LookSensitivity:
                     GameSettings.AdjustLookSensitivity(direction, fine);
                     break;
+                case Row.FlashlightIntensity:
+                    GameSettings.AdjustFlashlightIntensity(direction, fine);
+                    break;
                 case Row.Fullscreen:
                     GameSettings.ToggleFullscreen();
                     break;
@@ -144,6 +148,7 @@ namespace GameHub.Common
             entries.Add(new MenuEntry("Music volume", Percent(GameSettings.MusicVolume)));
             entries.Add(new MenuEntry("Effects volume", Percent(GameSettings.EffectsVolume)));
             entries.Add(new MenuEntry("Mouse sensitivity", Percent(GameSettings.LookSensitivity)));
+            entries.Add(new MenuEntry("Flashlight intensity", Percent(GameSettings.FlashlightIntensity)));
             entries.Add(new MenuEntry("Fullscreen", OnOff(GameSettings.Fullscreen)));
             entries.Add(new MenuEntry("VSync", OnOff(GameSettings.VSync)));
             entries.Add(new MenuEntry("Back"));

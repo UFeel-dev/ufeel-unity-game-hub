@@ -64,7 +64,7 @@ namespace GameHub.Hub
 
         private static void CreateLabel(string text, Transform parent, Vector3 localPosition, Quaternion localRotation, Vector2 size)
         {
-            GameObject label = new($"StatusLabel_{text}", typeof(RectTransform));
+            GameObject label = new($"StatusLabel_{text}", typeof(RectTransform)) { layer = parent.gameObject.layer };
             label.transform.SetParent(parent, false);
             label.transform.SetLocalPositionAndRotation(localPosition, localRotation);
 

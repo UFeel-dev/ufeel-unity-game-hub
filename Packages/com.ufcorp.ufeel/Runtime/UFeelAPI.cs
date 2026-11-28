@@ -71,7 +71,23 @@ namespace UFeel
 
             instance = this;
             DontDestroyOnLoad(gameObject);
+            Begin();
+        }
 
+        private void OnEnable()
+        {
+            if (instance != null)
+                return;
+
+            instance = this;
+            Begin();
+        }
+
+        private static void Begin()
+        {
+#if UNITY_EDITOR
+            UnityEditor.AssemblyReloadEvents.beforeAssemblyReload += Shutdown;
+#endif
             try
             {
                 StartSession();
@@ -121,6 +137,9 @@ namespace UFeel
             if (instance != this)
                 return;
 
+#if UNITY_EDITOR
+            UnityEditor.AssemblyReloadEvents.beforeAssemblyReload -= Shutdown;
+#endif
             Shutdown();
             instance = null;
         }

@@ -8,7 +8,6 @@ namespace GameHub.Hub
     {
         public const string InProgressLabel = "In progress";
 
-        private static readonly Vector3 LoadedScenePosition = new(0f, 0f, 20f);
         private static readonly Color GizmoColor = new(0f, 1f, 0f, 0.25f);
 
         [SerializeField] private string targetSceneName;
@@ -56,7 +55,7 @@ namespace GameHub.Hub
         private void Update()
         {
             SceneLoader? loader = SceneLoader.Instance;
-            if (!playerInRange || loader == null || loader.IsLoading || !UiFocus.IsFree || !LayoutInput.GetKeyDown(KeyCode.E))
+            if (!playerInRange || loader == null || loader.IsLoading || loader.HasPendingRoom || !UiFocus.IsFree || !LayoutInput.GetKeyDown(KeyCode.E))
                 return;
 
             if (IsInProgress)
@@ -71,7 +70,14 @@ namespace GameHub.Hub
             if (wallToDisable != null)
                 wallToDisable.SetActive(false);
 
-            loader.LoadAdditiveSceneAtPosition(targetSceneName, LoadedScenePosition, doorController.ToggleDoor);
+            loader.LoadAdditiveSceneAtPosition(targetSceneName, HubLayout.RoomEntry, doorController.ToggleDoor, CloseRoom);
+        }
+
+        private void CloseRoom()
+        {
+            doorController.ToggleDoor();
+            if (wallToDisable != null)
+                wallToDisable.SetActive(true);
         }
 
         private void OnTriggerEnter(Collider other)

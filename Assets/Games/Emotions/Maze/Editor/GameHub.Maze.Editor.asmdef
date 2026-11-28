@@ -2,6 +2,7 @@
     "name": "GameHub.Maze.Editor",
     "rootNamespace": "GameHub.Maze.Editor",
     "references": [
+        "GameHub.Common.Editor",
         "GameHub.Maze"
     ],
     "includePlatforms": [

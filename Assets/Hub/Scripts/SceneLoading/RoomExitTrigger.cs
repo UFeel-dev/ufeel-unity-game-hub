@@ -9,7 +9,11 @@ namespace GameHub.Hub
 
         private void OnTriggerEnter(Collider other)
         {
-            if (other.CompareTag(Tags.Player) && environmentToDisable != null)
+            if (!other.CompareTag(Tags.Player))
+                return;
+
+            SceneLoader.Instance?.EnterLoadedScene();
+            if (environmentToDisable != null)
                 environmentToDisable.SetActive(false);
         }
     }
